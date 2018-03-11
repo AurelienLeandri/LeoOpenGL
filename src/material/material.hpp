@@ -1,10 +1,26 @@
 #include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
+#include <GL/glew.h>
+
+#include "../utils/file-reader.hpp"
 
 class Material {
   public:
     Material();
-    virtual const char *build();
+    Material(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath);
+
+  public:
+    GLuint &getProgram();
+    void use();
+
+  public:
+    static void compileShader(GLuint &shader, const GLchar *shaderCode, GLint shaderType);
+
   protected:
-    bool _has_changed;
+    bool _hasChanged;
     std::string content;
+    GLuint _program;
 };
