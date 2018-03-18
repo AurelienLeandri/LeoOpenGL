@@ -1,6 +1,6 @@
-??? from here until ???END lines may have been inserted/deleted
-
 #include "geometry-node.hpp"
+
+namespace leo {
 
 GeometryNode::GeometryNode() {
   for (int i = 0; i < 4; ++i)
@@ -22,19 +22,28 @@ void GeometryNode::setMaterial(Material *material) {
 }
 
 
-const glm::mat4x4 &GeometryNode::getModelMatrix() {
+const glm::mat4x4 &GeometryNode::getModelMatrix() const {
   return this->_modelMatrix;
 }
 
-const Material *GeometryNode::getMaterial() {
+const Material *GeometryNode::getMaterial() const {
   return this->_material;
 }
 
-const float *GeometryNode::getVBO() {
+const float *GeometryNode::getVBO() const {
   return &_data[0];
 }
 
-const float *GeometryNode::getEBO() {
+const float *GeometryNode::getEBO() const {
   return &_indices[0];
 }
-???END
+
+size_t GeometryNode::getDataSize() const {
+  return this->_data.size();
+}
+
+size_t GeometryNode::getIndicesSize() const {
+  return this->_indices.size();
+}
+
+}

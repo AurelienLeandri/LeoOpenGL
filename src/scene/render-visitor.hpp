@@ -5,6 +5,8 @@
 #include "visitor.hpp"
 #include "../camera.hpp"
 
+namespace leo {
+
 class RenderVisitor : public Visitor {
   public:
     RenderVisitor(const Camera *_camera, sf::Window *window);
@@ -19,3 +21,5 @@ class RenderVisitor : public Visitor {
     const Camera *_camera;
     sf::Window *_window;
 };
+
+}

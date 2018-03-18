@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+namespace leo {
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
@@ -65,88 +66,32 @@ class Camera
     GLfloat movementSpeed;
     GLfloat mouseSensitivity;
   public:
-    GLfloat getZoom() const {
-      return zoom;
-    }
-
-    void setZoom(GLfloat zoom) {
-      Camera::zoom = zoom;
-    }
+    GLfloat getZoom() const;
+    void setZoom(GLfloat zoom);
 
   private:
     GLfloat zoom;
 
   public:
-    const glm::vec3 &getPosition() const {
-      return position;
-    }
-
-    void setPosition(const glm::vec3 &position) {
-      Camera::position = position;
-    }
-
-    const glm::vec3 &getFront() const {
-      return front;
-    }
-
-    void setFront(const glm::vec3 &front) {
-      Camera::front = front;
-    }
-
-    const glm::vec3 &getUp() const {
-      return up;
-    }
-
-    void setUp(const glm::vec3 &up) {
-      Camera::up = up;
-    }
-
-    const glm::vec3 &getRight() const {
-      return right;
-    }
-
-    void setRight(const glm::vec3 &right) {
-      Camera::right = right;
-    }
-
-    const glm::vec3 &getWorldUp() const {
-      return worldUp;
-    }
-
-    void setWorldUp(const glm::vec3 &worldUp) {
-      Camera::worldUp = worldUp;
-    }
-
-    GLfloat getYaw() const {
-      return yaw;
-    }
-
-    void setYaw(GLfloat yaw) {
-      Camera::yaw = yaw;
-    }
-
-    GLfloat getPitch() const {
-      return pitch;
-    }
-
-    void setPitch(GLfloat pitch) {
-      Camera::pitch = pitch;
-    }
-
-    GLfloat getMovementSpeed() const {
-      return movementSpeed;
-    }
-
-    void setMovementSpeed(GLfloat movementSpeed) {
-      Camera::movementSpeed = movementSpeed;
-    }
-
-    GLfloat getMouseSensitivity() const {
-      return mouseSensitivity;
-    }
-
-    void setMouseSensitivity(GLfloat mouseSensitivity) {
-      Camera::mouseSensitivity = mouseSensitivity;
-    }
+    const glm::vec3 &getPosition() const;
+    void setPosition(const glm::vec3 &position);
+    const glm::vec3 &getFront() const;
+    void setFront(const glm::vec3 &front);
+    const glm::vec3 &getUp() const;
+    void setUp(const glm::vec3 &up);
+    const glm::vec3 &getRight() const;
+    void setRight(const glm::vec3 &right);
+    const glm::vec3 &getWorldUp() const;
+    void setWorldUp(const glm::vec3 &worldUp);
+    GLfloat getYaw() const;
+    void setYaw(GLfloat yaw);
+    GLfloat getPitch() const;
+    void setPitch(GLfloat pitch);
+    GLfloat getMovementSpeed() const;
+    void setMovementSpeed(GLfloat movementSpeed);
+    GLfloat getMouseSensitivity() const;
+    void setMouseSensitivity(GLfloat mouseSensitivity);
 
 };
+
+}

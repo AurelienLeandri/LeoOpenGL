@@ -2,6 +2,8 @@
 
 #include <vector>
 
+namespace leo {
+
 class Node {
   public:
     Node();
@@ -21,3 +23,5 @@ class Node {
     std::vector<Node*> _children;
     
 };
+
+}

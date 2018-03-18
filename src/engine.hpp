@@ -1,7 +1,12 @@
 #pragma once
 
-#include "opengl-context.hpp"
+#include <SFML/System.hpp>
+#include <SFML/Window.hpp>
 #include "material/material.hpp"
+#include "scene/node.hpp"
+#include "camera.hpp"
+
+namespace leo {
 
 class Engine {
   public:
@@ -13,11 +18,13 @@ class Engine {
 
   private:
     void _init();
-    void _updateCamera(Camera &camera, float deltaTime, sf::Vector2f &formerPosition);
+    void _updateCamera(float deltaTime, sf::Vector2f &formerPosition);
 
   private:
-    OpenGLContext *_context;
     Material *_material;
     Camera *_camera;
+    Node *_root;
+    sf::Window *_window;
 };
 
+}

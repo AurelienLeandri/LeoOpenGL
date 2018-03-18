@@ -1,5 +1,7 @@
 #include "camera.hpp"
 
+namespace leo {
+
 // Constructor with vectors
 Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch) :
   front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED), mouseSensitivity(SENSITIVTY), zoom(ZOOM)
@@ -89,4 +91,86 @@ void Camera::updateCameraVectors()
   // Also re-calculate the Right and Up vector
   this->right = glm::normalize(glm::cross(this->front, this->worldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
   this->up    = glm::normalize(glm::cross(this->right, this->front));
+}
+
+GLfloat Camera::getZoom() const {
+  return zoom;
+}
+
+void Camera::setZoom(GLfloat zoom) {
+  Camera::zoom = zoom;
+}
+
+const glm::vec3 &Camera::getPosition() const {
+  return position;
+}
+
+void Camera::setPosition(const glm::vec3 &position) {
+  Camera::position = position;
+}
+
+const glm::vec3 &Camera::getFront() const {
+  return front;
+}
+
+void Camera::setFront(const glm::vec3 &front) {
+  Camera::front = front;
+}
+
+const glm::vec3 &Camera::getUp() const {
+  return up;
+}
+
+void Camera::setUp(const glm::vec3 &up) {
+  Camera::up = up;
+}
+
+const glm::vec3 &Camera::getRight() const {
+  return right;
+}
+
+void Camera::setRight(const glm::vec3 &right) {
+  Camera::right = right;
+}
+
+const glm::vec3 &Camera::getWorldUp() const {
+  return worldUp;
+}
+
+void Camera::setWorldUp(const glm::vec3 &worldUp) {
+  Camera::worldUp = worldUp;
+}
+
+GLfloat Camera::getYaw() const {
+  return yaw;
+}
+
+void Camera::setYaw(GLfloat yaw) {
+  Camera::yaw = yaw;
+}
+
+GLfloat Camera::getPitch() const {
+  return pitch;
+}
+
+void Camera::setPitch(GLfloat pitch) {
+  Camera::pitch = pitch;
+}
+
+GLfloat Camera::getMovementSpeed() const {
+  return movementSpeed;
+}
+
+void Camera::setMovementSpeed(GLfloat movementSpeed) {
+  Camera::movementSpeed = movementSpeed;
+}
+
+GLfloat Camera::getMouseSensitivity() const {
+  return mouseSensitivity;
+}
+
+void Camera::setMouseSensitivity(GLfloat mouseSensitivity) {
+  Camera::mouseSensitivity = mouseSensitivity;
+}
+
 }

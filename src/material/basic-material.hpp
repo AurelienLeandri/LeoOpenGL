@@ -2,8 +2,12 @@
 
 #include "material.hpp"
 
-class BasicMaterial {
+namespace leo {
+
+class BasicMaterial : public Material {
   public:
     BasicMaterial();
   protected:
 };
+
+}

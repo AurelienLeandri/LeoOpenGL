@@ -1,6 +1,8 @@
 #include "transformation-visitor.hpp"
 #include "geometry-node.hpp"
 
+namespace leo {
+
 TransformationVisitor::TransformationVisitor() {
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
@@ -37,4 +39,6 @@ void TransformationVisitor::transform(glm::mat4x4 transformation) {
 
 void TransformationVisitor::setTransformation(glm::mat4x4 transformation){
   this->_transformation = transformation;
+}
+
 }

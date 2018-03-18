@@ -2,6 +2,8 @@
 #include <fstream>
 #include <iostream>
 
+namespace leo {
+
 std::string FileReader::readFile(std::string fileName) {
   std::ifstream ifs;
   try {
@@ -17,4 +19,6 @@ std::string FileReader::readFile(std::string fileName) {
       << fileName << ")" << std::endl;
   }
   return "";
+}
+
 }

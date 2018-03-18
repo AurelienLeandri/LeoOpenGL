@@ -1,5 +1,7 @@
 #include "node.hpp"
 
+namespace leo {
+
 Node::Node() {
 }
 
@@ -18,4 +20,6 @@ void Node::_destroy() {
 
 const std::vector<Node*> &Node::getChildren() {
   return this->_children;
+}
+
 }

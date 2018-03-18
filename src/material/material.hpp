@@ -9,6 +9,8 @@
 
 #include "../utils/file-reader.hpp"
 
+namespace leo {
+
 class Material {
   public:
     Material();
@@ -26,3 +28,5 @@ class Material {
     std::string content;
     GLuint _program;
 };
+
+}

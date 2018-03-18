@@ -1,5 +1,7 @@
 #include "material.hpp"
 
+namespace leo {
+
 Material::Material() {
 }
 
@@ -49,4 +51,6 @@ void Material::use() const {
 
 const GLuint &Material::getProgram() const {
   return this->_program;
+}
+
 }
