@@ -1,3 +1,5 @@
+??? from here until ???END lines may have been inserted/deleted
+
 #include "geometry-node.hpp"
 
 GeometryNode::GeometryNode() {
@@ -15,10 +17,24 @@ void GeometryNode::transform(const glm::mat4x4 &transformation) {
   this->_modelMatrix = transformation * this->_modelMatrix;
 }
 
+void GeometryNode::setMaterial(Material *material) {
+  this->_material = material;
+}
+
+
 const glm::mat4x4 &GeometryNode::getModelMatrix() {
   return this->_modelMatrix;
 }
 
-void GeometryNode::setMaterial(Material *material) {
-  this->_material = material;
+const Material *GeometryNode::getMaterial() {
+  return this->_material;
 }
+
+const float *GeometryNode::getVBO() {
+  return &_data[0];
+}
+
+const float *GeometryNode::getEBO() {
+  return &_indices[0];
+}
+???END

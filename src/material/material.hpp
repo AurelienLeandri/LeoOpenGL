@@ -15,8 +15,8 @@ class Material {
     Material(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath);
 
   public:
-    GLuint &getProgram();
-    void use();
+    const GLuint &getProgram() const;
+    void use() const;
 
   public:
     static void compileShader(GLuint &shader, const GLchar *shaderCode, GLint shaderType);

@@ -12,14 +12,18 @@ class GeometryNode : public Node {
 
   public:
     const glm::mat4x4 &getModelMatrix() const;
-    void setMaterial(Material *material);
     void transform(const glm::mat4x4 &transformation);
 
   public:
+    void setMaterial(Material *material);
     const glm::mat4x4 &getModelMatrix();
+    const Material *getMaterial;
+    const float *getVBO();
+    const float *getEBO();
 
   protected:
     Material *_material = nullptr;
     std::vector<float> _data;
+    std::vector<float> _indices;
     glm::mat4x4 _modelMatrix;
 };

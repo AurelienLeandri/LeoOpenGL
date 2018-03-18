@@ -43,10 +43,10 @@ void Material::compileShader(GLuint &shader, const GLchar *shaderCode,
   }
 }
 
-void Material::use() {
+void Material::use() const {
   glUseProgram(this->_program);
 }
 
-GLuint &Material::getProgram() {
+const GLuint &Material::getProgram() const {
   return this->_program;
 }
