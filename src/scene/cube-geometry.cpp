@@ -12,6 +12,10 @@ CubeGeometry::CubeGeometry(glm::vec3 position, double size) {
   // FIXME: translate model matrix
 }
 
+CubeGeometry::~CubeGeometry()
+{
+}
+
 void CubeGeometry::draw(const OpenGLContext &context) {
 }
 

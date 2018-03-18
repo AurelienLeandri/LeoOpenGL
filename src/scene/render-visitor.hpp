@@ -1,3 +1,5 @@
+#pragma once
+
 #include "visitor.hpp"
 
 class RenderVisitor : public Visitor {

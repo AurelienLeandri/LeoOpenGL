@@ -1,3 +1,5 @@
+#pragma once
+
 #include "opengl-context.hpp"
 #include "material/material.hpp"
 

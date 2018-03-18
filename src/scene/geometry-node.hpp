@@ -1,10 +1,13 @@
+#pragma once
+
 #include "node.hpp"
 #include "../material/material.hpp"
 #include "../opengl-context.hpp"
 
 class GeometryNode : public Node {
   public:
-    ~GeometryNode();
+    GeometryNode();
+    virtual ~GeometryNode();
     virtual void draw(const OpenGLContext &context) = 0;
 
   public:
@@ -16,7 +19,7 @@ class GeometryNode : public Node {
     const glm::mat4x4 &getModelMatrix();
 
   protected:
-    Material *_material;
+    Material *_material = nullptr;
     std::vector<float> _data;
     glm::mat4x4 _modelMatrix;
 };

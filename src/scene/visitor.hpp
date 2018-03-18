@@ -1,8 +1,10 @@
+#pragma once
+
 #include "node.hpp"
 
 class Visitor {
   public:
     Visitor();
-  protected:
+  public:
     virtual void visit(Node *node) = 0;
 };

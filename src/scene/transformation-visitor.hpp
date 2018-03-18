@@ -1,3 +1,5 @@
+#pragma once
+
 #include "visitor.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -8,6 +10,9 @@ class TransformationVisitor : public Visitor {
     TransformationVisitor(const TransformationVisitor &other);
 
   public:
+    virtual void visit(Node *node);
+
+  public:
     void setTransformation(glm::mat4x4 transformation);
     void translate(glm::vec3 v);
     void rotate(float deg, glm::vec3 v);
@@ -15,6 +20,5 @@ class TransformationVisitor : public Visitor {
     void transform(glm::mat4x4 transformation);
 
   protected:
-    virtual void visit(Node *node);
     glm::mat4x4 _transformation;
 };

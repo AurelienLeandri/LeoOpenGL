@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SOIL.h>
 #include <GL/glew.h>
 #include <SFML/Window.hpp>

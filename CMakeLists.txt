@@ -38,7 +38,7 @@ endif()
 # Hide some variables
 mark_as_advanced(GLM_INCLUDE_DIR)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Wall -Wextra -pedantic -O0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Wall -Wextra -pedantic -O0 -g")
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/src
