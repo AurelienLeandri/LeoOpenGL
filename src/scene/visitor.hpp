@@ -4,5 +4,5 @@ class Visitor {
   public:
     Visitor();
   protected:
-    virtual void visit(Node &node) = 0;
+    virtual void visit(Node *node) = 0;
 };

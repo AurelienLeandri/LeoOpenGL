@@ -3,5 +3,5 @@
 RenderVisitor::RenderVisitor() {
 }
 
-void RenderVisitor::visit(Node &node) {
+void RenderVisitor::visit(Node *node) {
 }

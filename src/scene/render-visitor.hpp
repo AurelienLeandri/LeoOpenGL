@@ -4,5 +4,5 @@ class RenderVisitor : public Visitor {
   public:
     RenderVisitor();
   private:
-    virtual void visit(Node &node);
+    virtual void visit(Node *node);
 };
