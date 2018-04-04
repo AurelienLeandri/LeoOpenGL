@@ -1,6 +1,6 @@
 #pragma once
 
-#include "node.hpp"
+#include <scene/node.hpp>
 
 namespace leo {
 

@@ -1,8 +1,4 @@
 #include "engine.hpp"
-#include "scene/cube-geometry.hpp"
-#include "material/basic-material.hpp"
-#include "scene/cube-geometry.hpp"
-#include "scene/render-visitor.hpp"
 
 namespace leo {
 

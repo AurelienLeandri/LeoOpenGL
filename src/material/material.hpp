@@ -1,13 +1,13 @@
 #pragma once
 
+#include <GL/glew.h>
+
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
-#include <GL/glew.h>
-
-#include "../utils/file-reader.hpp"
+#include <utils/file-reader.hpp>
 
 namespace leo {
 

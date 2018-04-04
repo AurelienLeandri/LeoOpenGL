@@ -1,5 +1,4 @@
 #include "transformation-visitor.hpp"
-#include "geometry-node.hpp"
 
 namespace leo {
 

@@ -1,9 +1,12 @@
 #pragma once
 
+#include <glm/gtc/type_ptr.hpp>
 #include <SFML/Window.hpp>
 
-#include "visitor.hpp"
-#include "../camera.hpp"
+#include <camera.hpp>
+#include <material/material.hpp>
+#include <scene/visitor.hpp>
+#include <scene/geometry-node.hpp>
 
 namespace leo {
 

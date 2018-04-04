@@ -2,13 +2,17 @@
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
-#include "material/material.hpp"
-#include "scene/node.hpp"
-#include "camera.hpp"
+
+#include <material/material.hpp>
+#include <material/basic-material.hpp>
+#include <scene/node.hpp>
+#include <scene/render-visitor.hpp>
+#include <scene/cube-geometry.hpp>
+#include <camera.hpp>
 
 namespace leo {
 
-class Engine {
+class Engine{
   public:
     Engine();
     ~Engine();

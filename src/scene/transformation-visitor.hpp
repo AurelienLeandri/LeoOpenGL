@@ -1,9 +1,11 @@
 #pragma once
 
-#include "visitor.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include <scene/visitor.hpp>
+#include <scene/geometry-node.hpp>
 
 namespace leo {
 

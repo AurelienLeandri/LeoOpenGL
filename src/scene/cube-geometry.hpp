@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geometry-node.hpp"
+#include <scene/geometry-node.hpp>
 
 namespace leo {
 
