@@ -32,6 +32,7 @@ int main()
   print_matrix(dynamic_cast<leo::GeometryNode*>(root->getChildren()[0])->getModelMatrix());
   print_matrix(dynamic_cast<leo::GeometryNode*>(root->getChildren()[0]->getChildren()[0])->getModelMatrix());
   print_matrix(dynamic_cast<leo::GeometryNode*>(root->getChildren()[1]->getChildren()[0])->getModelMatrix());
+  engine.gameLoop();
   delete root;
   return 0;
 }

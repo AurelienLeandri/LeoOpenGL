@@ -23,6 +23,7 @@ class Engine{
   private:
     void _init();
     void _updateCamera(float deltaTime, sf::Vector2f &formerPosition);
+    Node *getRoot();
 
   private:
     Material *_material;

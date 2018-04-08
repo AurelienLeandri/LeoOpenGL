@@ -9,7 +9,7 @@ RenderVisitor::RenderVisitor(const Camera *camera, sf::Window *window)
 
 void RenderVisitor::visit(Node *node) {
   this->_visit(node);
-  //this->_window->display();  // TODO: move display in a calling function after the recursive visit
+  this->_window->display();  // TODO: move display in a calling function after the recursive visit
 }
 
 void RenderVisitor::_visit(Node *node) {
@@ -20,8 +20,7 @@ void RenderVisitor::_visit(Node *node) {
     const float *indices = g_node->getVBO();
     const Material *material = g_node->getMaterial();
     material->use();
-    //glm::mat4 view = this->_camera->getViewMatrix();
-    glm::mat4 view;
+    glm::mat4 view = this->_camera->getViewMatrix();
 
     GLuint EBO;
     glGenBuffers(1, &EBO);
@@ -50,11 +49,8 @@ void RenderVisitor::_visit(Node *node) {
     } glBindVertexArray(0);
 
     // TODO: change 800*600 for real screen size
-    glm::mat4 projection;
-    /*
     glm::mat4 projection = glm::perspective(this->_camera->getZoom(),
         (float) 800 / (float) 600, 0.1f, 100.0f);
-        */
 
     glUniformMatrix4fv(glGetUniformLocation(material->getProgram(), "view"),
         1, GL_FALSE, glm::value_ptr(view));

@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 project(opengl-engine)
 
+find_package(PkgConfig REQUIRED)
+pkg_search_module(GLFW REQUIRED glfw3)
+include_directories(${GLFW_INCLUDE_DIRS})
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 # Detect and add GLEW
 find_package(GLEW REQUIRED)

@@ -12,23 +12,37 @@ Engine::~Engine() {
 }
 
 void Engine::_init() {
-  this->_material = new BasicMaterial();
-  this->_camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
-  // TODO: create FolderNode
-  this->_root = new CubeGeometry();
+  // Initialize context
+  sf::ContextSettings settings;
+  settings.depthBits = 24;
+  settings.stencilBits = 8;
+  settings.antialiasingLevel = 4;
+  settings.majorVersion = 4;
+  settings.minorVersion = 5;
+  settings.attributeFlags = 0;
   this->_window = new sf::Window(sf::VideoMode(800, 600), "OpenGL",
-      sf::Style::Default, sf::ContextSettings(32));
+      sf::Style::Default, settings);
   this->_window->setVerticalSyncEnabled(true);
+  if (glewInit() == GLEW_OK) {
+    std::cerr << "Glew initialized successfully" << std::endl;
+  }
+  else {
+    std::cerr << "Failed to initialize Glew" << std::endl;
+    return;
+  }
+  std::cout << "Context GLSL version is " << glGetString ( GL_SHADING_LANGUAGE_VERSION ) << std::endl;
+  glewExperimental = GL_TRUE;
   glClearColor(0.07, 0.07, 0.07, 1);
   glEnable(GL_DEPTH_TEST);
-  if (glewInit() == GLEW_OK)
-    std::cout << "Glew initialized successfully" << std::endl;
+  glDepthFunc(GL_LESS); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
   // Define the viewport dimensions
   glViewport(0, 0, 800, 600);
 
+  // Initialize scene graph
+  this->_camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+  // TODO: create FolderNode
+  this->_root = new CubeGeometry();
   // Setup some OpenGL options
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
 
 }
 
@@ -62,6 +76,11 @@ void Engine::gameLoop() {
     clock.restart();
     render_visitor.visit(this->_root);
   }
+  this->_window->close();
+}
+
+Node *Engine::getRoot() {
+  return this->_root;
 }
 
 }

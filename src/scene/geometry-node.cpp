@@ -3,6 +3,7 @@
 namespace leo {
 
 GeometryNode::GeometryNode() {
+  this->_material = new Material("resources/shaders/vertex-basic.glsl", "resources/shaders/fragment-basic.glsl");
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       this->_modelMatrix[i][j] = i == j ? 1 : 0;
