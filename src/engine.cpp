@@ -77,8 +77,7 @@ void Engine::gameLoop() {
 
     render_visitor.visit(this->_root);
 
-    //glfwSwapBuffers(this->_window);  // TODO: fix double buffering
-    glFlush();
+    glfwSwapBuffers(this->_window);
 
     // Check and call events
     glfwPollEvents();
@@ -121,6 +120,7 @@ void Engine::doMovement(float deltaTime)
 // Is called whenever a key is pressed/released via GLFW
 void Engine::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
+  UNUSED(scancode); UNUSED(mode);
   InputManager *im = static_cast<InputManager *>(glfwGetWindowUserPointer(window));
   if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);

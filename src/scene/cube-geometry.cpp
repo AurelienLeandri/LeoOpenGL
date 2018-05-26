@@ -68,9 +68,11 @@ CubeGeometry::~CubeGeometry()
 }
 
 void CubeGeometry::draw(GLFWwindow *window) {
+  UNUSED(window);
 }
 
 void CubeGeometry::update(double delta) {
+  UNUSED(delta);
 }
 
 }
