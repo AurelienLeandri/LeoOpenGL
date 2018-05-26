@@ -15,14 +15,17 @@ void print_matrix(const glm::mat4x4 &mat) {
 int main()
 {
   leo::Engine engine;
-  leo::CubeGeometry *root = new leo::CubeGeometry();
-  root->addChild(new leo::CubeGeometry());
-  root->addChild(new leo::CubeGeometry());
-  root->addChild(new leo::CubeGeometry());
+  //leo::CubeGeometry *root = new leo::CubeGeometry();
+  //root->addChild(new leo::CubeGeometry(glm::vec3(2.0, 0.0, 0.0), 1.0));
+  //root->addChild(new leo::CubeGeometry(glm::vec3(0.0, 2.0, 0.0), 0.5));
+  //root->addChild(new leo::CubeGeometry(glm::vec3(0.0, 0.0, 2.0), 1.0));
+  /*
   for (auto *e : root->getChildren()) {
     e->addChild(new leo::CubeGeometry());
     e->addChild(new leo::CubeGeometry());
   }
+  */
+  /*
   leo::TransformationVisitor transformationVisitor;
   transformationVisitor.translate(glm::vec3(0.0, 0.0, 2.0));
   transformationVisitor.visit(root);
@@ -32,7 +35,8 @@ int main()
   print_matrix(dynamic_cast<leo::GeometryNode*>(root->getChildren()[0])->getModelMatrix());
   print_matrix(dynamic_cast<leo::GeometryNode*>(root->getChildren()[0]->getChildren()[0])->getModelMatrix());
   print_matrix(dynamic_cast<leo::GeometryNode*>(root->getChildren()[1]->getChildren()[0])->getModelMatrix());
+  */
   engine.gameLoop();
-  delete root;
+  //delete root;
   return 0;
 }

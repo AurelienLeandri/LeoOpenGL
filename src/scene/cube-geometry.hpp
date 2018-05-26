@@ -8,10 +8,10 @@ class CubeGeometry : public GeometryNode {
   public:
     CubeGeometry();
     virtual ~CubeGeometry();
-    CubeGeometry(double size);
-    CubeGeometry(glm::vec3 position, double size);
+    CubeGeometry(float size);
+    CubeGeometry(glm::vec3 position, float size);
   public:
-    virtual void draw(sf::Window *window);
+    virtual void draw(GLFWwindow *window);
     virtual void update(double delta);
 };
 

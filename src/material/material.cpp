@@ -37,7 +37,7 @@ void Material::compileShader(GLuint &shader, const GLchar *shaderCode,
   shader = glCreateShader(shaderType);
   glShaderSource(shader, 1, &shaderCode, NULL);
   glCompileShader(shader);
-  glGetMaterialiv(shader, GL_COMPILE_STATUS, &success);
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(shader, 512, NULL, infolog);
     std::cout << "ERROR::PROGRAM::COMPILE::COMPILATION_FAILED\n"

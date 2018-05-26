@@ -1,13 +1,15 @@
+
 #pragma once
 
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
+#include <global.hpp>
+#include <SOIL.h>
 
 #include <material/material.hpp>
 #include <material/basic-material.hpp>
 #include <scene/node.hpp>
 #include <scene/render-visitor.hpp>
 #include <scene/cube-geometry.hpp>
+#include <input-manager.hpp>
 #include <camera.hpp>
 
 namespace leo {
@@ -22,14 +24,22 @@ class Engine{
 
   private:
     void _init();
-    void _updateCamera(float deltaTime, sf::Vector2f &formerPosition);
     Node *getRoot();
 
+  private: // Control methods and callbacks
+    static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
+    static void mouseCallback(GLFWwindow *window, double xpos, double ypos);
+    void doMovement(float deltaTime);
+
+  public: // Control attributes
+    InputManager inputManager;
+
   private:
-    Material *_material;
     Camera *_camera;
     Node *_root;
-    sf::Window *_window;
+    GLFWwindow *_window;
+    GLuint screenWidth = 800;
+    GLuint screenHeight = 600;
 };
 
 }

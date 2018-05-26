@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <SFML/Window.hpp>
+#include <global.hpp>
 
 #include <scene/node.hpp>
 #include <material/material.hpp>
@@ -12,7 +11,7 @@ class GeometryNode : public Node {
   public:
     GeometryNode();
     virtual ~GeometryNode();
-    virtual void draw(sf::Window *window) = 0;
+    virtual void draw(GLFWwindow *window) = 0;
     virtual void update(double delta) = 0;
 
   public:
@@ -22,15 +21,15 @@ class GeometryNode : public Node {
     void setMaterial(Material *material);
     const glm::mat4x4 &getModelMatrix() const;
     const Material *getMaterial() const;
-    const float *getVBO() const;
-    const float *getEBO() const;
+    const GLfloat *getVBO() const;
+    const GLuint *getEBO() const;
     size_t getDataSize() const;
     size_t getIndicesSize() const;
 
   protected:
     Material *_material = nullptr;
-    std::vector<float> _data;
-    std::vector<float> _indices;
+    std::vector<GLfloat> _data;
+    std::vector<GLuint> _indices;
     glm::mat4x4 _modelMatrix;
 };
 

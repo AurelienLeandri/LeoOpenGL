@@ -1,7 +1,9 @@
 #pragma once
 
+
+#include <global.hpp>
+
 #include <glm/gtc/type_ptr.hpp>
-#include <SFML/Window.hpp>
 
 #include <camera.hpp>
 #include <material/material.hpp>
@@ -12,7 +14,7 @@ namespace leo {
 
 class RenderVisitor : public Visitor {
   public:
-    RenderVisitor(const Camera *_camera, sf::Window *window);
+    RenderVisitor(const Camera *_camera, GLFWwindow *window);
 
   public:
     virtual void visit(Node *node);
@@ -22,7 +24,7 @@ class RenderVisitor : public Visitor {
 
   private:
     const Camera *_camera;
-    sf::Window *_window;
+    GLFWwindow *_window;
 };
 
 }

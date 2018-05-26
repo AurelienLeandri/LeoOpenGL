@@ -31,11 +31,11 @@ const Material *GeometryNode::getMaterial() const {
   return this->_material;
 }
 
-const float *GeometryNode::getVBO() const {
+const GLfloat *GeometryNode::getVBO() const {
   return &_data[0];
 }
 
-const float *GeometryNode::getEBO() const {
+const GLuint *GeometryNode::getEBO() const {
   return &_indices[0];
 }
 
