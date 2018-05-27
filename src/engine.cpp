@@ -1,6 +1,6 @@
 #include "engine.hpp"
 
-  #include <scene/transformation-visitor.hpp>
+  #include <scene/visitor/transformation-visitor.hpp>
 
 namespace leo {
 
@@ -76,11 +76,13 @@ void Engine::gameLoop() {
   GLfloat currentFrame = 0.0;
 
   // TODO: only for testing, remove afterwards
+  /*
   TransformationVisitor tVisitor;
   tVisitor.translate(glm::vec3(-1.0f, 0.0f, 0.0f));
   tVisitor.rotate(1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
   tVisitor.scale(glm::vec3(1.0f, 2.0f, 1.0f));
   tVisitor.visit(this->_root);
+  */
 
 
   while(!glfwWindowShouldClose(this->_window)) {

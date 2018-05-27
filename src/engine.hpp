@@ -7,7 +7,7 @@
 #include <material/material.hpp>
 #include <material/basic-material.hpp>
 #include <scene/node.hpp>
-#include <scene/render-visitor.hpp>
+#include <scene/visitor/render-visitor.hpp>
 #include <scene/model.hpp>
 #include <input-manager.hpp>
 #include <camera.hpp>

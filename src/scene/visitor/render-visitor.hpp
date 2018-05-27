@@ -7,7 +7,7 @@
 
 #include <camera.hpp>
 #include <material/material.hpp>
-#include <scene/visitor.hpp>
+#include <scene/visitor/visitor.hpp>
 #include <scene/geometry-node.hpp>
 
 namespace leo {

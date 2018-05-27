@@ -1,3 +1,7 @@
+add_subdirectory(material)
+add_subdirectory(scene)
+add_subdirectory(utils)
+
 set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.hpp
@@ -6,10 +10,6 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/input-manager.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/input-manager.hpp
   )
-
-add_subdirectory(material)
-add_subdirectory(scene)
-add_subdirectory(utils)
 
 add_library(leo-engine SHARED ${ENGINE_SOURCES})
 

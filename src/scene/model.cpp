@@ -59,7 +59,6 @@ namespace leo {
       vector.y = mesh->mNormals[i].y;
       vector.z = mesh->mNormals[i].z;
       vertex.normal = vector;
-      vertices.push_back(vertex);
       if (mesh->mTextureCoords[0]) {
         glm::vec2 vec;
         vec.x = mesh->mTextureCoords[0][i].x;
@@ -68,6 +67,7 @@ namespace leo {
       }
       else
         vertex.texCoords = glm::vec2(0.0f, 0.0f);
+      vertices.push_back(vertex);
     }
     // Process indices
     for (GLuint i = 0; i < mesh->mNumFaces; i++) {
@@ -99,6 +99,7 @@ namespace leo {
         mat->GetTexture(type, i, &str);
         GLboolean skip = (GLboolean) false;
         for (GLuint j = 0; j < textures_loaded.size(); j++) {
+          // Check if texture is not already loaded
           if (textures_loaded[j].path == str) {
             textures.push_back(textures_loaded[j]);
             skip = (GLboolean) true;
@@ -126,7 +127,7 @@ namespace leo {
     int width, height;
     std::cout << filename.c_str() << std::endl;
     unsigned char *image = SOIL_load_image(filename.c_str(), &width, &height,
-        0, SOIL_LOAD_RGB);
+        0, SOIL_LOAD_RGB);  // TODO: RGBA for png ??
     std::cout << (SOIL_last_result()) << std::endl;
     // Assign texture to ID
     glBindTexture(GL_TEXTURE_2D, textureID);
