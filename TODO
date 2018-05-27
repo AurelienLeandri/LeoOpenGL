@@ -1,8 +1,3 @@
-src/scene/render-visitor.cpp:12:  //this->_window->display();  // TODO: move display in a calling function after the recursive visit
-src/scene/render-visitor.cpp:19:    // TODO: if geometry hasnt changed, maybe put genBuffers in the node info (check if no limited size)
-src/scene/render-visitor.cpp:48:    // TODO: change 800*600 for real screen size
-src/scene/render-visitor.cpp:52:    // TODO: model matrix ??
-src/scene/render-visitor.cpp:58:    // Cubes TODO: bind VBO instead of VAO
-src/scene/render-visitor.cpp:60:      // TODO: manage textures
-src/engine.cpp:57:  // TODO: create FolderNode
-src/engine.cpp:80:    //glfwSwapBuffers(this->_window);  // TODO: fix double buffering
+src/engine.cpp:59:  // TODO: create FolderNode
+src/engine.cpp:61:  // TODO: testing, remove after
+src/engine.cpp:76:  // TODO: only for testing, remove afterwards

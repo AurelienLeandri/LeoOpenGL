@@ -1,5 +1,7 @@
 #include "engine.hpp"
 
+  #include <scene/transformation-visitor.hpp>
+
 namespace leo {
 
 
@@ -56,6 +58,12 @@ void Engine::_init() {
   // Initialize scene graph
   // TODO: create FolderNode
   this->_root = new Model();
+  // TODO: testing, remove after
+  Model *child = new Model();
+  TransformationVisitor tVisitor;
+  tVisitor.translate(glm::vec3(2.0f, 0.0f, 0.0f));
+  tVisitor.visit(child);
+  this->_root->addChild(child);
 
 }
 
@@ -64,6 +72,14 @@ void Engine::gameLoop() {
   GLfloat lastFrame = 0.0;
   GLfloat deltaTime = 0.0;
   GLfloat currentFrame = 0.0;
+
+  // TODO: only for testing, remove afterwards
+  TransformationVisitor tVisitor;
+  tVisitor.translate(glm::vec3(-1.0f, 0.0f, 0.0f));
+  tVisitor.rotate(1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+  tVisitor.scale(glm::vec3(1.0f, 2.0f, 1.0f));
+  tVisitor.visit(this->_root);
+
 
   while(!glfwWindowShouldClose(this->_window)) {
     currentFrame = glfwGetTime();

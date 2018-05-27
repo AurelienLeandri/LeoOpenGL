@@ -7,25 +7,92 @@
 namespace leo {
 
   Mesh::Mesh() {
-    struct Vertex v1;
-    v1.position = glm::vec3(1.0f, 0.0f, 0.0f);
-    v1.normal = glm::vec3(0.0f, 0.0f, -1.0f);
-    v1.texCoords = glm::vec2(0.0f, 1.0f);
-    struct Vertex v2;
-    v2.position = glm::vec3(1.0f, 1.0f, 0.0f);
-    v2.normal = glm::vec3(0.0f, 0.0f, -1.0f);
-    v2.texCoords = glm::vec2(0.0f, 1.0f);
-    struct Vertex v3;
-    v3.position = glm::vec3(0.0f, 1.0f, 0.0f);
-    v3.normal = glm::vec3(0.0f, 0.0f, -1.0f);
-    v3.texCoords = glm::vec2(0.0f, 1.0f);
-    this->_vertices.push_back(v1);
-    this->_vertices.push_back(v2);
-    this->_vertices.push_back(v3);
+    std::vector<GLfloat> pos {
+      1.0f, 0.0f, 0.0f,
+        1.0f,  1.0f, 0.0f, 
+        0.0f,  1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+
+        1.0f, 0.0f,  1.0f, 
+        1.0f,  1.0f,  1.0f,
+        0.0f,  1.0f,  1.0f, 
+        0.0f, 0.0f,  1.0f, 
+
+        0.0f,  1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f,  1.0f,
+        0.0f,  1.0f,  1.0f,
+
+        1.0f,  1.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f,  1.0f,
+        0.0f, 0.0f,  1.0f,
+        0.0f, 0.0f, 0.0f,
+
+        1.0f,  1.0f, 0.0f,
+        1.0f,  1.0f,  1.0f,
+        0.0f,  1.0f,  1.0f,
+        0.0f,  1.0f, 0.0f,
+    };
+    std::vector<GLfloat> norm{
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+
+        -1.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, 0.0f,
+
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f
+    };
+
+    for (int i = 0; i < 6 * 4 * 3; i+=3) {
+      struct Vertex v;
+      v.position = glm::vec3(pos[i], pos[i + 1], pos[i + 2]);
+      v.normal = glm::vec3(norm[i], norm[i + 1], norm[i + 2]);
+      v.texCoords = glm::vec2(0.0f, 1.0f);
+      this->_vertices.push_back(v);
+    }
 
     this->_indices = std::vector<GLuint>{
-      0, 1, 2
+      0, 1, 3,
+        1, 2, 3,
+        4, 5, 7,
+        5, 6, 7,
+        8, 9, 11,
+        9, 10, 11,
+        12, 13, 15,
+        13, 14, 15,
+        16, 17, 19,
+        17, 18, 19,
+        20, 21, 23,
+        21, 22, 23
     };
+
     this->setupMesh();
   }
 
