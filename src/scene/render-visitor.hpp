@@ -15,6 +15,7 @@ namespace leo {
 class RenderVisitor : public Visitor {
   public:
     RenderVisitor(const Camera *_camera, GLFWwindow *window);
+    virtual ~RenderVisitor();
 
   public:
     virtual void visit(Node *node);
@@ -25,6 +26,7 @@ class RenderVisitor : public Visitor {
   private:
     const Camera *_camera;
     GLFWwindow *_window;
+    Material *_material;
 };
 
 }

@@ -55,7 +55,7 @@ void Engine::_init() {
 
   // Initialize scene graph
   // TODO: create FolderNode
-  this->_root = new CubeGeometry();
+  this->_root = new Model();
 
 }
 
