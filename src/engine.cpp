@@ -57,7 +57,8 @@ void Engine::_init() {
 
   // Initialize scene graph
   // TODO: create FolderNode
-  this->_root = new Model();
+  //this->_root = new Model();
+  this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
   // TODO: testing, remove after
   Model *child = new Model();
   TransformationVisitor tVisitor;
@@ -68,7 +69,8 @@ void Engine::_init() {
 }
 
 void Engine::gameLoop() {
-  RenderVisitor render_visitor(this->_camera, this->_window);
+  RenderVisitor render_visitor(this->_camera, this->_window,
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   GLfloat lastFrame = 0.0;
   GLfloat deltaTime = 0.0;
   GLfloat currentFrame = 0.0;

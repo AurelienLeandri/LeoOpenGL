@@ -138,6 +138,27 @@ namespace leo {
   void Mesh::draw(Material *material) {
     UNUSED(material);
 
+    GLuint diffuseNr = 1;
+    GLuint specularNr = 1;
+    for (GLuint i = 0; i < this->_textures.size(); i++) {
+      glActiveTexture(GL_TEXTURE0 + i);
+      // Retrieve texture number (the N in diffuse_textureN)
+      std::stringstream ss;
+      std::string number;
+      std::string name = this->_textures[i].type;
+      if (name == "texture_diffuse")
+        ss << diffuseNr++; // Transfer GLuint to stream
+      else if (name == "texture_specular")
+        ss << specularNr++; // Transfer GLuint to stream
+      number = ss.str();
+
+      glUniform1f(glGetUniformLocation(material->getProgram(),
+            ("material." + name + number).c_str()),
+          i);
+      glBindTexture(GL_TEXTURE_2D, this->_textures[i].id);
+    }
+    glActiveTexture(GL_TEXTURE0);
+
     // Draw mesh
     glBindVertexArray(this->_VAO);
     glDrawElements(GL_TRIANGLES, (GLsizei) this->_indices.size(),

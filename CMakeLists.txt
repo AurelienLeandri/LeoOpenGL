@@ -25,6 +25,12 @@ if (!SOIL_FOUND)
 endif()
 include_directories(${SOIL_INCLUDE_DIRS})
 
+find_package(assimp REQUIRED)
+if (!ASSIMP_FOUND)
+    MESSAGE("ASSIMP NOT FOUND")
+endif()
+include_directories(${ASSIMP_INCLUDE_DIRS})
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GLM DEFAULT_MSG GLM_INCLUDE_DIR)
 # Define GLM_INCLUDE_DIRS

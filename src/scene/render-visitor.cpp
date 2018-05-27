@@ -3,9 +3,17 @@
 namespace leo {
 
 RenderVisitor::RenderVisitor(const Camera *camera, GLFWwindow *window)
+  : RenderVisitor(camera, window,
+      "resources/shaders/vertex-basic.glsl",
+      "resources/shaders/fragment-basic.glsl")
+{
+}
+
+RenderVisitor::RenderVisitor(const Camera *camera, GLFWwindow *window,
+    const GLchar *vertex, const GLchar *fragment)
   : _camera(camera), _window(window)
 {
-  this->_material = new Material("resources/shaders/vertex-basic.glsl", "resources/shaders/fragment-basic.glsl");
+  this->_material = new Material(vertex, fragment);
 }
 
 RenderVisitor::~RenderVisitor() {
