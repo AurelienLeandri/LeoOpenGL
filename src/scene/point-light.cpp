@@ -1,6 +1,13 @@
 #include <scene/point-light.hpp>
 
-UpointLight *PointLight::createLightUniform() {
-  UPointLight upl;
-  upl.position = this->_position;
+namespace leo {
+
+  UPointLight::UPointLight(const PointLight *light)
+    : ULight(light), position(light->_position)
+  {}
+
+  UPointLight PointLight::createLightUniform() {
+    return UPointLight(this);
+  }
+
 }

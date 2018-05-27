@@ -2,11 +2,13 @@
 
 #include <scene/light.hpp>
 
-static UPointLight : public ULight {
-  glm::vec3 position;
-}
-
 namespace leo {
+  class PointLight;
+
+  typedef struct UPointLight : public ULight {
+    UPointLight(const PointLight *light);
+    glm::vec3 position;
+  } UPointLight;
 
   class PointLight : public Light {
     public:
@@ -19,6 +21,8 @@ namespace leo {
 
     private:
       glm::vec3 _position;
-  }
+
+      friend UPointLight::UPointLight(const PointLight *light);
+  };
 
 }

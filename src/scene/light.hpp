@@ -9,7 +9,7 @@ namespace leo {
   class Light;
 
   typedef struct ULight {
-    ULight(const Light &light);
+    ULight(const Light *light);
     float constant;
     float linear;
     float quadratic;
@@ -43,7 +43,7 @@ namespace leo {
       glm::vec3 _diffuse;
       glm::vec3 _specular;
 
-      friend ULight::ULight(const Light &light);
+      friend ULight::ULight(const Light *light);
   };
 
 }
