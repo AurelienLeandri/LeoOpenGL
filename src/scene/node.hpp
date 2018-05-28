@@ -11,7 +11,7 @@ class Node {
 
   public:
     virtual void update(double delta) = 0;
-    void addChild(Node *child);
+    virtual void addChild(Node *child);
 
   private:
     void _destroy();

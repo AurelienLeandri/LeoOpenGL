@@ -4,8 +4,7 @@
 #include <global.hpp>
 #include <SOIL.h>
 
-#include <material/material.hpp>
-#include <material/basic-material.hpp>
+#include <utils/shader.hpp>
 #include <scene/node.hpp>
 #include <scene/visitor/render-visitor.hpp>
 #include <scene/model.hpp>

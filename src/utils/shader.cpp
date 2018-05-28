@@ -1,19 +1,19 @@
-#include "material.hpp"
+#include "shader.hpp"
 
 namespace leo {
 
-Material::Material() {
+Shader::Shader() {
 }
 
-Material::Material(const GLchar *vertexSourcePath,
+Shader::Shader(const GLchar *vertexSourcePath,
                const GLchar *fragmentSourcePath) {
   std::string vertexCode = FileReader::readFile(vertexSourcePath);
   std::string fragmentCode = FileReader::readFile(fragmentSourcePath);
-  const GLchar *vMaterialCode = vertexCode.c_str();
-  const GLchar *fMaterialCode = fragmentCode.c_str();
+  const GLchar *vShaderCode = vertexCode.c_str();
+  const GLchar *fShaderCode = fragmentCode.c_str();
   GLuint vertex, fragment;
-  this->compileShader(vertex, vMaterialCode, GL_VERTEX_SHADER);
-  this->compileShader(fragment, fMaterialCode, GL_FRAGMENT_SHADER);
+  this->compileShader(vertex, vShaderCode, GL_VERTEX_SHADER);
+  this->compileShader(fragment, fShaderCode, GL_FRAGMENT_SHADER);
   this->_program = glCreateProgram();
   glAttachShader(this->_program, vertex);
   glAttachShader(this->_program, fragment);
@@ -30,7 +30,7 @@ Material::Material(const GLchar *vertexSourcePath,
   glDeleteShader(fragment);
 }
 
-void Material::compileShader(GLuint &shader, const GLchar *shaderCode,
+void Shader::compileShader(GLuint &shader, const GLchar *shaderCode,
                            GLint shaderType) {
   GLint success;
   GLchar infolog[512];
@@ -45,11 +45,11 @@ void Material::compileShader(GLuint &shader, const GLchar *shaderCode,
   }
 }
 
-void Material::use() const {
+void Shader::use() const {
   glUseProgram(this->_program);
 }
 
-const GLuint &Material::getProgram() const {
+const GLuint &Shader::getProgram() const {
   return this->_program;
 }
 

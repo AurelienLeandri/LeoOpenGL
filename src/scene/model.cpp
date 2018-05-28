@@ -15,9 +15,9 @@ namespace leo {
   Model::~Model() {
   }
 
-  void Model::draw(Material *material) {
+  void Model::draw(Shader *shader) {
     for (auto &m : this->_meshes) {
-      m.draw(material);
+      m.draw(shader);
     }
   }
 
@@ -75,15 +75,15 @@ namespace leo {
       for (GLuint j = 0; j < face.mNumIndices; j++)
         indices.push_back(face.mIndices[j]);
     }
-    // Process material
+    // Process shader
     if (mesh->mMaterialIndex >= 0) {
-      aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+      aiMaterial *shader = scene->mMaterials[mesh->mMaterialIndex];
       std::vector<Texture> diffuseMaps =
-        this->loadMaterialTextures(material, aiTextureType_DIFFUSE,
+        this->loadMaterialTextures(shader, aiTextureType_DIFFUSE,
             "texture_diffuse");
       textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
       std::vector<Texture> specularMaps =
-        this->loadMaterialTextures(material, aiTextureType_SPECULAR,
+        this->loadMaterialTextures(shader, aiTextureType_SPECULAR,
             "texture_specular");
       textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }

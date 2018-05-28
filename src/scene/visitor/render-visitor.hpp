@@ -6,7 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <camera.hpp>
-#include <material/material.hpp>
+#include <utils/shader.hpp>
 #include <scene/visitor/visitor.hpp>
 #include <scene/geometry-node.hpp>
 #include <scene/lights/point-light.hpp>
@@ -32,7 +32,7 @@ class RenderVisitor : public Visitor {
   private:
     const Camera *_camera;
     GLFWwindow *_window;
-    Material *_material;
+    Shader *_shader;
     std::vector<PointLight *> _pLights;
 };
 

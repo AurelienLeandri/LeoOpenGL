@@ -68,7 +68,16 @@ void Engine::_init() {
   TransformationVisitor tVisitor;
   tVisitor.translate(glm::vec3(4.0f, 2.0f, 0.0f));
   tVisitor.visit(pl);
+  PointLight *pl2 = new PointLight();
+  TransformationVisitor tVisitor2;
+  tVisitor2.translate(glm::vec3(-7.0f, 10.0f, -5.0f));
+  tVisitor2.visit(pl2);
   this->_root->addChild(pl);
+  this->_root->addChild(pl2);
+  Model *l1 = new Model();
+  pl->addChild(l1);
+  Model *l2 = new Model();
+  pl2->addChild(l2);
   this->render_visitor->registerLight(pl);
 
 }

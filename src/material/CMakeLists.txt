@@ -1,6 +1,0 @@
-set(ENGINE_SOURCES ${ENGINE_SOURCES}
-  ${CMAKE_CURRENT_SOURCE_DIR}/material.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/material.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/basic-material.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/basic-material.hpp
-  PARENT_SCOPE)

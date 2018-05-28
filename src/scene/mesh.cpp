@@ -93,17 +93,39 @@ namespace leo {
         21, 22, 23
     };
 
+    this->_ambient = glm::vec3(1.0, 1.0, 1.0);
+    this->_diffuse = glm::vec3(1.0, 1.0, 1.0);
+    this->_specular = glm::vec3(1.0, 1.0, 1.0);
+    this->_shininess = 32;
+
     this->setupMesh();
   }
 
   Mesh::Mesh(std::vector<Vertex> vertices,
       std::vector<GLuint> indices,
       std::vector<Texture> textures) :
+    Mesh(vertices, indices, textures,
+        glm::vec3(0.0, 0.0, 0.0),
+        glm::vec3(0.0, 0.0, 0.0),
+        glm::vec3(0.0, 0.0, 0.0),
+        32
+        )
+  {
+  }
+
+  Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
+      std::vector<Texture> textures,
+      glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint shininess) :
     _vertices(vertices),
     _indices(indices),
-    _textures(textures) {
-      this->setupMesh();
-    }
+    _textures(textures),
+    _ambient(ambient),
+    _diffuse(diffuse),
+    _specular(specular),
+    _shininess(shininess)
+  {
+    this->setupMesh();
+  }
 
   void Mesh::setupMesh() {
     glGenVertexArrays(1, &this->_VAO);
@@ -135,8 +157,8 @@ namespace leo {
     glBindVertexArray(0);
   }
 
-  void Mesh::draw(Material *material) {
-    UNUSED(material);
+  void Mesh::draw(Shader *shader) {
+    UNUSED(shader);
 
     GLuint diffuseNr = 1;
     GLuint specularNr = 1;
@@ -152,12 +174,21 @@ namespace leo {
         ss << specularNr++; // Transfer GLuint to stream
       number = ss.str();
 
-      glUniform1f(glGetUniformLocation(material->getProgram(),
+      glUniform1f(glGetUniformLocation(shader->getProgram(),
             ("material." + name + number).c_str()),
           i);
       glBindTexture(GL_TEXTURE_2D, this->_textures[i].id);
     }
     glActiveTexture(GL_TEXTURE0);
+
+    glUniform3f(glGetUniformLocation(shader->getProgram(), "material.ambient"),
+          this->_ambient.x, this->_ambient.y, this->_ambient.z);
+    glUniform3f(glGetUniformLocation(shader->getProgram(), "material.diffuse"),
+          this->_diffuse.x, this->_diffuse.y, this->_diffuse.z);
+    glUniform3f(glGetUniformLocation(shader->getProgram(), "material.specular"),
+          this->_specular.x, this->_specular.y, this->_specular.z);
+    glUniform1i(glGetUniformLocation(shader->getProgram(), "material.shininess"),
+          this->_shininess);
 
     // Draw mesh
     glBindVertexArray(this->_VAO);

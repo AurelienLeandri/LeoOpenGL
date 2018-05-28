@@ -1,3 +1,5 @@
-src/engine.cpp:59:  // TODO: create FolderNode
-src/engine.cpp:61:  // TODO: testing, remove after
-src/engine.cpp:76:  // TODO: only for testing, remove afterwards
+src/scene/model.cpp:130:        0, SOIL_LOAD_RGB);  // TODO: RGBA for png ??
+src/scene/visitor/render-visitor.cpp:37:    // TODO: Put all that in UBO and refactor
+src/engine.cpp:63:  // TODO: create FolderNode
+src/engine.cpp:66:  // TODO: testing, remove after
+src/engine.cpp:81:  // TODO: only for testing, remove afterwards

@@ -3,17 +3,12 @@
 namespace leo {
 
 GeometryNode::GeometryNode() {
-  //this->_material = new Material("resources/shaders/vertex-basic.glsl", "resources/shaders/fragment-basic.glsl");
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       this->_modelMatrix[i][j] = i == j ? 1 : 0;
 }
 
 GeometryNode::~GeometryNode() {
-  /*
-  if (this->_material)
-    delete this->_material;
-    */
 }
 
 void GeometryNode::transform(const glm::mat4x4 &transformation) {
@@ -22,6 +17,14 @@ void GeometryNode::transform(const glm::mat4x4 &transformation) {
 
 const glm::mat4x4 &GeometryNode::getModelMatrix() const {
   return this->_modelMatrix;
+}
+
+void GeometryNode::addChild(Node *child) {
+  GeometryNode *gn = dynamic_cast<GeometryNode *>(child);
+  if (gn) {
+    gn->transform(this->_modelMatrix);
+  }
+  this->_children.push_back(child);
 }
 
 }

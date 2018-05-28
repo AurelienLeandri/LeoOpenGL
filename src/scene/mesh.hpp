@@ -6,7 +6,7 @@
 
 #include <global.hpp>
 #include <scene/geometry-node.hpp>
-#include <material/material.hpp>
+#include <utils/shader.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 #include <string>
@@ -32,9 +32,13 @@ namespace leo {
       Mesh();
       Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
           std::vector<Texture> textures);
+      Mesh(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+      Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
+          std::vector<Texture> textures,
+          glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint shininess);
 
     public:
-      virtual void draw(Material *material) override;
+      virtual void draw(Shader *shader) override;
       virtual void update(double delta) override { UNUSED(delta); };
 
     private:
@@ -44,9 +48,13 @@ namespace leo {
       std::vector<Vertex> _vertices;
       std::vector<GLuint> _indices;
       std::vector<Texture> _textures;
+      glm::vec3 _ambient;
+      glm::vec3 _diffuse;
+      glm::vec3 _specular;
       GLuint _VAO;
       GLuint _VBO;
       GLuint _EBO;
+      GLint _shininess;
   };
 
 }

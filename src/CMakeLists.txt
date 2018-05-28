@@ -1,4 +1,3 @@
-add_subdirectory(material)
 add_subdirectory(scene)
 add_subdirectory(utils)
 

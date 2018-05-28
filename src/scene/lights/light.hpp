@@ -32,7 +32,7 @@ namespace leo {
       virtual ~Light() {}
 
     public:
-      virtual void draw(Material *material) {};
+      virtual void draw(Shader *shader) {};
       virtual void update(double delta) = 0;
 
     protected:

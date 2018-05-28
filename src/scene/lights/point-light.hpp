@@ -20,7 +20,7 @@ namespace leo {
         Light(constant, linear, quadratic, ambient, diffuse, specular) {}
       virtual ~PointLight() {}
     public:
-      virtual void draw(Material *material) override {};
+      virtual void draw(Shader *shader) override {};
       virtual void update(double delta) override {};
 
     public:

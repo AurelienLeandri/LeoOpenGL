@@ -11,10 +11,10 @@
 
 namespace leo {
 
-class Material {
+class Shader {
   public:
-    Material();
-    Material(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath);
+    Shader();
+    Shader(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath);
 
   public:
     const GLuint &getProgram() const;

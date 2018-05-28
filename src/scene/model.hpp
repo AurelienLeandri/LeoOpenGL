@@ -16,7 +16,7 @@ namespace leo {
       Model();
       Model(GLchar *path);
       virtual ~Model();
-      virtual void draw(Material *material) override;
+      virtual void draw(Shader *shader) override;
       virtual void update(double delta) override { UNUSED(delta); }
 
     private:
