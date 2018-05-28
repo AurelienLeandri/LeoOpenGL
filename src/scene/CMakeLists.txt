@@ -1,4 +1,5 @@
 add_subdirectory(visitor)
+add_subdirectory(lights)
 
 set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/node.cpp
@@ -9,8 +10,4 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/mesh.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/model.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/model.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/light.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/light.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/point-light.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/point-light.hpp
   PARENT_SCOPE)

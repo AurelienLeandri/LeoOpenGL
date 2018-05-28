@@ -23,19 +23,19 @@ namespace leo {
     glm::vec3 direction;
   } UDirLight;
 
-  /*
-  typedef struct USpotLight : public UDirLight, public UPointLight
-  {
-    GLfloat angle;
-  } USpotLight;
-  */
-
   class Light : public GeometryNode {
+    public:
+      Light();
+      Light(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+      Light(float constant, float linear, float quadratic,
+          glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+      virtual ~Light() {}
+
     public:
       virtual void draw(Material *material) {};
       virtual void update(double delta) = 0;
 
-    private:
+    protected:
       float _constant;
       float _linear;
       float _quadratic;

@@ -30,6 +30,24 @@ void RenderVisitor::visit(Node *node) {
       glm::value_ptr(projection));
   glUniformMatrix4fv(glGetUniformLocation(this->_material->getProgram(), "view"), 1, GL_FALSE,
       glm::value_ptr(view));
+  glm::vec3 camPos = this->_camera->getPosition();
+  glUniform3f(glGetUniformLocation(this->_material->getProgram(), "viewPos"), camPos.x, camPos.y, camPos.z);
+
+  for (int i = 1; i <= this->_pLights.size(); i++) {
+    // TODO: Put all that in UBO and refactor
+    UPointLight lightData = this->_pLights[i - 1]->createLightUniform();
+    glUniform1f(glGetUniformLocation(this->_material->getProgram(), "pLight1.constant"), lightData.constant);
+    glUniform1f(glGetUniformLocation(this->_material->getProgram(), "pLight1.linear"), lightData.linear);
+    glUniform1f(glGetUniformLocation(this->_material->getProgram(), "pLight1.quadratic"), lightData.quadratic);
+    glUniform3f(glGetUniformLocation(this->_material->getProgram(), "pLight1.ambient"),
+        lightData.ambient.x, lightData.ambient.y, lightData.ambient.z);
+    glUniform3f(glGetUniformLocation(this->_material->getProgram(), "pLight1.diffuse"),
+        lightData.diffuse.x, lightData.diffuse.y, lightData.diffuse.z);
+    glUniform3f(glGetUniformLocation(this->_material->getProgram(), "pLight1.specular"),
+        lightData.specular.x, lightData.specular.y, lightData.specular.z);
+    glUniform3f(glGetUniformLocation(this->_material->getProgram(), "pLight1.position"),
+        lightData.position.x, lightData.position.y, lightData.position.z);
+  }
 
   this->_visit(node);
 }
@@ -44,6 +62,14 @@ void RenderVisitor::_visit(Node *node) {
   }
   for (auto *e : node->getChildren())
     this->_visit(e);
+}
+
+void RenderVisitor::registerLight(Light *light) {
+  PointLight* pLight = dynamic_cast<PointLight*> (light);
+  if (pLight) {
+    this->_pLights.push_back(pLight);
+  }
+
 }
 
 }

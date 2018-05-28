@@ -1,4 +1,4 @@
-#include <scene/point-light.hpp>
+#include <scene/lights/point-light.hpp>
 
 namespace leo {
 

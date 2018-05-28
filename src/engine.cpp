@@ -1,6 +1,7 @@
 #include "engine.hpp"
 
   #include <scene/visitor/transformation-visitor.hpp>
+  #include <scene/lights/point-light.hpp>
 
 namespace leo {
 
@@ -55,22 +56,24 @@ void Engine::_init() {
     return;
   }
 
+  this->render_visitor = new RenderVisitor(this->_camera, this->_window,
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
+
   // Initialize scene graph
   // TODO: create FolderNode
   //this->_root = new Model();
   this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
   // TODO: testing, remove after
-  Model *child = new Model();
+  PointLight *pl = new PointLight();
   TransformationVisitor tVisitor;
-  tVisitor.translate(glm::vec3(2.0f, 0.0f, 0.0f));
-  tVisitor.visit(child);
-  this->_root->addChild(child);
+  tVisitor.translate(glm::vec3(4.0f, 2.0f, 0.0f));
+  tVisitor.visit(pl);
+  this->_root->addChild(pl);
+  this->render_visitor->registerLight(pl);
 
 }
 
 void Engine::gameLoop() {
-  RenderVisitor render_visitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   GLfloat lastFrame = 0.0;
   GLfloat deltaTime = 0.0;
   GLfloat currentFrame = 0.0;
@@ -95,7 +98,7 @@ void Engine::gameLoop() {
     glViewport(0, 0, screenWidth, screenHeight);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    render_visitor.visit(this->_root);
+    render_visitor->visit(this->_root);
 
     glfwSwapBuffers(this->_window);
 

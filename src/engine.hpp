@@ -37,6 +37,7 @@ class Engine{
   private:
     Camera *_camera;
     Node *_root;
+    RenderVisitor *render_visitor;
     GLFWwindow *_window;
     GLuint screenWidth = 800;
     GLuint screenHeight = 600;
