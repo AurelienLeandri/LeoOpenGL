@@ -36,16 +36,23 @@ void RenderVisitor::visit(Node *node) {
   for (int i = 1; i <= this->_pLights.size(); i++) {
     // TODO: Put all that in UBO and refactor
     UPointLight lightData = this->_pLights[i - 1]->createLightUniform();
-    glUniform1f(glGetUniformLocation(this->_shader->getProgram(), "pLight1.constant"), lightData.constant);
-    glUniform1f(glGetUniformLocation(this->_shader->getProgram(), "pLight1.linear"), lightData.linear);
-    glUniform1f(glGetUniformLocation(this->_shader->getProgram(), "pLight1.quadratic"), lightData.quadratic);
-    glUniform3f(glGetUniformLocation(this->_shader->getProgram(), "pLight1.ambient"),
+    glUniform1f(glGetUniformLocation(this->_shader->getProgram(),
+          Shader::generateParamName("pLight", i, ".constant").c_str()), lightData.constant);
+    glUniform1f(glGetUniformLocation(this->_shader->getProgram(),
+          Shader::generateParamName("pLight", i, ".linear").c_str()), lightData.linear);
+    glUniform1f(glGetUniformLocation(this->_shader->getProgram(),
+        Shader::generateParamName("pLight", i, ".quadratic").c_str()), lightData.quadratic);
+    glUniform3f(glGetUniformLocation(this->_shader->getProgram(),
+        Shader::generateParamName("pLight", i, ".ambient").c_str()),
         lightData.ambient.x, lightData.ambient.y, lightData.ambient.z);
-    glUniform3f(glGetUniformLocation(this->_shader->getProgram(), "pLight1.diffuse"),
+    glUniform3f(glGetUniformLocation(this->_shader->getProgram(),
+        Shader::generateParamName("pLight", i, ".diffuse").c_str()),
         lightData.diffuse.x, lightData.diffuse.y, lightData.diffuse.z);
-    glUniform3f(glGetUniformLocation(this->_shader->getProgram(), "pLight1.specular"),
+    glUniform3f(glGetUniformLocation(this->_shader->getProgram(),
+        Shader::generateParamName("pLight", i, ".specular").c_str()),
         lightData.specular.x, lightData.specular.y, lightData.specular.z);
-    glUniform3f(glGetUniformLocation(this->_shader->getProgram(), "pLight1.position"),
+    glUniform3f(glGetUniformLocation(this->_shader->getProgram(),
+        Shader::generateParamName("pLight", i, ".position").c_str()),
         lightData.position.x, lightData.position.y, lightData.position.z);
   }
 

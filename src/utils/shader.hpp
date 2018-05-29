@@ -22,6 +22,7 @@ class Shader {
 
   public:
     static void compileShader(GLuint &shader, const GLchar *shaderCode, GLint shaderType);
+    static std::string generateParamName(std::string prefix, int nb, std::string suffix);
 
   protected:
     bool _hasChanged;

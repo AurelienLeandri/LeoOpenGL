@@ -53,4 +53,10 @@ const GLuint &Shader::getProgram() const {
   return this->_program;
 }
 
+std::string Shader::generateParamName(std::string prefix, int nb, std::string suffix) {
+  std::stringstream ss;
+  ss << prefix << nb << suffix;
+  return ss.str();
+}
+
 }

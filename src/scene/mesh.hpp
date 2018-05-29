@@ -32,7 +32,7 @@ namespace leo {
       Mesh();
       Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
           std::vector<Texture> textures);
-      Mesh(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+      Mesh(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint shininess);
       Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
           std::vector<Texture> textures,
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint shininess);
@@ -42,7 +42,8 @@ namespace leo {
       virtual void update(double delta) override { UNUSED(delta); };
 
     private:
-      void setupMesh();
+      void _setupMesh();
+      void _generateDefaultMesh();
 
     private:
       std::vector<Vertex> _vertices;

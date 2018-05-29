@@ -6,7 +6,126 @@
 
 namespace leo {
 
+  // TODO: refactor redundant code
+
   Mesh::Mesh() {
+
+    this->_ambient = glm::vec3(1.0, 1.0, 1.0);
+    this->_diffuse = glm::vec3(1.0, 1.0, 1.0);
+    this->_specular = glm::vec3(1.0, 1.0, 1.0);
+    this->_shininess = 32;
+    this->_generateDefaultMesh();
+    this->_setupMesh();
+  }
+
+  Mesh::Mesh(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint shininess)
+  {
+    this->_ambient = ambient;
+    this->_diffuse = diffuse;
+    this->_specular = specular;
+    this->_shininess = shininess;
+    this->_generateDefaultMesh();
+    this->_setupMesh();
+  }
+
+  Mesh::Mesh(std::vector<Vertex> vertices,
+      std::vector<GLuint> indices,
+      std::vector<Texture> textures) :
+    Mesh(vertices, indices, textures,
+        glm::vec3(0.0, 0.0, 0.0),
+        glm::vec3(0.0, 0.0, 0.0),
+        glm::vec3(0.0, 0.0, 0.0),
+        32
+        )
+  {
+  }
+
+  Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
+      std::vector<Texture> textures,
+      glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint shininess) :
+    _vertices(vertices),
+    _indices(indices),
+    _textures(textures),
+    _ambient(ambient),
+    _diffuse(diffuse),
+    _specular(specular),
+    _shininess(shininess)
+  {
+    this->_setupMesh();
+  }
+
+  void Mesh::_setupMesh() {
+    glGenVertexArrays(1, &this->_VAO);
+    glGenBuffers(1, &this->_VBO);
+    glGenBuffers(1, &this->_EBO);
+
+    glBindVertexArray(this->_VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_VBO);
+
+    glBufferData(GL_ARRAY_BUFFER, this->_vertices.size() * sizeof(Vertex),
+        &this->_vertices[0], GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->_indices.size() * sizeof(GLuint),
+        &this->_indices[0], GL_STATIC_DRAW);
+    // Vertex Positions
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        (GLvoid *) 0);
+    // Vertex Normals
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        (GLvoid *) offsetof(Vertex, normal));
+    // Vertex Texture Coords
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        (GLvoid *) offsetof(Vertex, texCoords));
+
+    glBindVertexArray(0);
+  }
+
+  void Mesh::draw(Shader *shader) {
+    UNUSED(shader);
+
+    GLuint diffuseNr = 1;
+    GLuint specularNr = 1;
+    for (GLuint i = 0; i < this->_textures.size(); i++) {
+      glActiveTexture(GL_TEXTURE0 + i);
+      // Retrieve texture number (the N in diffuse_textureN)
+      std::stringstream ss;
+      std::string number;
+      std::string name = this->_textures[i].type;
+      if (name == "texture_diffuse")
+        ss << diffuseNr++; // Transfer GLuint to stream
+      else if (name == "texture_specular")
+        ss << specularNr++; // Transfer GLuint to stream
+      number = ss.str();
+
+      glUniform1f(glGetUniformLocation(shader->getProgram(),
+            ("material." + name + number).c_str()),
+          i);
+      glBindTexture(GL_TEXTURE_2D, this->_textures[i].id);
+    }
+    glActiveTexture(GL_TEXTURE0);
+
+    glUniform3f(glGetUniformLocation(shader->getProgram(), "material.ambient"),
+          this->_ambient.x, this->_ambient.y, this->_ambient.z);
+    glUniform3f(glGetUniformLocation(shader->getProgram(), "material.diffuse"),
+          this->_diffuse.x, this->_diffuse.y, this->_diffuse.z);
+    glUniform3f(glGetUniformLocation(shader->getProgram(), "material.specular"),
+          this->_specular.x, this->_specular.y, this->_specular.z);
+    glUniform1i(glGetUniformLocation(shader->getProgram(), "material.shininess"),
+          this->_shininess);
+
+    // Draw mesh
+    glBindVertexArray(this->_VAO);
+    glDrawElements(GL_TRIANGLES, (GLsizei) this->_indices.size(),
+        GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+  }
+
+  void Mesh::_generateDefaultMesh() {
     std::vector<GLfloat> pos {
       1.0f, 0.0f, 0.0f,
         1.0f,  1.0f, 0.0f, 
@@ -92,110 +211,6 @@ namespace leo {
         20, 21, 23,
         21, 22, 23
     };
-
-    this->_ambient = glm::vec3(1.0, 1.0, 1.0);
-    this->_diffuse = glm::vec3(1.0, 1.0, 1.0);
-    this->_specular = glm::vec3(1.0, 1.0, 1.0);
-    this->_shininess = 32;
-
-    this->setupMesh();
-  }
-
-  Mesh::Mesh(std::vector<Vertex> vertices,
-      std::vector<GLuint> indices,
-      std::vector<Texture> textures) :
-    Mesh(vertices, indices, textures,
-        glm::vec3(0.0, 0.0, 0.0),
-        glm::vec3(0.0, 0.0, 0.0),
-        glm::vec3(0.0, 0.0, 0.0),
-        32
-        )
-  {
-  }
-
-  Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
-      std::vector<Texture> textures,
-      glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint shininess) :
-    _vertices(vertices),
-    _indices(indices),
-    _textures(textures),
-    _ambient(ambient),
-    _diffuse(diffuse),
-    _specular(specular),
-    _shininess(shininess)
-  {
-    this->setupMesh();
-  }
-
-  void Mesh::setupMesh() {
-    glGenVertexArrays(1, &this->_VAO);
-    glGenBuffers(1, &this->_VBO);
-    glGenBuffers(1, &this->_EBO);
-
-    glBindVertexArray(this->_VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, this->_VBO);
-
-    glBufferData(GL_ARRAY_BUFFER, this->_vertices.size() * sizeof(Vertex),
-        &this->_vertices[0], GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->_indices.size() * sizeof(GLuint),
-        &this->_indices[0], GL_STATIC_DRAW);
-    // Vertex Positions
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-        (GLvoid *) 0);
-    // Vertex Normals
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-        (GLvoid *) offsetof(Vertex, normal));
-    // Vertex Texture Coords
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-        (GLvoid *) offsetof(Vertex, texCoords));
-
-    glBindVertexArray(0);
-  }
-
-  void Mesh::draw(Shader *shader) {
-    UNUSED(shader);
-
-    GLuint diffuseNr = 1;
-    GLuint specularNr = 1;
-    for (GLuint i = 0; i < this->_textures.size(); i++) {
-      glActiveTexture(GL_TEXTURE0 + i);
-      // Retrieve texture number (the N in diffuse_textureN)
-      std::stringstream ss;
-      std::string number;
-      std::string name = this->_textures[i].type;
-      if (name == "texture_diffuse")
-        ss << diffuseNr++; // Transfer GLuint to stream
-      else if (name == "texture_specular")
-        ss << specularNr++; // Transfer GLuint to stream
-      number = ss.str();
-
-      glUniform1f(glGetUniformLocation(shader->getProgram(),
-            ("material." + name + number).c_str()),
-          i);
-      glBindTexture(GL_TEXTURE_2D, this->_textures[i].id);
-    }
-    glActiveTexture(GL_TEXTURE0);
-
-    glUniform3f(glGetUniformLocation(shader->getProgram(), "material.ambient"),
-          this->_ambient.x, this->_ambient.y, this->_ambient.z);
-    glUniform3f(glGetUniformLocation(shader->getProgram(), "material.diffuse"),
-          this->_diffuse.x, this->_diffuse.y, this->_diffuse.z);
-    glUniform3f(glGetUniformLocation(shader->getProgram(), "material.specular"),
-          this->_specular.x, this->_specular.y, this->_specular.z);
-    glUniform1i(glGetUniformLocation(shader->getProgram(), "material.shininess"),
-          this->_shininess);
-
-    // Draw mesh
-    glBindVertexArray(this->_VAO);
-    glDrawElements(GL_TRIANGLES, (GLsizei) this->_indices.size(),
-        GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-
   }
 
 }

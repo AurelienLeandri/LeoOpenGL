@@ -1,6 +1,8 @@
 #pragma once
 
 #include <scene/lights/light.hpp>
+#include <scene/mesh.hpp>
+#include <scene/visitor/transformation-visitor.hpp>
 
 namespace leo {
   class PointLight;
@@ -12,12 +14,10 @@ namespace leo {
 
   class PointLight : public Light {
     public:
-      PointLight() : Light() {}
-      PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
-        Light(ambient, diffuse, specular) {}
+      PointLight(bool genMesh);
+      PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, bool genMesh);
       PointLight(float constant, float linear, float quadratic,
-          glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
-        Light(constant, linear, quadratic, ambient, diffuse, specular) {}
+          glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, bool genMesh);
       virtual ~PointLight() {}
     public:
       virtual void draw(Shader *shader) override {};
@@ -26,6 +26,9 @@ namespace leo {
     public:
       void transform(const glm::mat4x4 &transformation);
       UPointLight createLightUniform();
+
+    private:
+      void _genMesh();
 
     private:
       glm::vec3 _position;
