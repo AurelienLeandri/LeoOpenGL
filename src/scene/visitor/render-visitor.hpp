@@ -10,6 +10,7 @@
 #include <scene/visitor/visitor.hpp>
 #include <scene/geometry-node.hpp>
 #include <scene/lights/point-light.hpp>
+#include <scene/lights/direction-light.hpp>
 
 namespace leo {
 
@@ -34,6 +35,7 @@ class RenderVisitor : public Visitor {
     GLFWwindow *_window;
     Shader *_shader;
     std::vector<PointLight *> _pLights;
+    std::vector<DirectionLight *> _dLights;
 };
 
 }

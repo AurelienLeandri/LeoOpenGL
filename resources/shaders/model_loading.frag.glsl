@@ -10,6 +10,16 @@ struct PointLight {
   vec3 position;
 };
 
+struct DirectionLight {
+  float constant;
+  float linear;
+  float quadratic;
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
+  vec3 direction;
+};
+
 struct Material {
   vec3 ambient;
   vec3 diffuse;
@@ -28,6 +38,7 @@ out vec4 color;
 uniform PointLight pLight1;
 uniform PointLight pLight2;
 uniform PointLight pLight3;
+uniform DirectionLight dLight1;
 uniform Material material;
 uniform vec3 viewPos;
 
@@ -37,6 +48,7 @@ void main()
   vec3 lightDir1 = normalize(pLight1.position - FragPos);
   vec3 lightDir2 = normalize(pLight2.position - FragPos);
   vec3 lightDir3 = normalize(pLight3.position - FragPos);
+  vec3 lightDir4 = normalize(-dLight1.direction);
 
   // Ambient
   vec3 diffuse_sample = vec3(texture(material.texture_diffuse1, TexCoords));
@@ -49,6 +61,8 @@ void main()
   diffuse += pLight2.diffuse * diff2 * (material.diffuse + diffuse_sample);
   float diff3 = max(dot(norm, lightDir3), 0.0);
   diffuse += pLight3.diffuse * diff3 * (material.diffuse + diffuse_sample);
+  float diff4 = max(dot(norm, lightDir4), 0.0);
+  diffuse += dLight1.diffuse * diff4 * (material.diffuse + diffuse_sample);
 
   // Specular
   float specularStrength = 0.5;
@@ -64,6 +78,9 @@ void main()
   vec3 reflectDir3 = reflect(-lightDir3, norm);
   float spec3 = pow(max(dot(viewDir, reflectDir3), 0.0), material.shininess);
   specular += pLight3.specular * spec3 * (material.specular + specular_sample);
+  vec3 reflectDir4 = reflect(-lightDir4, norm);
+  float spec4 = pow(max(dot(viewDir, reflectDir4), 0.0), material.shininess);
+  specular += dLight1.specular * spec4 * (material.specular + specular_sample);
 
   vec3 result = ambient + diffuse + specular;
   color = vec4(result, 1.0);

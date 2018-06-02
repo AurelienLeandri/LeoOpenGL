@@ -13,6 +13,7 @@ Engine::Engine() {
 Engine::~Engine() {
   delete this->_camera;
   delete this->_root;
+  delete this->render_visitor;
 }
 
 void Engine::_init() {
@@ -63,26 +64,29 @@ void Engine::_init() {
   // TODO: create FolderNode
   //this->_root = new Model();
   this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
-  // TODO: testing, remove after
-  bool displayLight = false;
-  PointLight *pl = new PointLight(displayLight);
   TransformationVisitor tVisitor;
-  tVisitor.translate(glm::vec3(4.0f, 2.0f, 0.0f));
-  tVisitor.visit(pl);
+  //tVisitor.scale(glm::vec3(4.0f, 2.0f, 12.0f));
+  tVisitor.visit(this->_root);
+  // TODO: testing, remove after
+  bool displayLight = true;
+  PointLight *pl = new PointLight(displayLight);
+  TransformationVisitor tVisitor1;
+  tVisitor1.translate(glm::vec3(4.0f, 2.0f, 0.0f));
+  tVisitor1.visit(pl);
   PointLight *pl2 = new PointLight(displayLight);
   TransformationVisitor tVisitor2;
   tVisitor2.translate(glm::vec3(-7.0f, 10.0f, -5.0f));
   tVisitor2.visit(pl2);
-  PointLight *pl3 = new PointLight(displayLight);
+  DirectionLight *dl1 = new DirectionLight();
   TransformationVisitor tVisitor3;
   tVisitor3.translate(glm::vec3(1.0f, 20.0f, 8.0f));
-  tVisitor3.visit(pl3);
-  this->_root->addChild(pl);
-  this->_root->addChild(pl2);
-  this->_root->addChild(pl3);
-  this->render_visitor->registerLight(pl);
-  this->render_visitor->registerLight(pl2);
-  this->render_visitor->registerLight(pl3);
+  tVisitor3.visit(dl1);
+  //this->_root->addChild(pl);
+  //this->_root->addChild(pl2);
+  this->_root->addChild(dl1);
+  //this->render_visitor->registerLight(pl);
+  //this->render_visitor->registerLight(pl2);
+  this->render_visitor->registerLight(dl1);
 
 }
 

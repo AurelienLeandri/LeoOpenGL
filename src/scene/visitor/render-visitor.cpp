@@ -56,6 +56,29 @@ void RenderVisitor::visit(Node *node) {
         lightData.position.x, lightData.position.y, lightData.position.z);
   }
 
+  for (int i = 1; i <= this->_dLights.size(); i++) {
+    // TODO: Put all that in UBO and refactor
+    UDirectionLight lightData = this->_dLights[i - 1]->createLightUniform();
+    glUniform1f(glGetUniformLocation(this->_shader->getProgram(),
+          Shader::generateParamName("dLight", i, ".constant").c_str()), lightData.constant);
+    glUniform1f(glGetUniformLocation(this->_shader->getProgram(),
+          Shader::generateParamName("dLight", i, ".linear").c_str()), lightData.linear);
+    glUniform1f(glGetUniformLocation(this->_shader->getProgram(),
+        Shader::generateParamName("dLight", i, ".quadratic").c_str()), lightData.quadratic);
+    glUniform3f(glGetUniformLocation(this->_shader->getProgram(),
+        Shader::generateParamName("dLight", i, ".ambient").c_str()),
+        lightData.ambient.x, lightData.ambient.y, lightData.ambient.z);
+    glUniform3f(glGetUniformLocation(this->_shader->getProgram(),
+        Shader::generateParamName("dLight", i, ".diffuse").c_str()),
+        lightData.diffuse.x, lightData.diffuse.y, lightData.diffuse.z);
+    glUniform3f(glGetUniformLocation(this->_shader->getProgram(),
+        Shader::generateParamName("dLight", i, ".specular").c_str()),
+        lightData.specular.x, lightData.specular.y, lightData.specular.z);
+    glUniform3f(glGetUniformLocation(this->_shader->getProgram(),
+        Shader::generateParamName("dLight", i, ".direction").c_str()),
+        lightData.direction.x, lightData.direction.y, lightData.direction.z);
+  }
+
   this->_visit(node);
 }
 
@@ -75,8 +98,13 @@ void RenderVisitor::registerLight(Light *light) {
   PointLight* pLight = dynamic_cast<PointLight*> (light);
   if (pLight) {
     this->_pLights.push_back(pLight);
+    return;
   }
-
+  DirectionLight* dLight = dynamic_cast<DirectionLight*> (light);
+  if (dLight) {
+    this->_dLights.push_back(dLight);
+    return;
+  }
 }
 
 }
