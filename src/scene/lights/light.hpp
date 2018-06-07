@@ -6,23 +6,6 @@
 
 namespace leo {
 
-  class Light;
-
-  typedef struct ULight {
-    ULight(const Light *light);
-    float constant;
-    float linear;
-    float quadratic;
-
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
-  } ULight;
-
-  typedef struct UDirLight : public ULight {
-    glm::vec3 direction;
-  } UDirLight;
-
   class Light : public GeometryNode {
     public:
       Light();
@@ -42,8 +25,6 @@ namespace leo {
       glm::vec3 _ambient;
       glm::vec3 _diffuse;
       glm::vec3 _specular;
-
-      friend ULight::ULight(const Light *light);
   };
 
 }

@@ -20,10 +20,6 @@ const glm::mat4x4 &GeometryNode::getModelMatrix() const {
 }
 
 void GeometryNode::addChild(Node *child) {
-  GeometryNode *gn = dynamic_cast<GeometryNode *>(child);
-  if (gn) {
-    gn->transform(this->_modelMatrix);
-  }
   this->_children.push_back(child);
 }
 

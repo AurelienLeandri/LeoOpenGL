@@ -16,7 +16,7 @@ class GeometryNode : public Node {
     virtual void addChild(Node *child) override;
 
   public:
-    void transform(const glm::mat4x4 &transformation);
+    virtual void transform(const glm::mat4x4 &transformation);
 
   public:
     const glm::mat4x4 &getModelMatrix() const;

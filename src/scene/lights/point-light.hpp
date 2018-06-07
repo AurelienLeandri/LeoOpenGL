@@ -5,11 +5,15 @@
 #include <scene/visitor/transformation-visitor.hpp>
 
 namespace leo {
-  class PointLight;
 
-  typedef struct UPointLight : public ULight {
-    UPointLight(const PointLight *light);
-    glm::vec3 position;
+  typedef struct UPointLight {
+      glm::vec3 ambient;
+      float constant;
+      glm::vec3 diffuse;
+      float linear;
+      glm::vec3 specular;
+      float quadratic;
+      glm::vec4 position;
   } UPointLight;
 
   class PointLight : public Light {
@@ -20,20 +24,21 @@ namespace leo {
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, bool genMesh);
       virtual ~PointLight() {}
     public:
+      void print_pos() {
+        std::cout << this->_position.x << std::endl;
+      }
       virtual void draw(Shader *shader) override {};
       virtual void update(double delta) override {};
 
     public:
-      void transform(const glm::mat4x4 &transformation);
+      virtual void transform(const glm::mat4x4 &transformation) override;
       UPointLight createLightUniform();
 
     private:
       void _genMesh();
 
     private:
-      glm::vec3 _position;
-
-      friend UPointLight::UPointLight(const PointLight *light);
+      glm::vec4 _position;
   };
 
 }
