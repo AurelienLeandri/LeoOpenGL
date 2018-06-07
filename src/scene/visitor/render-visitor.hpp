@@ -14,6 +14,16 @@
 
 namespace leo {
 
+  #define MAX_NUM_LIGHTS 3
+
+  typedef struct uboLights {
+    UPointLight pointLights[MAX_NUM_LIGHTS];
+    UDirectionLight directionLights[MAX_NUM_LIGHTS];
+    //int numPointLights;
+    //int numDirectionLights;
+    //float __padding[2];
+  } uboLights;
+
 class RenderVisitor : public Visitor {
   public:
     RenderVisitor(const Camera *_camera, GLFWwindow *window);
@@ -36,6 +46,7 @@ class RenderVisitor : public Visitor {
     Shader *_shader;
     std::vector<PointLight *> _pLights;
     std::vector<DirectionLight *> _dLights;
+    uboLights _lightsUBO;
 };
 
 }

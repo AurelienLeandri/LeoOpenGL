@@ -57,53 +57,43 @@ void Engine::_init() {
     return;
   }
 
-  this->render_visitor = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
-
   // Initialize scene graph
   // TODO: create FolderNode
   //this->_root = new Model();
   this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
-  TransformationVisitor tVisitor;
+  //TransformationVisitor tVisitor;
   //tVisitor.scale(glm::vec3(4.0f, 2.0f, 12.0f));
-  tVisitor.visit(this->_root);
+  //tVisitor.visit(this->_root);
   // TODO: testing, remove after
-  bool displayLight = true;
+  bool displayLight = false;
   PointLight *pl = new PointLight(displayLight);
   TransformationVisitor tVisitor1;
   tVisitor1.translate(glm::vec3(4.0f, 2.0f, 0.0f));
   tVisitor1.visit(pl);
   PointLight *pl2 = new PointLight(displayLight);
   TransformationVisitor tVisitor2;
-  tVisitor2.translate(glm::vec3(-7.0f, 10.0f, -5.0f));
+  tVisitor2.translate(glm::vec3(-2.0f, 10.0f, 4.0f));
   tVisitor2.visit(pl2);
-  DirectionLight *dl1 = new DirectionLight();
+  PointLight *pl3 = new PointLight(displayLight);
   TransformationVisitor tVisitor3;
-  tVisitor3.translate(glm::vec3(1.0f, 20.0f, 8.0f));
-  tVisitor3.visit(dl1);
-  //this->_root->addChild(pl);
-  //this->_root->addChild(pl2);
-  this->_root->addChild(dl1);
-  //this->render_visitor->registerLight(pl);
-  //this->render_visitor->registerLight(pl2);
-  this->render_visitor->registerLight(dl1);
-
+  tVisitor3.translate(glm::vec3(0.0f, 7.0f, -6.0f));
+  tVisitor3.visit(pl3);
+  this->_root->addChild(pl);
+  this->_root->addChild(pl2);
+  this->_root->addChild(pl3);
+  DirectionLight *dl = new DirectionLight();
+  this->render_visitor = new RenderVisitor(this->_camera, this->_window,
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
+  this->render_visitor->registerLight(pl);
+  this->render_visitor->registerLight(pl2);
+  this->render_visitor->registerLight(pl3);
+  this->render_visitor->registerLight(dl);
 }
 
 void Engine::gameLoop() {
   GLfloat lastFrame = 0.0;
   GLfloat deltaTime = 0.0;
   GLfloat currentFrame = 0.0;
-
-  // TODO: only for testing, remove afterwards
-  /*
-  TransformationVisitor tVisitor;
-  tVisitor.translate(glm::vec3(-1.0f, 0.0f, 0.0f));
-  tVisitor.rotate(1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
-  tVisitor.scale(glm::vec3(1.0f, 2.0f, 1.0f));
-  tVisitor.visit(this->_root);
-  */
-
 
   while(!glfwWindowShouldClose(this->_window)) {
     currentFrame = glfwGetTime();
