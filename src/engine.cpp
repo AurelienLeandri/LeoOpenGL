@@ -65,7 +65,7 @@ void Engine::_init() {
   //tVisitor.scale(glm::vec3(4.0f, 2.0f, 12.0f));
   //tVisitor.visit(this->_root);
   // TODO: testing, remove after
-  bool displayLight = false;
+  bool displayLight = true;
   PointLight *pl = new PointLight(displayLight);
   TransformationVisitor tVisitor1;
   tVisitor1.translate(glm::vec3(4.0f, 2.0f, 0.0f));

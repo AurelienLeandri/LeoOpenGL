@@ -24,9 +24,6 @@ namespace leo {
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, bool genMesh);
       virtual ~PointLight() {}
     public:
-      void print_pos() {
-        std::cout << this->_position.x << std::endl;
-      }
       virtual void draw(Shader *shader) override {};
       virtual void update(double delta) override {};
 

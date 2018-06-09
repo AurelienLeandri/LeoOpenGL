@@ -13,6 +13,7 @@ namespace leo {
     light.specular = this->_specular;
     light.quadratic = this->_quadratic;
     light.direction = this->_direction;
+    return light;
   }
 
   DirectionLight::DirectionLight() : Light() {
