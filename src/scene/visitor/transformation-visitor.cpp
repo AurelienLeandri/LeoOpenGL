@@ -8,8 +8,20 @@ TransformationVisitor::TransformationVisitor() {
       this->_transformation[i][j] = i == j ? 1 : 0;
 }
 
-TransformationVisitor::TransformationVisitor(const TransformationVisitor &other) : TransformationVisitor() {
-  this->setTransformation(other._transformation);
+TransformationVisitor::TransformationVisitor(const TransformationVisitor &other) :
+  Visitor(other),
+  _transformation(other._transformation)
+{
+}
+
+
+TransformationVisitor::~TransformationVisitor() {
+}
+
+TransformationVisitor &TransformationVisitor::operator=(const TransformationVisitor &other) {
+  Visitor::operator=(other);
+  this->_transformation = other._transformation;
+  return *this;
 }
 
 void TransformationVisitor::visit(Node *node) {

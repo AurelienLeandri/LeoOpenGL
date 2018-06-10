@@ -82,6 +82,7 @@ void Engine::_init() {
   this->_root->addChild(pl2);
   this->_root->addChild(pl3);
   DirectionLight *dl = new DirectionLight();
+  this->_root->addChild(dl);
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   this->render_visitor->registerLight(pl);

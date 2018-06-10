@@ -20,6 +20,28 @@ RenderVisitor::~RenderVisitor() {
   delete this->_shader;
 }
 
+RenderVisitor::RenderVisitor(const RenderVisitor &other) :
+  Visitor(other),
+  _camera(other._camera),
+  _window(other._window),
+  _pLights(other._pLights),
+  _dLights(other._dLights),
+  _lightsUBO(other._lightsUBO)
+{
+  *this->_shader = *other._shader;
+}
+
+RenderVisitor &RenderVisitor::operator=(const RenderVisitor &other)
+{
+  Visitor::operator=(other);
+  this->_camera = other._camera;
+  this->_window = other._window;
+  this->_pLights = other._pLights;
+  this->_dLights = other._dLights;
+  this->_lightsUBO = other._lightsUBO;
+  *this->_shader = *other._shader;
+}
+
 void RenderVisitor::visit(Node *node) {
   this->_shader->use();
 

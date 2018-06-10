@@ -23,6 +23,9 @@ namespace leo {
       PointLight(float constant, float linear, float quadratic,
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, bool genMesh);
       virtual ~PointLight() {}
+      PointLight(const PointLight &other);
+      PointLight &operator=(const PointLight &other);
+
     public:
       virtual void draw(Shader *shader) override {};
       virtual void update(double delta) override {};
@@ -32,10 +35,11 @@ namespace leo {
       UPointLight createLightUniform();
 
     private:
-      void _genMesh();
+      void _generateMesh();
 
     private:
       glm::vec4 _position;
+      bool _genMesh;
   };
 
 }

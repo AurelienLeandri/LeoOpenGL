@@ -33,46 +33,26 @@ class Camera
 {
   public:
 
-    // Constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), GLfloat yaw = YAW,
         GLfloat pitch = PITCH);
-    // Constructor with scalar values
     Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY,
         GLfloat upZ, GLfloat yaw, GLfloat pitch);
-    // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
+    ~Camera();
+    Camera(const Camera &other);
+    Camera& operator=(const Camera &other);
+
+  public:
     glm::mat4 getViewMatrix() const;
-    // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void processKeyboard(Camera_Movement direction, GLfloat deltaTime);
-    // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
     void processMouse(GLfloat xoffset, GLfloat yoffset,
         GLboolean constrainPitch = true);
-    // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-    void processMouseScroll(GLfloat yoffset);
-
-  private:
     // Calculates the front vector from the Camera's (updated) Eular Angles
     void updateCameraVectors();
-    // Camera Attributes
-    glm::vec3 position;
-    glm::vec3 front;
-    glm::vec3 up;
-    glm::vec3 right;
-    glm::vec3 worldUp;
-    // Eular Angles
-    GLfloat yaw;
-    GLfloat pitch;
-    // Camera options
-    GLfloat movementSpeed;
-    GLfloat mouseSensitivity;
+
   public:
     GLfloat getZoom() const;
     void setZoom(GLfloat zoom);
-
-  private:
-    GLfloat zoom;
-
-  public:
     const glm::vec3 &getPosition() const;
     void setPosition(const glm::vec3 &position);
     const glm::vec3 &getFront() const;
@@ -91,6 +71,18 @@ class Camera
     void setMovementSpeed(GLfloat movementSpeed);
     GLfloat getMouseSensitivity() const;
     void setMouseSensitivity(GLfloat mouseSensitivity);
+
+  private:
+    glm::vec3 position;
+    glm::vec3 front;
+    glm::vec3 up;
+    glm::vec3 right;
+    glm::vec3 worldUp;
+    GLfloat yaw;
+    GLfloat pitch;
+    GLfloat movementSpeed;
+    GLfloat mouseSensitivity;
+    GLfloat zoom;
 
 };
 

@@ -11,6 +11,16 @@ GeometryNode::GeometryNode() {
 GeometryNode::~GeometryNode() {
 }
 
+GeometryNode::GeometryNode(const GeometryNode &other) :
+  _modelMatrix(other._modelMatrix)
+{
+}
+
+GeometryNode &GeometryNode::operator=(const GeometryNode &other) {
+  this->_modelMatrix = other._modelMatrix;
+  return *this;
+}
+
 void GeometryNode::transform(const glm::mat4x4 &transformation) {
   this->_modelMatrix = transformation * this->_modelMatrix;
 }

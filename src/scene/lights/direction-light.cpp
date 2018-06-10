@@ -21,15 +21,29 @@ namespace leo {
   }
 
   DirectionLight::DirectionLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
-    Light(ambient, diffuse, specular) {
-      this->_direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
-    }
+    Light(ambient, diffuse, specular)
+  {
+    this->_direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
+  }
 
   DirectionLight::DirectionLight(float constant, float linear, float quadratic,
       glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
-    Light(constant, linear, quadratic, ambient, diffuse, specular) {
-      this->_direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
-    }
+    Light(constant, linear, quadratic, ambient, diffuse, specular)
+  {
+    this->_direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
+  }
+
+  DirectionLight::DirectionLight(const DirectionLight &other) :
+    Light(other),
+    _direction(other._direction)
+  {
+  }
+
+  DirectionLight &DirectionLight::operator=(const DirectionLight &other) {
+    Light::operator=(other);
+    this->_direction = other._direction;
+    return *this;
+  }
 
   void DirectionLight::transform(const glm::mat4x4 &transformation) {
     GeometryNode::transform(transformation);

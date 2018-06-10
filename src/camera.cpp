@@ -25,6 +25,39 @@ Camera::Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX,
   this->updateCameraVectors();
 }
 
+Camera::~Camera() {
+}
+
+Camera::Camera(const Camera &other) :
+  position(other.position),
+  front(other.front),
+  up(other.up),
+  right(other.right),
+  worldUp(other.worldUp),
+  yaw(other.yaw),
+  pitch(other.pitch),
+  movementSpeed(other.movementSpeed),
+  mouseSensitivity(other.mouseSensitivity),
+  zoom(other.zoom)
+{
+  this->updateCameraVectors();
+}
+
+Camera &Camera::operator=(const Camera &other) {
+  this->position = other.position;
+  this->front = other.front;
+  this->up = other.up;
+  this->right = other.right;
+  this->worldUp = other.worldUp;
+  this->yaw = other.yaw;
+  this->pitch = other.pitch;
+  this->movementSpeed = other.movementSpeed;
+  this->mouseSensitivity = other.mouseSensitivity;
+  this->zoom = other.zoom;
+  this->updateCameraVectors();
+  return *this;
+}
+
 // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
 glm::mat4 Camera::getViewMatrix() const
 {
@@ -70,17 +103,6 @@ void Camera::processMouse(GLfloat xoffset, GLfloat yoffset,
 
   // Update Front, Right and Up Vectors using the updated Eular angles
   this->updateCameraVectors();
-}
-
-// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-void Camera::processMouseScroll(GLfloat yoffset)
-{
-  if (this->zoom >= 1.0f && this->zoom <= 45.0f)
-    this->zoom -= yoffset;
-  if (this->zoom <= 1.0f)
-    this->zoom = 1.0f;
-  if (this->zoom >= 45.0f)
-    this->zoom = 45.0f;
 }
 
 // Calculates the front vector from the Camera's (updated) Eular Angles

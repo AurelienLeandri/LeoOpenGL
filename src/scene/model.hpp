@@ -16,6 +16,10 @@ namespace leo {
       Model();
       Model(GLchar *path);
       virtual ~Model();
+      Model(const Model &other);
+      Model &operator=(const Model &other);
+
+    public:
       virtual void draw(Shader *shader) override;
       virtual void update(double delta) override { UNUSED(delta); }
 
@@ -25,7 +29,6 @@ namespace leo {
       Mesh processMesh(aiMesh *mesh, const aiScene *scene);
       std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type,
                                                 std::string typeName);
-
 
     private:
       std::vector<Texture> textures_loaded;

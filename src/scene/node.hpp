@@ -14,7 +14,7 @@ class Node {
     virtual void addChild(Node *child);
 
   private:
-    void _destroy();
+    void _destroyChildren();
 
   public:
     const std::vector<Node*> &getChildren();

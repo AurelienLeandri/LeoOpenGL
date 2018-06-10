@@ -27,4 +27,24 @@ namespace leo {
     _specular(specular)
   {}
 
+  Light::Light(const Light &other) :
+    _constant(other._constant),
+    _linear(other._linear),
+    _quadratic(other._quadratic),
+    _ambient(other._ambient),
+    _diffuse(other._diffuse),
+    _specular(other._specular)
+  {
+  }
+
+  Light &Light::operator=(const Light &other) {
+    this->_constant = other._constant;
+    this->_linear = other._linear;
+    this->_quadratic = other._quadratic;
+    this->_ambient = other._ambient;
+    this->_diffuse = other._diffuse;
+    this->_specular = other._specular;
+    return *this;
+  }
+
 }

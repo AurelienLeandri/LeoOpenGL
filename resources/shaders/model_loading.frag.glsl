@@ -1,6 +1,6 @@
 #version 450 core
 
-#define MAX_NUM_LIGHTS 3
+#define MAX_NUM_LIGHTS 10
 
 struct UPointLight {
   vec3 ambient;

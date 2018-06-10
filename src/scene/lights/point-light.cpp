@@ -16,28 +16,53 @@ namespace leo {
     return light;
   }
 
-  PointLight::PointLight(bool genMesh) : Light() {
+  PointLight::PointLight(bool genMesh) :
+    Light(),
+    _genMesh(genMesh)
+  {
     this->_position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    if (genMesh)
-      this->_genMesh();
+    if (this->_genMesh)
+      this->_generateMesh();
   }
 
   PointLight::PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, bool genMesh) :
-    Light(ambient, diffuse, specular) {
+    Light(ambient, diffuse, specular),
+    _genMesh(genMesh)
+  {
     this->_position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    if (genMesh)
-      this->_genMesh();
-    }
+    if (this->_genMesh)
+      this->_generateMesh();
+  }
 
   PointLight::PointLight(float constant, float linear, float quadratic,
       glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, bool genMesh) :
-    Light(constant, linear, quadratic, ambient, diffuse, specular) {
+    Light(constant, linear, quadratic, ambient, diffuse, specular),
+    _genMesh(genMesh)
+  {
     this->_position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    if (genMesh)
-      this->_genMesh();
-    }
+    if (this->_genMesh)
+      this->_generateMesh();
+  }
 
-  void PointLight::_genMesh() {
+  PointLight::PointLight(const PointLight &other) :
+    Light(other),
+    _position(other._position),
+    _genMesh(other._genMesh)
+  {
+    if (this->_genMesh)
+      this->_generateMesh();
+  }
+
+  PointLight &PointLight::operator=(const PointLight &other) {
+    Light::operator=(other);
+    this->_position = other._position;
+    this->_genMesh = other._genMesh;
+    if (this->_genMesh)
+      this->_generateMesh();
+    return *this;
+  }
+
+  void PointLight::_generateMesh() {
     TransformationVisitor tVisitor;
     tVisitor.translate(glm::vec3(-0.5f, -0.5f, -0.5f));
     Mesh *mesh = new Mesh(

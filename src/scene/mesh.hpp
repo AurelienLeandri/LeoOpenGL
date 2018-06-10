@@ -36,6 +36,9 @@ namespace leo {
       Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
           std::vector<Texture> textures,
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint shininess);
+      virtual ~Mesh();
+      Mesh(const Mesh &other);
+      Mesh &operator=(const Mesh &other);
 
     public:
       virtual void draw(Shader *shader) override;

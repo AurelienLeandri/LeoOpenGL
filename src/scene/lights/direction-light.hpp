@@ -24,6 +24,8 @@ namespace leo {
       DirectionLight(float constant, float linear, float quadratic,
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
       virtual ~DirectionLight() {}
+      DirectionLight(const DirectionLight &other);
+      DirectionLight &operator=(const DirectionLight &other);
     public:
       virtual void draw(Shader *shader) override {};
       virtual void update(double delta) override {};

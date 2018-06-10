@@ -17,6 +17,8 @@ class Engine{
   public:
     Engine();
     ~Engine();
+    Engine(const Engine &other) = delete;
+    Engine& operator=(const Engine &other) = delete;
 
   public:
     void gameLoop();

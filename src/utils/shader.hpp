@@ -15,6 +15,11 @@ class Shader {
   public:
     Shader();
     Shader(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath);
+    Shader(const Shader &other);
+    Shader &operator=(const Shader &other);
+
+  protected:
+    void _initProgram();
 
   public:
     const GLuint &getProgram() const;
@@ -25,8 +30,8 @@ class Shader {
     static std::string generateParamName(std::string prefix, int nb, std::string suffix);
 
   protected:
-    bool _hasChanged;
-    std::string content;
+    std::string vertexCode;
+    std::string fragmentCode;
     GLuint _program;
 };
 

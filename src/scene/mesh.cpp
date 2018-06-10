@@ -54,6 +54,33 @@ namespace leo {
     this->_setupMesh();
   }
 
+  Mesh::~Mesh() {
+  }
+
+  Mesh::Mesh(const Mesh &other) :
+    _vertices(other._vertices),
+    _indices(other._indices),
+    _textures(other._textures),
+    _ambient(other._ambient),
+    _diffuse(other._diffuse),
+    _specular(other._specular),
+    _shininess(other._shininess)
+  {
+    this->_setupMesh();
+  }
+
+  Mesh &Mesh::operator=(const Mesh &other) {
+    this->_vertices = other._vertices;
+    this->_indices = other._indices;
+    this->_textures = other._textures;
+    this->_ambient = other._ambient;
+    this->_diffuse = other._diffuse;
+    this->_specular = other._specular;
+    this->_shininess = other._shininess;
+    this->_setupMesh();
+    return *this;
+  }
+
   void Mesh::_setupMesh() {
     glGenVertexArrays(1, &this->_VAO);
     glGenBuffers(1, &this->_VBO);

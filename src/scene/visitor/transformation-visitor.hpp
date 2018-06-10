@@ -12,7 +12,9 @@ namespace leo {
 class TransformationVisitor : public Visitor {
   public:
     TransformationVisitor();
+    virtual ~TransformationVisitor();
     TransformationVisitor(const TransformationVisitor &other);
+    TransformationVisitor &operator=(const TransformationVisitor &other);
 
   public:
     virtual void visit(Node *node);

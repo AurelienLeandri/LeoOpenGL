@@ -15,6 +15,20 @@ namespace leo {
   Model::~Model() {
   }
 
+  Model::Model(const Model &other) :
+    textures_loaded(other.textures_loaded),
+    _meshes(other._meshes),
+    directory(other.directory)
+  {
+  }
+
+  Model &Model::operator=(const Model &other) {
+    this->textures_loaded = other.textures_loaded;
+    this->_meshes = other._meshes;
+    this->directory = other.directory;
+    return *this;
+  }
+
   void Model::draw(Shader *shader) {
     for (auto &m : this->_meshes) {
       m.draw(shader);

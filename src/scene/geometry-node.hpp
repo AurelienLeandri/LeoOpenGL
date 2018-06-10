@@ -11,6 +11,10 @@ class GeometryNode : public Node {
   public:
     GeometryNode();
     virtual ~GeometryNode();
+    GeometryNode(const GeometryNode &other);
+    GeometryNode &operator=(const GeometryNode &other);
+
+  public:
     virtual void draw(Shader *shader) = 0;
     virtual void update(double delta) = 0;
     virtual void addChild(Node *child) override;

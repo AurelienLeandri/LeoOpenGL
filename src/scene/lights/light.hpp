@@ -13,6 +13,8 @@ namespace leo {
       Light(float constant, float linear, float quadratic,
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
       virtual ~Light() {}
+      Light(const Light &other);
+      Light &operator=(const Light &other);
 
     public:
       virtual void draw(Shader *shader) {};
