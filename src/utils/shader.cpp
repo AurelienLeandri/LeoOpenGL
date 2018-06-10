@@ -7,29 +7,29 @@ Shader::Shader() {
 
 Shader::Shader(const GLchar *vertexSourcePath,
                const GLchar *fragmentSourcePath) :
-  vertexCode(FileReader::readFile(vertexSourcePath)),
-  fragmentCode(FileReader::readFile(fragmentSourcePath))
+  _vertexCode(FileReader::readFile(vertexSourcePath)),
+  _fragmentCode(FileReader::readFile(fragmentSourcePath))
 {
   this->_initProgram();
 }
 
 Shader::Shader(const Shader &other) :
-  vertexCode(other.vertexCode),
-  fragmentCode(other.fragmentCode)
+  _vertexCode(other._vertexCode),
+  _fragmentCode(other._fragmentCode)
 {
   this->_initProgram();
 }
 
 Shader &Shader::operator=(const Shader &other) {
-  this->vertexCode = other.vertexCode;
-  this->fragmentCode = other.fragmentCode;
+  this->_vertexCode = other._vertexCode;
+  this->_fragmentCode = other._fragmentCode;
   this->_initProgram();
   return *this;
 }
 
 void Shader::_initProgram() {
-  const GLchar *vShaderCode = this->vertexCode.c_str();
-  const GLchar *fShaderCode = this->fragmentCode.c_str();
+  const GLchar *vShaderCode = this->_vertexCode.c_str();
+  const GLchar *fShaderCode = this->_fragmentCode.c_str();
   GLuint vertex, fragment;
   this->compileShader(vertex, vShaderCode, GL_VERTEX_SHADER);
   this->compileShader(fragment, fShaderCode, GL_FRAGMENT_SHADER);

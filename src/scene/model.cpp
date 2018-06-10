@@ -2,7 +2,7 @@
 
 namespace leo {
 
-  GLint TextureFromFile(const char *path, std::string directory);
+  GLint TextureFromFile(const char *path, std::string _directory);
 
   Model::Model() {
     this->_meshes.push_back(Mesh());
@@ -17,17 +17,17 @@ namespace leo {
 
   Model::Model(const Model &other) :
     GeometryNode(other),
-    textures_loaded(other.textures_loaded),
+    _loadedTextures(other._loadedTextures),
     _meshes(other._meshes),
-    directory(other.directory)
+    _directory(other._directory)
   {
   }
 
   Model &Model::operator=(const Model &other) {
     GeometryNode::operator=(other);
-    this->textures_loaded = other.textures_loaded;
+    this->_loadedTextures = other._loadedTextures;
     this->_meshes = other._meshes;
-    this->directory = other.directory;
+    this->_directory = other._directory;
     return *this;
   }
 
@@ -45,7 +45,7 @@ namespace leo {
         !scene->mRootNode) {
       return;
     }
-    this->directory = path.substr(0, path.find_last_of('/'));
+    this->_directory = path.substr(0, path.find_last_of('/'));
     this->processNode(scene->mRootNode, scene);
   }
 
@@ -112,30 +112,30 @@ namespace leo {
         aiString str;
         mat->GetTexture(type, i, &str);
         GLboolean skip = (GLboolean) false;
-        for (GLuint j = 0; j < textures_loaded.size(); j++) {
+        for (GLuint j = 0; j < _loadedTextures.size(); j++) {
           // Check if texture is not already loaded
-          if (textures_loaded[j].path == str) {
-            textures.push_back(textures_loaded[j]);
+          if (_loadedTextures[j].path == str) {
+            textures.push_back(_loadedTextures[j]);
             skip = (GLboolean) true;
             break;
           }
         }
         if (!skip) {   // If texture hasn't been loaded already, load it
           Texture texture;
-          texture.id = (GLuint) TextureFromFile(str.C_Str(), this->directory);
+          texture.id = (GLuint) TextureFromFile(str.C_Str(), this->_directory);
           texture.type = typeName;
           texture.path = str;
           textures.push_back(texture);
-          this->textures_loaded.push_back(texture);  // Add to loaded _textures
+          this->_loadedTextures.push_back(texture);  // Add to loaded _textures
         }
       }
       return textures;
     }
 
-  GLint TextureFromFile(const char *path, std::string directory) {
+  GLint TextureFromFile(const char *path, std::string _directory) {
     //Generate texture ID and load texture data
     std::string filename = std::string(path);
-    filename = directory + '/' + filename;
+    filename = _directory + '/' + filename;
     GLuint textureID;
     glGenTextures(1, &textureID);
     int width, height;

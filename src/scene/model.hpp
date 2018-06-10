@@ -31,9 +31,9 @@ namespace leo {
                                                 std::string typeName);
 
     private:
-      std::vector<Texture> textures_loaded;
+      std::vector<Texture> _loadedTextures;
       std::vector<Mesh> _meshes;
-      std::string directory;
+      std::string _directory;
 
   };
 

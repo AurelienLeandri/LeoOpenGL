@@ -30,8 +30,8 @@ class Shader {
     static std::string generateParamName(std::string prefix, int nb, std::string suffix);
 
   protected:
-    std::string vertexCode;
-    std::string fragmentCode;
+    std::string _vertexCode;
+    std::string _fragmentCode;
     GLuint _program;
 };
 
