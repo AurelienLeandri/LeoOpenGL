@@ -40,6 +40,10 @@ namespace leo {
     private:
       glm::vec4 _position;
       bool _genMesh;
+
+    public:
+      const glm::vec4 &getPosition() { return this->_position; }
+      void getPosition(const glm::vec4 &value) { this->_position = value; }
   };
 
 }

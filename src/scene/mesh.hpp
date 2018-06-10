@@ -59,6 +59,16 @@ namespace leo {
       GLuint _VBO;
       GLuint _EBO;
       GLint _shininess;
+
+    public:
+      const glm::vec3 &getAmbient() const { return this->_ambient; }
+      const glm::vec3 &getDiffuse() const { return this->_diffuse; }
+      const glm::vec3 &getSpecular() const { return this->_specular; }
+      const GLint &getShininess() const { return this->_shininess; }
+      void setAmbient(const glm::vec3 &value) { this->_ambient = value; }
+      void setDiffuse(const glm::vec3 &value) { this->_diffuse = value; }
+      void setSpecular(const glm::vec3 &value) { this->_specular = value; }
+      void getShininess(const GLint &value) { this->_shininess = value; }
   };
 
 }

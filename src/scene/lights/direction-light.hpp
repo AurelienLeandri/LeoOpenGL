@@ -36,6 +36,10 @@ namespace leo {
 
     private:
       glm::vec4 _direction;
+
+    public:
+      const glm::vec4 &getDirection() { return this->_direction; }
+      void getDirection(const glm::vec4 &value) { this->_direction = value; }
   };
 
 }
