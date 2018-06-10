@@ -17,8 +17,8 @@ namespace leo {
   #define MAX_NUM_LIGHTS 10
 
   typedef struct uboLights {
-    UPointLight pointLights[MAX_NUM_LIGHTS];
-    UDirectionLight directionLights[MAX_NUM_LIGHTS];
+    PointLightUniform pointLights[MAX_NUM_LIGHTS];
+    DirectionLightUniform directionLights[MAX_NUM_LIGHTS];
   } uboLights;
 
 class RenderVisitor : public Visitor {

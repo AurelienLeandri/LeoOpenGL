@@ -2,6 +2,39 @@
 
 namespace leo {
 
+  LightUniform::LightUniform() {}
+
+  LightUniform::LightUniform(const Light &light) {
+    this->ambient = light._ambient;
+    this->constant = light._constant;
+    this->diffuse = light._diffuse;
+    this->linear = light._linear;
+    this->specular = light._specular;
+    this->quadratic = light._quadratic;
+  }
+
+  LightUniform::~LightUniform() {}
+
+  LightUniform::LightUniform(const LightUniform &other) :
+    ambient(other.ambient),
+    constant(other.constant),
+    diffuse(other.diffuse),
+    linear(other.linear),
+    specular(other.specular),
+    quadratic(other.quadratic)
+  {
+  }
+
+  LightUniform &LightUniform::operator=(const LightUniform &other) {
+    this->ambient = other.ambient;
+    this->constant = other.constant;
+    this->diffuse = other.diffuse;
+    this->linear = other.linear;
+    this->specular = other.specular;
+    this->quadratic = other.quadratic;
+    return *this;
+  }
+
   Light::Light() : Light(
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.5f, 0.5f, 0.5f),

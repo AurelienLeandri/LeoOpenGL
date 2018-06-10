@@ -2,18 +2,26 @@
 
 namespace leo {
 
-  // TODO: refactor reduntant code
+  DirectionLightUniform::DirectionLightUniform() {}
 
-  UDirectionLight DirectionLight::createLightUniform() {
-    UDirectionLight light;
-    light.ambient = this->_ambient;
-    light.constant = this->_constant;
-    light.diffuse = this->_diffuse;
-    light.linear = this->_linear;
-    light.specular = this->_specular;
-    light.quadratic = this->_quadratic;
-    light.direction = this->_direction;
-    return light;
+  DirectionLightUniform::DirectionLightUniform(const DirectionLight &light) :
+    LightUniform(light)
+  {
+    this->direction = light._direction;
+  }
+
+  DirectionLightUniform::~DirectionLightUniform() {}
+
+  DirectionLightUniform::DirectionLightUniform(const DirectionLightUniform &other) :
+    LightUniform::LightUniform(other)
+  {
+    this->direction = other.direction;
+  }
+
+  DirectionLightUniform &DirectionLightUniform::operator=(const DirectionLightUniform &other) {
+    LightUniform::operator=(other);
+    this->direction = other.direction;
+    return *this;
   }
 
   DirectionLight::DirectionLight() : Light() {

@@ -5,16 +5,17 @@
 #include <scene/visitor/transformation-visitor.hpp>
 
 namespace leo {
+  
+  class DirectionLight;
 
-  typedef struct UDirectionLight {
-    glm::vec3 ambient;
-    float constant;
-    glm::vec3 diffuse;
-    float linear;
-    glm::vec3 specular;
-    float quadratic;
+  typedef struct DirectionLightUniform : public LightUniform {
+    DirectionLightUniform();
+    DirectionLightUniform(const DirectionLight &light);
+    ~DirectionLightUniform();
+    DirectionLightUniform(const DirectionLightUniform &other);
+    DirectionLightUniform &operator=(const DirectionLightUniform &other);
     glm::vec4 direction;
-  } UDirectionLight;
+  } DirectionLightUniform;
 
   class DirectionLight : public Light {
     public:
@@ -32,7 +33,6 @@ namespace leo {
 
     public:
       virtual void transform(const glm::mat4x4 &transformation) override;
-      UDirectionLight createLightUniform();
 
     private:
       glm::vec4 _direction;
@@ -40,6 +40,8 @@ namespace leo {
     public:
       const glm::vec4 &getDirection() { return this->_direction; }
       void getDirection(const glm::vec4 &value) { this->_direction = value; }
+
+    friend DirectionLightUniform::DirectionLightUniform(const DirectionLight &light);
   };
 
 }

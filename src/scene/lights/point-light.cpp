@@ -2,18 +2,26 @@
 
 namespace leo {
 
-  // TODO: refactor reduntant code
+  PointLightUniform::PointLightUniform() {}
 
-  UPointLight PointLight::createLightUniform() {
-    UPointLight light;
-    light.ambient = this->_ambient;
-    light.constant = this->_constant;
-    light.diffuse = this->_diffuse;
-    light.linear = this->_linear;
-    light.specular = this->_specular;
-    light.quadratic = this->_quadratic;
-    light.position = this->_position;
-    return light;
+  PointLightUniform::PointLightUniform(const PointLight &light) :
+    LightUniform(light)
+  {
+    this->position = light._position;
+  }
+
+  PointLightUniform::~PointLightUniform() {}
+
+  PointLightUniform::PointLightUniform(const PointLightUniform &other) :
+    LightUniform::LightUniform(other)
+  {
+    this->position = other.position;
+  }
+
+  PointLightUniform &PointLightUniform::operator=(const PointLightUniform &other) {
+    LightUniform::operator=(other);
+    this->position = other.position;
+    return *this;
   }
 
   PointLight::PointLight(bool genMesh) :

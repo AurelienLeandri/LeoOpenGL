@@ -5,6 +5,21 @@
 #include <scene/geometry-node.hpp>
 
 namespace leo {
+  class Light;
+
+  typedef struct LightUniform {
+    LightUniform();
+    LightUniform(const Light &light);
+    ~LightUniform();
+    LightUniform(const LightUniform &other);
+    LightUniform &operator=(const LightUniform &other);
+    glm::vec3 ambient;
+    float constant;
+    glm::vec3 diffuse;
+    float linear;
+    glm::vec3 specular;
+    float quadratic;
+  } LightUniform;
 
   class Light : public GeometryNode {
     public:
@@ -41,6 +56,8 @@ namespace leo {
       void setAmbient(const glm::vec3 &value) { this->_ambient = value; }
       void setDiffuse(const glm::vec3 &value) { this->_diffuse = value; }
       void setSpecular(const glm::vec3 &value) { this->_specular = value; }
+
+      friend LightUniform::LightUniform(const Light &light);
 
   };
 

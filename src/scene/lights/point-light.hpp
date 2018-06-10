@@ -6,15 +6,16 @@
 
 namespace leo {
 
-  typedef struct UPointLight {
-      glm::vec3 ambient;
-      float constant;
-      glm::vec3 diffuse;
-      float linear;
-      glm::vec3 specular;
-      float quadratic;
-      glm::vec4 position;
-  } UPointLight;
+  class PointLight;
+
+  typedef struct PointLightUniform : public LightUniform {
+    PointLightUniform();
+    PointLightUniform(const PointLight &light);
+    ~PointLightUniform();
+    PointLightUniform(const PointLightUniform &other);
+    PointLightUniform &operator=(const PointLightUniform &other);
+    glm::vec4 position;
+  } PointLightUniform;
 
   class PointLight : public Light {
     public:
@@ -32,7 +33,6 @@ namespace leo {
 
     public:
       virtual void transform(const glm::mat4x4 &transformation) override;
-      UPointLight createLightUniform();
 
     private:
       void _generateMesh();
@@ -44,6 +44,8 @@ namespace leo {
     public:
       const glm::vec4 &getPosition() { return this->_position; }
       void getPosition(const glm::vec4 &value) { this->_position = value; }
+
+    friend PointLightUniform::PointLightUniform(const PointLight &light);
   };
 
 }

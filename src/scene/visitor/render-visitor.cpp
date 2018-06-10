@@ -68,15 +68,13 @@ void RenderVisitor::visit(Node *node) {
   glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-  this->_lightsUBO.pointLights[0] = this->_pLights[0]->createLightUniform();
-
   unsigned int ubiLights = glGetUniformBlockIndex(this->_shader->getProgram(), "s1");
   glUniformBlockBinding(this->_shader->getProgram(), ubiLights, 1);
   unsigned int uboLightsData;
   glGenBuffers(1, &uboLightsData);
 
   glBindBuffer(GL_UNIFORM_BUFFER, uboLightsData);
-  glBufferData(GL_UNIFORM_BUFFER, MAX_NUM_LIGHTS * (sizeof(UPointLight) + sizeof(UDirectionLight)),
+  glBufferData(GL_UNIFORM_BUFFER, MAX_NUM_LIGHTS * (sizeof(PointLightUniform) + sizeof(DirectionLightUniform)),
       NULL, GL_STATIC_DRAW);
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -86,17 +84,17 @@ void RenderVisitor::visit(Node *node) {
   glBindBuffer(GL_UNIFORM_BUFFER, uboLightsData);
   unsigned int i = 0;
   for (; i < this->_pLights.size(); i++) {
-    this->_lightsUBO.pointLights[i] = this->_pLights[i]->createLightUniform();
+    this->_lightsUBO.pointLights[i] = PointLightUniform(*this->_pLights[i]);
     auto &pl = this->_lightsUBO.pointLights[i];
-    glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof (UPointLight), sizeof (UPointLight), &pl);
+    glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof (PointLightUniform), sizeof (PointLightUniform), &pl);
   }
   i = 0;
-  unsigned int offset = MAX_NUM_LIGHTS * sizeof (UPointLight);
+  unsigned int offset = MAX_NUM_LIGHTS * sizeof (PointLightUniform);
   for (; i < this->_dLights.size(); i++) {
-    this->_lightsUBO.directionLights[i] = this->_dLights[i]->createLightUniform();
+    this->_lightsUBO.directionLights[i] = DirectionLightUniform(*this->_dLights[i]);
     auto &pl = this->_lightsUBO.directionLights[i];
-    glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof (UDirectionLight),
-        sizeof (UDirectionLight), &pl);
+    glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof (DirectionLightUniform),
+        sizeof (DirectionLightUniform), &pl);
   }
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
