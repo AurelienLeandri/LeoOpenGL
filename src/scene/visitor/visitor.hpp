@@ -1,6 +1,7 @@
 #pragma once
 
 #include <scene/node.hpp>
+#include <global.hpp>
 
 namespace leo {
 

@@ -27,8 +27,8 @@ namespace leo {
       PointLight &operator=(const PointLight &other);
 
     public:
-      virtual void draw(Shader *shader) override {};
-      virtual void update(double delta) override {};
+      virtual void draw(Shader *shader) override { UNUSED(shader); };
+      virtual void update(double delta) override { UNUSED(delta); };
 
     public:
       virtual void transform(const glm::mat4x4 &transformation) override;

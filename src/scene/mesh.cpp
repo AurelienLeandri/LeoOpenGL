@@ -58,6 +58,7 @@ namespace leo {
   }
 
   Mesh::Mesh(const Mesh &other) :
+    GeometryNode(other),
     _vertices(other._vertices),
     _indices(other._indices),
     _textures(other._textures),
@@ -70,6 +71,7 @@ namespace leo {
   }
 
   Mesh &Mesh::operator=(const Mesh &other) {
+    GeometryNode::operator=(other);
     this->_vertices = other._vertices;
     this->_indices = other._indices;
     this->_textures = other._textures;

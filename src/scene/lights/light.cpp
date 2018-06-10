@@ -28,6 +28,7 @@ namespace leo {
   {}
 
   Light::Light(const Light &other) :
+    GeometryNode(other),
     _constant(other._constant),
     _linear(other._linear),
     _quadratic(other._quadratic),
@@ -38,6 +39,7 @@ namespace leo {
   }
 
   Light &Light::operator=(const Light &other) {
+    GeometryNode::operator=(other);
     this->_constant = other._constant;
     this->_linear = other._linear;
     this->_quadratic = other._quadratic;

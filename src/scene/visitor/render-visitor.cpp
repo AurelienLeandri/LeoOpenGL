@@ -40,6 +40,7 @@ RenderVisitor &RenderVisitor::operator=(const RenderVisitor &other)
   this->_dLights = other._dLights;
   this->_lightsUBO = other._lightsUBO;
   *this->_shader = *other._shader;
+  return *this;
 }
 
 void RenderVisitor::visit(Node *node) {
@@ -83,15 +84,15 @@ void RenderVisitor::visit(Node *node) {
 
 
   glBindBuffer(GL_UNIFORM_BUFFER, uboLightsData);
-  int i = 0;
-  for (i; i < this->_pLights.size(); i++) {
+  unsigned int i = 0;
+  for (; i < this->_pLights.size(); i++) {
     this->_lightsUBO.pointLights[i] = this->_pLights[i]->createLightUniform();
     auto &pl = this->_lightsUBO.pointLights[i];
     glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof (UPointLight), sizeof (UPointLight), &pl);
   }
   i = 0;
   unsigned int offset = MAX_NUM_LIGHTS * sizeof (UPointLight);
-  for (i; i < this->_dLights.size(); i++) {
+  for (; i < this->_dLights.size(); i++) {
     this->_lightsUBO.directionLights[i] = this->_dLights[i]->createLightUniform();
     auto &pl = this->_lightsUBO.directionLights[i];
     glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof (UDirectionLight),

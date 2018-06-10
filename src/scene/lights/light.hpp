@@ -17,7 +17,7 @@ namespace leo {
       Light &operator=(const Light &other);
 
     public:
-      virtual void draw(Shader *shader) {};
+      virtual void draw(Shader *shader) = 0;
       virtual void update(double delta) = 0;
 
     protected:

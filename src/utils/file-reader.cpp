@@ -14,7 +14,7 @@ std::string FileReader::readFile(std::string fileName) {
   std::string content((std::istreambuf_iterator<char>(ifs)),
                       (std::istreambuf_iterator<char>()));
     return content;
-  } catch (std::ifstream::failure e) {
+  } catch (std::ifstream::failure &e) {
     std::cerr << "ERROR::FILE_READER::FILE_NOT_SUCCESSFULLY_READ("
       << fileName << ")" << std::endl;
   }

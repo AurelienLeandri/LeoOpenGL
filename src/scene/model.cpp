@@ -16,6 +16,7 @@ namespace leo {
   }
 
   Model::Model(const Model &other) :
+    GeometryNode(other),
     textures_loaded(other.textures_loaded),
     _meshes(other._meshes),
     directory(other.directory)
@@ -23,6 +24,7 @@ namespace leo {
   }
 
   Model &Model::operator=(const Model &other) {
+    GeometryNode::operator=(other);
     this->textures_loaded = other.textures_loaded;
     this->_meshes = other._meshes;
     this->directory = other.directory;
@@ -90,17 +92,15 @@ namespace leo {
         indices.push_back(face.mIndices[j]);
     }
     // Process shader
-    if (mesh->mMaterialIndex >= 0) {
-      aiMaterial *shader = scene->mMaterials[mesh->mMaterialIndex];
-      std::vector<Texture> diffuseMaps =
-        this->loadMaterialTextures(shader, aiTextureType_DIFFUSE,
-            "texture_diffuse");
-      textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-      std::vector<Texture> specularMaps =
-        this->loadMaterialTextures(shader, aiTextureType_SPECULAR,
-            "texture_specular");
-      textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    }
+    aiMaterial *shader = scene->mMaterials[mesh->mMaterialIndex];
+    std::vector<Texture> diffuseMaps =
+      this->loadMaterialTextures(shader, aiTextureType_DIFFUSE,
+          "texture_diffuse");
+    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+    std::vector<Texture> specularMaps =
+      this->loadMaterialTextures(shader, aiTextureType_SPECULAR,
+          "texture_specular");
+    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     return Mesh(vertices, indices, textures);
   }
 
