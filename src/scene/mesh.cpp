@@ -14,7 +14,6 @@ namespace leo {
     this->_diffuse = glm::vec3(1.0, 1.0, 1.0);
     this->_specular = glm::vec3(1.0, 1.0, 1.0);
     this->_shininess = 32;
-    this->_generateDefaultMesh();
     this->_setupMesh();
   }
 
@@ -240,6 +239,40 @@ namespace leo {
         20, 21, 23,
         21, 22, 23
     };
+  }
+
+  Mesh *Mesh::createPlaneMesh() {
+    Mesh *m = new Mesh();
+
+    std::vector<GLfloat> pos {
+      1.0f, 0.0f, 0.0f,
+        1.0f,  1.0f, 0.0f, 
+        0.0f,  1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+    };
+
+    std::vector<GLfloat> norm{
+      0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+    };
+
+    for (int i = 0; i < 4 * 3; i+=3) {
+      struct Vertex v;
+      v.position = glm::vec3(pos[i], pos[i + 1], pos[i + 2]);
+      v.normal = glm::vec3(norm[i], norm[i + 1], norm[i + 2]);
+      v.texCoords = glm::vec2(pos[i], pos[i + 1]);
+      m->_vertices.push_back(v);
+    }
+
+    m->_indices = std::vector<GLuint>{
+      0, 1, 3, 1, 2, 3,
+    };
+
+    m->_setupMesh();
+
+    return m;
   }
 
 }

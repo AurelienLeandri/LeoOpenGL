@@ -14,6 +14,7 @@ Engine::~Engine() {
   delete this->_camera;
   delete this->_root;
   delete this->render_visitor;
+  delete this->post_process_render_visitor;
 }
 
 void Engine::_init() {
@@ -59,12 +60,8 @@ void Engine::_init() {
 
   // Initialize scene graph
   // TODO: create FolderNode
-  //this->_root = new Model();
   this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
-  //TransformationVisitor tVisitor;
-  //tVisitor.scale(glm::vec3(4.0f, 2.0f, 12.0f));
-  //tVisitor.visit(this->_root);
-  // TODO: testing, remove after
+  this->_post_process_quad = Mesh::createPlaneMesh();
   bool displayLight = true;
   PointLight *pl = new PointLight(displayLight);
   TransformationVisitor tVisitor1;
@@ -84,11 +81,18 @@ void Engine::_init() {
   DirectionLight *dl = new DirectionLight();
   this->_root->addChild(dl);
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl", true);
+      //"resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl", false);
+  this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
+      "resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl", false);
+  this->post_process_render_visitor->registerFrameBuffer(*this->render_visitor);
   this->render_visitor->registerLight(pl);
   this->render_visitor->registerLight(pl2);
   this->render_visitor->registerLight(pl3);
   this->render_visitor->registerLight(dl);
+  TransformationVisitor transformGlobal;
+  transformGlobal.rotate(15.0, glm::vec3(-2.0f, 10.0f, 4.0f));
+  transformGlobal.visit(this->_root);
 }
 
 void Engine::gameLoop() {
@@ -106,7 +110,10 @@ void Engine::gameLoop() {
     glViewport(0, 0, screenWidth, screenHeight);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    render_visitor->visit(this->_root);
+    glEnable(GL_DEPTH_TEST);
+    this->render_visitor->visit(this->_root);
+    glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
+    this->post_process_render_visitor->visit(this->_post_process_quad);
 
     glfwSwapBuffers(this->_window);
 

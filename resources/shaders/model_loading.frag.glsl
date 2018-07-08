@@ -22,18 +22,6 @@ struct UDirectionLight {
   vec3 direction;
 };
 
-layout (std140, binding = 1) uniform s1 {
-  UPointLight upl[MAX_NUM_LIGHTS];
-  UDirectionLight udl[MAX_NUM_LIGHTS];
-};
-
-/*
-layout (std140, binding = 1) uniform s1 {
-  vec3 lposition;
-  vec3 lcolor;
-};
-*/
-
 struct Material {
   vec3 ambient;
   vec3 diffuse;
@@ -41,6 +29,11 @@ struct Material {
   sampler2D texture_diffuse1;
   sampler2D texture_specular1;
   int shininess;
+};
+
+layout (std140, binding = 1) uniform s1 {
+  UPointLight upl[MAX_NUM_LIGHTS];
+  UDirectionLight udl[MAX_NUM_LIGHTS];
 };
 
 in vec2 TexCoords;
@@ -78,6 +71,7 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     specular += iupl.specular * spec * (material.specular + specular_sample);
   }
+
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UDirectionLight iudl = udl[i];
     vec3 lightDir = normalize(-iudl.direction);
@@ -91,4 +85,5 @@ void main()
 
   vec3 result = diffuse + ambient + specular;
   color = vec4(result, 1.0);
+  //color = vec4(1.0, 0.0, 0.0, 1.0);
 }

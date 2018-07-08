@@ -44,6 +44,9 @@ namespace leo {
       virtual void draw(Shader *shader) override;
       virtual void update(double delta) override { UNUSED(delta); };
 
+    public:
+      static Mesh *createPlaneMesh();
+
     private:
       void _setupMesh();
       void _generateDefaultMesh();

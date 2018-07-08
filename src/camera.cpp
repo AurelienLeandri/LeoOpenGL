@@ -2,6 +2,12 @@
 
 namespace leo {
 
+// Constructor with scalar values
+Camera::Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX,
+    GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) :
+  Camera(glm::vec3(posX, posY, posZ), glm::vec3(upX, upY, upZ), yaw, pitch)
+{}
+
 // Constructor with vectors
 Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch) :
   _front(glm::vec3(0.0f, 0.0f, -1.0f)),
@@ -11,20 +17,6 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch) :
 {
   this->_position = position;
   this->_worldUp = up;
-  this->_yaw = yaw;
-  this->_pitch = pitch;
-  this->_updateCameraVectors();
-}
-// Constructor with scalar values
-Camera::Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX,
-    GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) :
-  _front(glm::vec3(0.0f, 0.0f, -1.0f)),
-  _movementSpeed(SPEED),
-  _mouseSensitivity(SENSITIVTY),
-  _zoom(ZOOM)
-{
-  this->_position = glm::vec3(posX, posY, posZ);
-  this->_worldUp = glm::vec3(upX, upY, upZ);
   this->_yaw = yaw;
   this->_pitch = pitch;
   this->_updateCameraVectors();

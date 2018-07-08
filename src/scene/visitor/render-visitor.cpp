@@ -2,45 +2,57 @@
 
 namespace leo {
 
-RenderVisitor::RenderVisitor(const Camera *camera, GLFWwindow *window)
+RenderVisitor::RenderVisitor(const Camera *camera, GLFWwindow *window, bool offscreen)
   : RenderVisitor(camera, window,
       "resources/shaders/vertex-basic.glsl",
-      "resources/shaders/fragment-basic.glsl")
+      "resources/shaders/fragment-basic.glsl", offscreen)
 {
 }
 
 RenderVisitor::RenderVisitor(const Camera *camera, GLFWwindow *window,
-    const GLchar *vertex, const GLchar *fragment)
-  : _camera(camera), _window(window)
+    const GLchar *vertex, const GLchar *fragment, bool offscreen)
+  : _camera(camera), _window(window), _offscreen(offscreen)
 {
+  this->_init();
   this->_shader= new Shader(vertex, fragment);
 }
 
 RenderVisitor::~RenderVisitor() {
+  if (this->_offscreen)
+    glDeleteFramebuffers(1, &this->_fbo);
   delete this->_shader;
 }
 
-RenderVisitor::RenderVisitor(const RenderVisitor &other) :
-  Visitor(other),
-  _camera(other._camera),
-  _window(other._window),
-  _pLights(other._pLights),
-  _dLights(other._dLights),
-  _lightsUBO(other._lightsUBO)
-{
-  *this->_shader = *other._shader;
-}
+void RenderVisitor::_init() {
+  if (this->_offscreen) {
+    // FrameBuffer initialization
+    glGenFramebuffers(1, &this->_fbo);
 
-RenderVisitor &RenderVisitor::operator=(const RenderVisitor &other)
-{
-  Visitor::operator=(other);
-  this->_camera = other._camera;
-  this->_window = other._window;
-  this->_pLights = other._pLights;
-  this->_dLights = other._dLights;
-  this->_lightsUBO = other._lightsUBO;
-  *this->_shader = *other._shader;
-  return *this;
+    glBindFramebuffer(GL_FRAMEBUFFER, this->_fbo);
+
+    // generate texture
+    glGenTextures(1, &this->_colorBufferTexture);
+    glBindTexture(GL_TEXTURE_2D, this->_colorBufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // attach it to currently bound framebuffer object
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->_colorBufferTexture, 0);
+
+    glGenRenderbuffers(1, &this->_rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, this->_rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, this->_rbo);
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+      std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  }
+
 }
 
 void RenderVisitor::visit(Node *node) {
@@ -98,7 +110,18 @@ void RenderVisitor::visit(Node *node) {
   }
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+  if (this->_offscreen)
+    glBindFramebuffer(GL_FRAMEBUFFER, this->_fbo);
+
+  // Bind Framebuffer textures
+  for (size_t i = 0; i < this->_fbTextures.size(); i++) {
+    glActiveTexture(GL_TEXTURE0 + i);
+    glBindTexture(GL_TEXTURE_2D, this->_fbTextures[i]);
+  }
+
   this->_visit(node);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void RenderVisitor::_visit(Node *node) {
@@ -123,6 +146,14 @@ void RenderVisitor::registerLight(Light *light) {
   if (dLight) {
     this->_dLights.push_back(dLight);
     return;
+  }
+}
+
+
+void RenderVisitor::registerFrameBuffer(const RenderVisitor &rv) {
+  GLuint cbt = rv.getColorBufferTexture();
+  if (cbt > 0) {
+    this->_fbTextures.push_back(cbt);
   }
 }
 
