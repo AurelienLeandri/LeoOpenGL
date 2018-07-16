@@ -43,7 +43,7 @@ void Engine::_init() {
   glewExperimental = GL_TRUE;
 
   // Define the viewport dimensions
-  glClearColor(0.07, 0.07, 0.07, 1);
+  glClearColor(1.07, 0.07, 0.07, 1);
 
   // Setup some OpenGL options
   glEnable(GL_DEPTH_TEST);
@@ -60,6 +60,7 @@ void Engine::_init() {
 
   // Initialize scene graph
   // TODO: create FolderNode
+  //this->_root = new Model();
   this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
   this->_post_process_quad = Mesh::createPlaneMesh();
   bool displayLight = true;
@@ -81,11 +82,11 @@ void Engine::_init() {
   DirectionLight *dl = new DirectionLight();
   this->_root->addChild(dl);
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl", true);
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl", false);
       //"resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl", false);
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl", false);
-  this->post_process_render_visitor->registerFrameBuffer(*this->render_visitor);
+  //this->post_process_render_visitor->registerFrameBuffer(*this->render_visitor);
   this->render_visitor->registerLight(pl);
   this->render_visitor->registerLight(pl2);
   this->render_visitor->registerLight(pl3);
@@ -96,6 +97,52 @@ void Engine::_init() {
 }
 
 void Engine::gameLoop() {
+  GLuint FramebufferName = 0;
+  glGenFramebuffers(1, &FramebufferName);
+  glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+
+  // The texture we're going to render to
+  GLuint renderedTexture;
+  glGenTextures(1, &renderedTexture);
+
+  // "Bind" the newly created texture : all future texture functions will modify this texture
+  glBindTexture(GL_TEXTURE_2D, renderedTexture);
+
+  // Give an empty image to OpenGL ( the last "0" )
+  glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 800, 600, 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+  // Poor filtering. Needed !
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  // The depth buffer
+  GLuint depthrenderbuffer;
+  glGenRenderbuffers(1, &depthrenderbuffer);
+  glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 800, 600);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
+  
+  // Set "renderedTexture" as our colour attachement #0
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
+
+  // Set the list of draw buffers.
+  GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+  glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
+
+  // Always check that our framebuffer is ok
+  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    std::cout << "ERROR FBO" << std::endl;
+    return;
+  }
+
+  // Render to our framebuffer
+  //glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+  //glViewport(0, 0, 800, 600); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+
+  ///////
+  ///////
+  ///////
+  ///////
   GLfloat lastFrame = 0.0;
   GLfloat deltaTime = 0.0;
   GLfloat currentFrame = 0.0;
@@ -107,12 +154,19 @@ void Engine::gameLoop() {
 
     this->doMovement(deltaTime);
 
-    glViewport(0, 0, screenWidth, screenHeight);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Render to our framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+    glViewport(0, 0, screenWidth, screenHeight);
 
     glEnable(GL_DEPTH_TEST);
     this->render_visitor->visit(this->_root);
     glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, screenWidth, screenHeight);
+
     this->post_process_render_visitor->visit(this->_post_process_quad);
 
     glfwSwapBuffers(this->_window);

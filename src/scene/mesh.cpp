@@ -134,6 +134,7 @@ namespace leo {
           i);
       glBindTexture(GL_TEXTURE_2D, this->_textures[i].id);
     }
+    //glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE0);
 
     glUniform3f(glGetUniformLocation(shader->getProgram(), "material.ambient"),
