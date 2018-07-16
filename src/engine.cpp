@@ -154,18 +154,19 @@ void Engine::gameLoop() {
 
     this->doMovement(deltaTime);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render to our framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-    glViewport(0, 0, screenWidth, screenHeight);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_DEPTH_TEST);
     this->render_visitor->visit(this->_root);
     glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, screenWidth, screenHeight);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glBindTexture(GL_TEXTURE_2D, renderedTexture);
 
     this->post_process_render_visitor->visit(this->_post_process_quad);
 

@@ -2,8 +2,6 @@
 
 #define MAX_NUM_LIGHTS 10
 
-layout(location = 0) out vec3 fb_color;
-
 struct UPointLight {
   vec3 ambient;
   float constant;
@@ -87,6 +85,4 @@ void main()
 
   vec3 result = diffuse + ambient + specular;
   color = vec4(result, 1.0);
-  fb_color = vec3(result);
-  //color = vec4(1.0, 0.0, 0.0, 1.0);
 }

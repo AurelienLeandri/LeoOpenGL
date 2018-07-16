@@ -114,10 +114,12 @@ void RenderVisitor::visit(Node *node) {
   }
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+  /*
   if (this->_offscreen)
     glBindFramebuffer(GL_FRAMEBUFFER, this->_fbo);
   else
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  */
 
   // Bind Framebuffer textures
   for (size_t i = 0; i < this->_fbTextures.size(); i++) {
