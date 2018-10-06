@@ -2,8 +2,6 @@
 
 namespace leo {
 
-  GLint TextureFromFile(const char *path, std::string _directory);
-
   Model::Model() {
     this->_meshes.push_back(Mesh());
   }
@@ -50,11 +48,11 @@ namespace leo {
   }
 
   void Model::processNode(aiNode *node, const aiScene *scene) {
-    for (GLuint i = 0; i < node->mNumMeshes; i++) {
+    for (int i = 0; i < node->mNumMeshes; i++) {
       aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
       this->_meshes.push_back(this->processMesh(mesh, scene));
     }
-    for (GLuint i = 0; i < node->mNumChildren; i++)
+    for (int i = 0; i < node->mNumChildren; i++)
       this->processNode(node->mChildren[i], scene);
   }
 
@@ -63,7 +61,7 @@ namespace leo {
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
 
-    for (GLuint i = 0; i < mesh->mNumVertices; i++) {
+    for (int i = 0; i < mesh->mNumVertices; i++) {
       Vertex vertex;
       // Process vertex positions, normals and texture coordinates
       glm::vec3 vector;
@@ -86,9 +84,9 @@ namespace leo {
       vertices.push_back(vertex);
     }
     // Process indices
-    for (GLuint i = 0; i < mesh->mNumFaces; i++) {
+    for (int i = 0; i < mesh->mNumFaces; i++) {
       aiFace face = mesh->mFaces[i];
-      for (GLuint j = 0; j < face.mNumIndices; j++)
+      for (int j = 0; j < face.mNumIndices; j++)
         indices.push_back(face.mIndices[j]);
     }
     // Process shader
@@ -108,23 +106,23 @@ namespace leo {
     Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
         std::string typeName) {
       std::vector<Texture> textures;
-      for (GLuint i = 0; i < mat->GetTextureCount(type); i++) {
+      for (int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);
-        GLboolean skip = (GLboolean) false;
-        for (GLuint j = 0; j < _loadedTextures.size(); j++) {
+        std::string path = str.C_Str();
+        bool skip = (GLboolean) false;
+        for (int j = 0; j < _loadedTextures.size(); j++) {
           // Check if texture is not already loaded
-          if (_loadedTextures[j].path == str) {
+          if (_loadedTextures[j].path == path) {
             textures.push_back(_loadedTextures[j]);
-            skip = (GLboolean) true;
+            skip = true;
             break;
           }
         }
         if (!skip) {   // If texture hasn't been loaded already, load it
-          Texture texture;
-          texture.id = (GLuint) TextureFromFile(str.C_Str(), this->_directory);
-          texture.type = typeName;
-          texture.path = str;
+          Texture texture(path, this->_directory);
+          texture.name = typeName;
+          texture.path = path;
           textures.push_back(texture);
           this->_loadedTextures.push_back(texture);  // Add to loaded _textures
         }
@@ -132,30 +130,4 @@ namespace leo {
       return textures;
     }
 
-  GLint TextureFromFile(const char *path, std::string _directory) {
-    //Generate texture ID and load texture data
-    std::string filename = std::string(path);
-    filename = _directory + '/' + filename;
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    int width, height;
-    std::cout << filename.c_str() << std::endl;
-    unsigned char *image = SOIL_load_image(filename.c_str(), &width, &height,
-        0, SOIL_LOAD_RGB);  // TODO: RGBA for png ??
-    std::cout << (SOIL_last_result()) << std::endl;
-    // Assign texture to ID
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
-        GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    // Parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-        GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    SOIL_free_image_data(image);
-    return textureID;
-  }
 }

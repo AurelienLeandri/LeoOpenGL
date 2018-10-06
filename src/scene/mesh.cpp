@@ -122,7 +122,7 @@ namespace leo {
       // Retrieve texture number (the N in diffuse_textureN)
       std::stringstream ss;
       std::string number;
-      std::string name = this->_textures[i].type;
+      std::string name = this->_textures[i].name;
       if (name == "texture_diffuse")
         ss << diffuseNr++; // Transfer GLuint to stream
       else if (name == "texture_specular")

@@ -24,39 +24,6 @@ RenderVisitor::~RenderVisitor() {
 }
 
 void RenderVisitor::_init() {
-  if (this->_offscreen) {
-    // FrameBuffer initialization
-    glGenFramebuffers(1, &this->_fbo);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, this->_fbo);
-
-    // generate texture
-    glGenTextures(1, &this->_colorBufferTexture);
-    glBindTexture(GL_TEXTURE_2D, this->_colorBufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // attach it to currently bound framebuffer object
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->_colorBufferTexture, 0);
-
-    glGenRenderbuffers(1, &this->_rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, this->_rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
-    //glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, this->_rbo);
-
-    // Set the list of draw buffers.
-    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
-
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-      std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  }
-
 }
 
 void RenderVisitor::visit(Node *node) {
@@ -121,11 +88,13 @@ void RenderVisitor::visit(Node *node) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   */
 
+  /*
   // Bind Framebuffer textures
   for (size_t i = 0; i < this->_fbTextures.size(); i++) {
     glActiveTexture(GL_TEXTURE0 + i);
     glBindTexture(GL_TEXTURE_2D, this->_fbTextures[i]);
   }
+  */
 
   this->_visit(node);
 }

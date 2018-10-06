@@ -7,6 +7,7 @@
 #include <global.hpp>
 #include <scene/geometry-node.hpp>
 #include <utils/shader.hpp>
+#include <utils/texture.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 #include <string>
@@ -19,12 +20,6 @@ namespace leo {
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 texCoords;
-  };
-
-  struct Texture {
-    GLuint id;
-    std::string type;
-    aiString path;
   };
 
   class Mesh : public GeometryNode {
