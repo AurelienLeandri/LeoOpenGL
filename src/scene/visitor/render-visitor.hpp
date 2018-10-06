@@ -7,6 +7,7 @@
 
 #include <camera.hpp>
 #include <utils/shader.hpp>
+#include <utils/framebuffer.hpp>
 #include <scene/visitor/visitor.hpp>
 #include <scene/geometry-node.hpp>
 #include <scene/lights/point-light.hpp>
@@ -34,13 +35,13 @@ class RenderVisitor : public Visitor {
 
   public:
     void registerLight(Light *light);
-    void registerFrameBuffer(const RenderVisitor &rv);
+    void registerFramebuffer(const Framebuffer *fb);
 
   private:
     virtual void _visit(Node *node);
 
   public:
-    const GLuint &getColorBufferTexture() const { return this->_colorBufferTexture; }
+    const Framebuffer &getFramebuffer() const { return this->_fb; }
 
   private:
     const Camera *_camera;
@@ -48,11 +49,11 @@ class RenderVisitor : public Visitor {
     Shader *_shader;
     std::vector<PointLight *> _pLights;
     std::vector<DirectionLight *> _dLights;
+    std::vector<const Framebuffer *> _framebuffers;
+    std::vector<const Texture *> _colorBuffers;
     uboLights _lightsUBO;
-    GLuint _fbo;
+    Framebuffer _fb;
     GLuint _rbo;
-    GLuint _colorBufferTexture;
-    std::vector<GLuint> _fbTextures;
     bool _offscreen;
 };
 

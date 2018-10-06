@@ -2,11 +2,12 @@
 
 namespace leo {
   Framebuffer::Framebuffer() {
+    Texture renderedTexture;
     glGenFramebuffers(1, &this->_id);
     glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
 
-    // Set "this->_renderedTexture" as our colour attachement #0
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this->_renderedTexture.id, 0);
+    // Set "renderedTexture" as our colour attachement #0
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture.id, 0);
 
     // The depth buffer
     GLuint depthrenderbuffer;
@@ -27,6 +28,7 @@ namespace leo {
   }
 
   Framebuffer::~Framebuffer() {
+    glDeleteFramebuffers(1, &this->_id);
   }
 
 }  // namespace leo

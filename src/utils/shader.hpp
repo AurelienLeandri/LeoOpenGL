@@ -24,6 +24,8 @@ class Shader {
   public:
     const GLuint &getProgram() const;
     void use() const;
+    GLuint getTextureOffset() const { return this->_textureOffset; }
+    void setTextureOffset(GLuint value) { this->_textureOffset = value; }
 
   public:
     static void compileShader(GLuint &shader, const GLchar *shaderCode, GLint shaderType);
@@ -33,6 +35,7 @@ class Shader {
     std::string _vertexCode;
     std::string _fragmentCode;
     GLuint _program;
+    GLuint _textureOffset;
 };
 
 }

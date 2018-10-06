@@ -117,8 +117,9 @@ namespace leo {
 
     GLuint diffuseNr = 1;
     GLuint specularNr = 1;
+    GLuint offset = shader->getTextureOffset();
     for (GLuint i = 0; i < this->_textures.size(); i++) {
-      glActiveTexture(GL_TEXTURE0 + i);
+      glActiveTexture(GL_TEXTURE0 + offset + i);
       // Retrieve texture number (the N in diffuse_textureN)
       std::stringstream ss;
       std::string number;

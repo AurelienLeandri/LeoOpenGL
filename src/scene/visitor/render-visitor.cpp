@@ -18,8 +18,6 @@ RenderVisitor::RenderVisitor(const Camera *camera, GLFWwindow *window,
 }
 
 RenderVisitor::~RenderVisitor() {
-  if (this->_offscreen)
-    glDeleteFramebuffers(1, &this->_fbo);
   delete this->_shader;
 }
 
@@ -81,20 +79,6 @@ void RenderVisitor::visit(Node *node) {
   }
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-  /*
-  if (this->_offscreen)
-    glBindFramebuffer(GL_FRAMEBUFFER, this->_fbo);
-  else
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  */
-
-  /*
-  // Bind Framebuffer textures
-  for (size_t i = 0; i < this->_fbTextures.size(); i++) {
-    glActiveTexture(GL_TEXTURE0 + i);
-    glBindTexture(GL_TEXTURE_2D, this->_fbTextures[i]);
-  }
-  */
 
   this->_visit(node);
 }
@@ -124,12 +108,13 @@ void RenderVisitor::registerLight(Light *light) {
   }
 }
 
-
-void RenderVisitor::registerFrameBuffer(const RenderVisitor &rv) {
-  GLuint cbt = rv.getColorBufferTexture();
-  if (cbt > 0) {
-    this->_fbTextures.push_back(cbt);
-  }
+void RenderVisitor::registerFramebuffer(const Framebuffer *fb) {
+  this->_framebuffers.push_back(fb);
+  auto &color_buffers = fb->getColorBuffers();
+  for (unsigned int i = 0; i < color_buffers.size(); i++)
+    this->_colorBuffers.push_back(&color_buffers[i]);
+  this->_shader->setTextureOffset(this->_colorBuffers.size());
 }
+
 
 }

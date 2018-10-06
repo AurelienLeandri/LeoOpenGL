@@ -123,7 +123,7 @@ void Engine::gameLoop() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glBindTexture(GL_TEXTURE_2D, fb.getRenderedTexture().id);
+    glBindTexture(GL_TEXTURE_2D, fb.getColorBuffers()[0].id);
 
     this->post_process_render_visitor->visit(this->_post_process_quad);
 
