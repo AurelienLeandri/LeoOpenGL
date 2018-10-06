@@ -5,6 +5,7 @@
 #include <SOIL.h>
 
 #include <utils/shader.hpp>
+#include <utils/framebuffer.hpp>
 #include <scene/node.hpp>
 #include <scene/visitor/render-visitor.hpp>
 #include <scene/model.hpp>

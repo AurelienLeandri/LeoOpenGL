@@ -97,32 +97,7 @@ void Engine::_init() {
 }
 
 void Engine::gameLoop() {
-  GLuint FramebufferName = 0;
-  glGenFramebuffers(1, &FramebufferName);
-  glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-
-  // The texture we're going to render to
-  Texture renderedTexture;
-
-  // Set "renderedTexture" as our colour attachement #0
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture.id, 0);
-
-  // The depth buffer
-  GLuint depthrenderbuffer;
-  glGenRenderbuffers(1, &depthrenderbuffer);
-  glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 800, 600);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
-  
-  // Set the list of draw buffers.
-  GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-  glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
-
-  // Always check that our framebuffer is ok
-  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    std::cout << "ERROR FBO" << std::endl;
-    return;
-  }
+  Framebuffer fb;
 
   // Render to our framebuffer
   GLfloat lastFrame = 0.0;
@@ -138,7 +113,7 @@ void Engine::gameLoop() {
 
 
     // Render to our framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+    glBindFramebuffer(GL_FRAMEBUFFER, fb.getId());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_DEPTH_TEST);
@@ -148,7 +123,7 @@ void Engine::gameLoop() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glBindTexture(GL_TEXTURE_2D, renderedTexture.id);
+    glBindTexture(GL_TEXTURE_2D, fb.getRenderedTexture().id);
 
     this->post_process_render_visitor->visit(this->_post_process_quad);
 
