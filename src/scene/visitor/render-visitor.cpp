@@ -2,16 +2,16 @@
 
 namespace leo {
 
-RenderVisitor::RenderVisitor(const Camera *camera, GLFWwindow *window, bool offscreen)
+RenderVisitor::RenderVisitor(const Camera *camera, GLFWwindow *window)
   : RenderVisitor(camera, window,
       "resources/shaders/vertex-basic.glsl",
-      "resources/shaders/fragment-basic.glsl", offscreen)
+      "resources/shaders/fragment-basic.glsl")
 {
 }
 
 RenderVisitor::RenderVisitor(const Camera *camera, GLFWwindow *window,
-    const GLchar *vertex, const GLchar *fragment, bool offscreen)
-  : _camera(camera), _window(window), _offscreen(offscreen)
+    const GLchar *vertex, const GLchar *fragment)
+  : _camera(camera), _window(window)
 {
   this->_init();
   this->_shader= new Shader(vertex, fragment);
@@ -25,8 +25,22 @@ void RenderVisitor::_init() {
 }
 
 void RenderVisitor::visit(Node *node) {
-  this->_shader->use();
+  this->visit(node, false);
+}
 
+void RenderVisitor::visit(Node *node, bool offscreen) {
+  if (offscreen) {
+    glBindFramebuffer(GL_FRAMEBUFFER, this->_fb.getId());
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
+  else {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT);
+  }
+
+  this->_shader->use();
   // Transformation matrices
   glm::vec3 camPos = this->_camera->getPosition();
   glUniform3f(glGetUniformLocation(this->_shader->getProgram(), "viewPos"), camPos.x, camPos.y, camPos.z);
@@ -55,8 +69,10 @@ void RenderVisitor::visit(Node *node) {
   glGenBuffers(1, &uboLightsData);
 
   glBindBuffer(GL_UNIFORM_BUFFER, uboLightsData);
-  glBufferData(GL_UNIFORM_BUFFER, MAX_NUM_LIGHTS * (sizeof(PointLightUniform) + sizeof(DirectionLightUniform)),
-      NULL, GL_STATIC_DRAW);
+  glBufferData(GL_UNIFORM_BUFFER,
+      MAX_NUM_LIGHTS * (sizeof(PointLightUniform) + sizeof(DirectionLightUniform)),
+      NULL, GL_STATIC_DRAW
+      );
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
   glBindBufferBase(GL_UNIFORM_BUFFER, 1, uboLightsData);
@@ -79,9 +95,17 @@ void RenderVisitor::visit(Node *node) {
   }
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+  for (GLuint i = 0; i < this->_colorBuffers.size(); i++) {
+    glActiveTexture(GL_TEXTURE0 + i);
+    glBindTexture(GL_TEXTURE_2D, this->_colorBuffers[i]->id);
+  }
+  glActiveTexture(GL_TEXTURE0);
 
   this->_visit(node);
-}
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+}  // void RenderVisitor::visit(Node *node)
+
 
 void RenderVisitor::_visit(Node *node) {
   GeometryNode * g_node = dynamic_cast<GeometryNode*>(node);
@@ -108,9 +132,8 @@ void RenderVisitor::registerLight(Light *light) {
   }
 }
 
-void RenderVisitor::registerFramebuffer(const Framebuffer *fb) {
-  this->_framebuffers.push_back(fb);
-  auto &color_buffers = fb->getColorBuffers();
+void RenderVisitor::registerFramebuffer(const Framebuffer &fb) {
+  auto &color_buffers = fb.getColorBuffers();
   for (unsigned int i = 0; i < color_buffers.size(); i++)
     this->_colorBuffers.push_back(&color_buffers[i]);
   this->_shader->setTextureOffset(this->_colorBuffers.size());

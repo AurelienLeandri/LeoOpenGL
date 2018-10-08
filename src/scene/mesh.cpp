@@ -113,8 +113,6 @@ namespace leo {
   }
 
   void Mesh::draw(Shader *shader) {
-    UNUSED(shader);
-
     GLuint diffuseNr = 1;
     GLuint specularNr = 1;
     GLuint offset = shader->getTextureOffset();

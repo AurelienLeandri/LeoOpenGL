@@ -7,7 +7,7 @@ namespace leo {
     glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
 
     // Set "renderedTexture" as our colour attachement #0
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture.id, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderedTexture.id, 0);
 
     // The depth buffer
     GLuint depthrenderbuffer;
@@ -16,19 +16,28 @@ namespace leo {
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 800, 600);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
 
+     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture.id, 0);
+
     // Set the list of draw buffers.
-    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
+    glDrawBuffers(1, this->_drawBuffers); // "1" is the size of DrawBuffers
 
     // Always check that our framebuffer is ok
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
       std::cout << "ERROR FBO" << std::endl;
       exit(1);
     }
+
+    this->_colorBuffers.push_back(renderedTexture);
+
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    std::cout << "initialized fb with id " << this->_id << std::endl;
   }
 
   Framebuffer::~Framebuffer() {
     glDeleteFramebuffers(1, &this->_id);
   }
+
 
 }  // namespace leo

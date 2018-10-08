@@ -24,18 +24,19 @@ namespace leo {
 
 class RenderVisitor : public Visitor {
   public:
-    RenderVisitor(const Camera *_camera, GLFWwindow *window, bool offscreen);
+    RenderVisitor(const Camera *_camera, GLFWwindow *window);
     RenderVisitor(const Camera *_camera, GLFWwindow *window,
-        const GLchar *vertex, const GLchar *fragment, bool offscreen);
+        const GLchar *vertex, const GLchar *fragment);
     virtual ~RenderVisitor();
 
   public:
     void _init();
     virtual void visit(Node *node);
+    virtual void visit(Node *node, bool offscreen);
 
   public:
     void registerLight(Light *light);
-    void registerFramebuffer(const Framebuffer *fb);
+    void registerFramebuffer(const Framebuffer &fb);
 
   private:
     virtual void _visit(Node *node);
@@ -49,12 +50,10 @@ class RenderVisitor : public Visitor {
     Shader *_shader;
     std::vector<PointLight *> _pLights;
     std::vector<DirectionLight *> _dLights;
-    std::vector<const Framebuffer *> _framebuffers;
+    Framebuffer _fb;
     std::vector<const Texture *> _colorBuffers;
     uboLights _lightsUBO;
-    Framebuffer _fb;
     GLuint _rbo;
-    bool _offscreen;
 };
 
 }

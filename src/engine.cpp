@@ -26,7 +26,7 @@ void Engine::_init() {
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
   glfwWindowHint(GLFW_SAMPLES, 4);
 
-  this->_window = glfwCreateWindow(this->screenWidth, this->screenHeight, "OpenGL", nullptr, nullptr);
+  this->_window = glfwCreateWindow(this->screenWidth, this->screenHeight, " ~~~ LeoEngine!!", nullptr, nullptr);
   this->_camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
   glfwSetWindowUserPointer(this->_window, &this->inputManager);
   glfwMakeContextCurrent(this->_window);
@@ -60,8 +60,8 @@ void Engine::_init() {
 
   // Initialize scene graph
   // TODO: create FolderNode
-  //this->_root = new Model();
   this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
+  this->_root2 = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
   this->_post_process_quad = Mesh::createPlaneMesh();
   bool displayLight = true;
   PointLight *pl = new PointLight(displayLight);
@@ -82,11 +82,11 @@ void Engine::_init() {
   DirectionLight *dl = new DirectionLight();
   this->_root->addChild(dl);
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl", false);
-      //"resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl", false);
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
+  this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl", false);
-  //this->post_process_render_visitor->registerFrameBuffer(*this->render_visitor);
+      "resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl");
   this->render_visitor->registerLight(pl);
   this->render_visitor->registerLight(pl2);
   this->render_visitor->registerLight(pl3);
@@ -97,12 +97,16 @@ void Engine::_init() {
 }
 
 void Engine::gameLoop() {
-  Framebuffer fb;
-
   // Render to our framebuffer
   GLfloat lastFrame = 0.0;
   GLfloat deltaTime = 0.0;
   GLfloat currentFrame = 0.0;
+  /*
+  this->post_process_render_visitor->registerFramebuffer(
+      this->render_visitor->getFramebuffer());
+      */
+  this->post_process_render_visitor->registerFramebuffer(
+      this->render_visitor2->getFramebuffer());
 
   while(!glfwWindowShouldClose(this->_window)) {
     currentFrame = glfwGetTime();
@@ -111,21 +115,11 @@ void Engine::gameLoop() {
 
     this->doMovement(deltaTime);
 
+    //this->render_visitor->visit(this->_root, true);
 
-    // Render to our framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, fb.getId());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    this->render_visitor2->visit(this->_root2, true);
 
-    glEnable(GL_DEPTH_TEST);
-    this->render_visitor->visit(this->_root);
-    glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glBindTexture(GL_TEXTURE_2D, fb.getColorBuffers()[0].id);
-
-    this->post_process_render_visitor->visit(this->_post_process_quad);
+    this->post_process_render_visitor->visit(this->_post_process_quad, false);
 
     glfwSwapBuffers(this->_window);
 

@@ -39,8 +39,10 @@ class Engine{
   private:
     Camera *_camera;
     Node *_root;
+    Node *_root2;
     Node *_post_process_quad;
     RenderVisitor *render_visitor;
+    RenderVisitor *render_visitor2;
     RenderVisitor *post_process_render_visitor;
     GLFWwindow *_window;
     GLuint screenWidth = 800;

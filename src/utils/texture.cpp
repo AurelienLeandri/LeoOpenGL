@@ -1,4 +1,5 @@
 #include "texture.hpp"
+#include <iostream>
 
 namespace leo {
 
@@ -13,6 +14,8 @@ namespace leo {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+    glBindTexture(GL_TEXTURE_2D, 0);
+    std::cout << "initialized text with id " << this->id << std::endl;
   }
 
 
@@ -30,7 +33,8 @@ namespace leo {
   }
 
 
-  Texture::Texture(std::string file_name, std::string directory) : Texture() {
+  Texture::Texture(std::string file_name, std::string directory) {
+    this->_init();
     std::string full = directory + '/' + file_name;
 
     int width, height;

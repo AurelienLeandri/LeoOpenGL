@@ -35,7 +35,7 @@ class Shader {
     std::string _vertexCode;
     std::string _fragmentCode;
     GLuint _program;
-    GLuint _textureOffset;
+    GLuint _textureOffset = 0;
 };
 
 }

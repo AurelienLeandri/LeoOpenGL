@@ -22,6 +22,7 @@ class Framebuffer {
   private:
     GLuint _id;
     std::vector<Texture> _colorBuffers;
+    GLenum _drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 
 };  // class Framebuffer
 
