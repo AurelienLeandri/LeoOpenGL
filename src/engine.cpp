@@ -79,8 +79,12 @@ void Engine::_init() {
   this->_root->addChild(pl);
   this->_root->addChild(pl2);
   this->_root->addChild(pl3);
+  this->_root2->addChild(pl);
+  this->_root2->addChild(pl2);
+  this->_root2->addChild(pl3);
   DirectionLight *dl = new DirectionLight();
   this->_root->addChild(dl);
+  this->_root2->addChild(dl);
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
@@ -91,6 +95,10 @@ void Engine::_init() {
   this->render_visitor->registerLight(pl2);
   this->render_visitor->registerLight(pl3);
   this->render_visitor->registerLight(dl);
+  this->render_visitor2->registerLight(pl);
+  this->render_visitor2->registerLight(pl2);
+  this->render_visitor2->registerLight(pl3);
+  this->render_visitor2->registerLight(dl);
   TransformationVisitor transformGlobal;
   transformGlobal.rotate(15.0, glm::vec3(-2.0f, 10.0f, 4.0f));
   transformGlobal.visit(this->_root);
@@ -101,10 +109,9 @@ void Engine::gameLoop() {
   GLfloat lastFrame = 0.0;
   GLfloat deltaTime = 0.0;
   GLfloat currentFrame = 0.0;
-  /*
   this->post_process_render_visitor->registerFramebuffer(
       this->render_visitor->getFramebuffer());
-      */
+
   this->post_process_render_visitor->registerFramebuffer(
       this->render_visitor2->getFramebuffer());
 
@@ -115,9 +122,9 @@ void Engine::gameLoop() {
 
     this->doMovement(deltaTime);
 
-    //this->render_visitor->visit(this->_root, true);
+    this->render_visitor->visit(this->_root, true);
 
-    this->render_visitor2->visit(this->_root2, true);
+    this->render_visitor2->visit(this->_root2,true);
 
     this->post_process_render_visitor->visit(this->_post_process_quad, false);
 

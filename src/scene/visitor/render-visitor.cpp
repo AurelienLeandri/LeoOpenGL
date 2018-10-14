@@ -96,8 +96,11 @@ void RenderVisitor::visit(Node *node, bool offscreen) {
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
   for (GLuint i = 0; i < this->_colorBuffers.size(); i++) {
+    std::stringstream number;
+    number << i;
     glActiveTexture(GL_TEXTURE0 + i);
     glBindTexture(GL_TEXTURE_2D, this->_colorBuffers[i]->id);
+    glUniform1i(glGetUniformLocation(this->_shader->getProgram(), ("fb" + number.str()).c_str()), i);
   }
   glActiveTexture(GL_TEXTURE0);
 

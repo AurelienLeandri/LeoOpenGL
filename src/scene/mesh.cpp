@@ -128,12 +128,11 @@ namespace leo {
         ss << specularNr++; // Transfer GLuint to stream
       number = ss.str();
 
-      glUniform1f(glGetUniformLocation(shader->getProgram(),
+      glUniform1i(glGetUniformLocation(shader->getProgram(),
             ("material." + name + number).c_str()),
-          i);
+          offset + i);
       glBindTexture(GL_TEXTURE_2D, this->_textures[i].id);
     }
-    //glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE0);
 
     glUniform3f(glGetUniformLocation(shader->getProgram(), "material.ambient"),
