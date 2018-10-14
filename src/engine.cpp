@@ -86,7 +86,7 @@ void Engine::_init() {
   this->_root->addChild(dl);
   this->_root2->addChild(dl);
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/depth_buffer_linear.frag.glsl");
   this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
