@@ -38,13 +38,14 @@ namespace leo {
     public:
       virtual void draw(Shader *shader) override;
       virtual void update(double delta) override { UNUSED(delta); };
+      void addTexture(Texture t);
 
     public:
       static Mesh *createPlaneMesh();
+      static Mesh *createCubeMesh();
 
     private:
       void _setupMesh();
-      void _generateDefaultMesh();
 
     private:
       std::vector<Vertex> _vertices;

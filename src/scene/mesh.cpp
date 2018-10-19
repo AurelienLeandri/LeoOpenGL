@@ -23,7 +23,6 @@ namespace leo {
     this->_diffuse = diffuse;
     this->_specular = specular;
     this->_shininess = shininess;
-    this->_generateDefaultMesh();
     this->_setupMesh();
   }
 
@@ -128,10 +127,10 @@ namespace leo {
         ss << specularNr++; // Transfer GLuint to stream
       number = ss.str();
 
+      glBindTexture(GL_TEXTURE_2D, this->_textures[i].id);
       glUniform1i(glGetUniformLocation(shader->getProgram(),
             ("material." + name + number).c_str()),
           offset + i);
-      glBindTexture(GL_TEXTURE_2D, this->_textures[i].id);
     }
     glActiveTexture(GL_TEXTURE0);
 
@@ -150,9 +149,60 @@ namespace leo {
         GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
+    for (GLuint i = 0; i < this->_textures.size(); i++) {
+      glActiveTexture(GL_TEXTURE0 + offset + i);
+      glBindTexture(GL_TEXTURE_2D, 0);
+    }
+    glActiveTexture(GL_TEXTURE0);
+
   }
 
-  void Mesh::_generateDefaultMesh() {
+  void Mesh::addTexture(Texture t) {
+    this->_textures.push_back(t);
+  }
+
+  Mesh *Mesh::createPlaneMesh() {
+    Mesh *m = new Mesh();
+
+    std::vector<GLfloat> pos {
+      1.0f, 0.0f, 0.0f,
+        1.0f,  1.0f, 0.0f, 
+        0.0f,  1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+    };
+
+    std::vector<GLfloat> norm{
+      0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+    };
+
+    for (int i = 0; i < 4 * 3; i+=3) {
+      struct Vertex v;
+      v.position = glm::vec3(pos[i], pos[i + 1], pos[i + 2]);
+      v.normal = glm::vec3(norm[i], norm[i + 1], norm[i + 2]);
+      v.texCoords = glm::vec2(pos[i], pos[i + 1]);
+      m->_vertices.push_back(v);
+    }
+
+    m->_indices = std::vector<GLuint>{
+      0, 1, 3, 1, 2, 3,
+    };
+
+    m->_setupMesh();
+
+    return m;
+  } // Mesh *createPlaneMesh()
+
+  Mesh *Mesh::createCubeMesh() {
+    Mesh *m = new Mesh(
+        glm::vec3(0.0, 0.0, 0.0),
+        glm::vec3(0.0, 0.0, 0.0),
+        glm::vec3(0.0, 0.0, 0.0),
+        30
+        );
+
     std::vector<GLfloat> pos {
       1.0f, 0.0f, 0.0f,
         1.0f,  1.0f, 0.0f, 
@@ -184,6 +234,40 @@ namespace leo {
         0.0f,  1.0f,  1.0f,
         0.0f,  1.0f, 0.0f,
     };
+
+    std::vector<GLfloat> tex {
+      1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f,  0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+
+        1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f,  0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+
+        1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f,  0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+
+        1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f,  0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+
+        1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f,  0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+
+        1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f,  0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f
+
+    };
+
     std::vector<GLfloat> norm{
         0.0f, 0.0f, -1.0f,
         0.0f, 0.0f, -1.0f,
@@ -220,11 +304,11 @@ namespace leo {
       struct Vertex v;
       v.position = glm::vec3(pos[i], pos[i + 1], pos[i + 2]);
       v.normal = glm::vec3(norm[i], norm[i + 1], norm[i + 2]);
-      v.texCoords = glm::vec2(0.0f, 1.0f);
-      this->_vertices.push_back(v);
+      v.texCoords = glm::vec2(tex[i], tex[i + 1]);
+      m->_vertices.push_back(v);
     }
 
-    this->_indices = std::vector<GLuint>{
+    m->_indices = std::vector<GLuint>{
       0, 1, 3,
         1, 2, 3,
         4, 5, 7,
@@ -237,36 +321,6 @@ namespace leo {
         17, 18, 19,
         20, 21, 23,
         21, 22, 23
-    };
-  }
-
-  Mesh *Mesh::createPlaneMesh() {
-    Mesh *m = new Mesh();
-
-    std::vector<GLfloat> pos {
-      1.0f, 0.0f, 0.0f,
-        1.0f,  1.0f, 0.0f, 
-        0.0f,  1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-    };
-
-    std::vector<GLfloat> norm{
-      0.0f, 0.0f, -1.0f,
-        0.0f, 0.0f, -1.0f,
-        0.0f, 0.0f, -1.0f,
-        0.0f, 0.0f, -1.0f,
-    };
-
-    for (int i = 0; i < 4 * 3; i+=3) {
-      struct Vertex v;
-      v.position = glm::vec3(pos[i], pos[i + 1], pos[i + 2]);
-      v.normal = glm::vec3(norm[i], norm[i + 1], norm[i + 2]);
-      v.texCoords = glm::vec2(pos[i], pos[i + 1]);
-      m->_vertices.push_back(v);
-    }
-
-    m->_indices = std::vector<GLuint>{
-      0, 1, 3, 1, 2, 3,
     };
 
     m->_setupMesh();

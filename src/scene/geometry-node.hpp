@@ -7,6 +7,10 @@
 
 namespace leo {
 
+  enum GeometryNodeOptions {
+    TRANSPARENT = 1 << 0
+  };
+
 class GeometryNode : public Node {
   public:
     GeometryNode();
@@ -24,9 +28,13 @@ class GeometryNode : public Node {
 
   public:
     const glm::mat4x4 &getModelMatrix() const;
+    glm::vec3 getPosition() const;
+    void setGeometryNodeOptions(unsigned int mask) { this->_geometryNodeOptions = mask; }
+    unsigned int getGeometryNodeOptions() const { return this->_geometryNodeOptions; }
 
   protected:
     glm::mat4x4 _modelMatrix;
+    unsigned int _geometryNodeOptions = 0;
 };
 
 }

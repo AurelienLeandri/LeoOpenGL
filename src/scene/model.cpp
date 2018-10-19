@@ -48,11 +48,11 @@ namespace leo {
   }
 
   void Model::processNode(aiNode *node, const aiScene *scene) {
-    for (int i = 0; i < node->mNumMeshes; i++) {
+    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
       aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
       this->_meshes.push_back(this->processMesh(mesh, scene));
     }
-    for (int i = 0; i < node->mNumChildren; i++)
+    for (unsigned int i = 0; i < node->mNumChildren; i++)
       this->processNode(node->mChildren[i], scene);
   }
 
@@ -61,7 +61,7 @@ namespace leo {
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
 
-    for (int i = 0; i < mesh->mNumVertices; i++) {
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
       Vertex vertex;
       // Process vertex positions, normals and texture coordinates
       glm::vec3 vector;
@@ -84,9 +84,9 @@ namespace leo {
       vertices.push_back(vertex);
     }
     // Process indices
-    for (int i = 0; i < mesh->mNumFaces; i++) {
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
       aiFace face = mesh->mFaces[i];
-      for (int j = 0; j < face.mNumIndices; j++)
+      for (unsigned int j = 0; j < face.mNumIndices; j++)
         indices.push_back(face.mIndices[j]);
     }
     // Process shader
@@ -106,12 +106,12 @@ namespace leo {
     Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
         std::string typeName) {
       std::vector<Texture> textures;
-      for (int i = 0; i < mat->GetTextureCount(type); i++) {
+      for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);
         std::string path = str.C_Str();
         bool skip = (GLboolean) false;
-        for (int j = 0; j < _loadedTextures.size(); j++) {
+        for (unsigned int j = 0; j < _loadedTextures.size(); j++) {
           // Check if texture is not already loaded
           if (_loadedTextures[j].path == path) {
             textures.push_back(_loadedTextures[j]);
@@ -120,9 +120,7 @@ namespace leo {
           }
         }
         if (!skip) {   // If texture hasn't been loaded already, load it
-          Texture texture(path, this->_directory);
-          texture.name = typeName;
-          texture.path = path;
+          Texture texture(typeName, path, this->_directory);
           textures.push_back(texture);
           this->_loadedTextures.push_back(texture);  // Add to loaded _textures
         }

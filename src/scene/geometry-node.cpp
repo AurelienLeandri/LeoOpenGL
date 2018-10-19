@@ -29,6 +29,10 @@ const glm::mat4x4 &GeometryNode::getModelMatrix() const {
   return this->_modelMatrix;
 }
 
+glm::vec3 GeometryNode::getPosition() const {
+  return glm::vec3(_modelMatrix[3][0], _modelMatrix[3][1], _modelMatrix[3][2]);
+}
+
 void GeometryNode::addChild(Node *child) {
   this->_children.push_back(child);
 }

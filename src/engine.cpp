@@ -43,12 +43,13 @@ void Engine::_init() {
   glewExperimental = GL_TRUE;
 
   // Define the viewport dimensions
-  glClearColor(1.07, 0.07, 0.07, 1);
+  glClearColor(0.07, 0.07, 0.07, 1);
 
   // Setup some OpenGL options
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
-
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   if (glewInit() == GLEW_OK) {
     std::cerr << "Glew initialized successfully" << std::endl;
@@ -63,6 +64,38 @@ void Engine::_init() {
   this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
   this->_root2 = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
   this->_post_process_quad = Mesh::createPlaneMesh();
+  Mesh *c1 = Mesh::createCubeMesh();
+  c1->setGeometryNodeOptions(GeometryNodeOptions::TRANSPARENT);
+  c1->addTexture(Texture("texture_diffuse", "red_window.png", "resources/textures/"));
+  Mesh *c2 = Mesh::createCubeMesh();
+  c2->setGeometryNodeOptions(GeometryNodeOptions::TRANSPARENT);
+  c2->addTexture(Texture("texture_diffuse", "red_window.png", "resources/textures/"));
+  Mesh *c3 = Mesh::createCubeMesh();
+  c3->setGeometryNodeOptions(GeometryNodeOptions::TRANSPARENT);
+  c3->addTexture(Texture("texture_diffuse", "red_window.png", "resources/textures/"));
+  TransformationVisitor tRotate;
+  tRotate.rotate(15.0, glm::vec3(3.0f, -2.0f, -1.0f));
+  TransformationVisitor t1;
+  t1.translate(glm::vec3(2.0f, 0.0f, 2.0f));
+  t1.visit(c1);
+  tRotate.visit(c1);
+  TransformationVisitor t2;
+  t2.translate(glm::vec3(2.0f, 0.0f, 4.0f));
+  t2.visit(c2);
+  tRotate.visit(c2);
+  tRotate.visit(c2);
+  TransformationVisitor t3;
+  t3.translate(glm::vec3(4.0f, 0.0f, 2.0f));
+  t3.visit(c3);
+  tRotate.visit(c3);
+  tRotate.visit(c3);
+  tRotate.visit(c3);
+  this->_root2->addChild(c1);
+  this->_root2->addChild(c2);
+  this->_root2->addChild(c3);
+  this->_root2->addTransparentChild(glm::distance(this->_camera->getPosition(), c1->getPosition()), c1);
+  this->_root2->addTransparentChild(glm::distance(this->_camera->getPosition(), c2->getPosition()), c2);
+  this->_root2->addTransparentChild(glm::distance(this->_camera->getPosition(), c3->getPosition()), c3);
   bool displayLight = true;
   PointLight *pl = new PointLight(displayLight);
   TransformationVisitor tVisitor1;
@@ -86,7 +119,7 @@ void Engine::_init() {
   this->_root->addChild(dl);
   this->_root2->addChild(dl);
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/depth_buffer_linear.frag.glsl");
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
@@ -122,9 +155,10 @@ void Engine::gameLoop() {
 
     this->doMovement(deltaTime);
 
-    this->render_visitor->visit(this->_root, true);
+    //this->render_visitor->visit(this->_root, true);
 
     this->render_visitor2->visit(this->_root2,true);
+    this->render_visitor2->visitTransparent(this->_root2,true);
 
     this->post_process_render_visitor->visit(this->_post_process_quad, false);
 
