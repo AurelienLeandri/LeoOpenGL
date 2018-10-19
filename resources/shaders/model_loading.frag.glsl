@@ -60,7 +60,7 @@ void main()
   vec3 specular = vec3(0.0, 0.0, 0.0);
 
   // Ambient
-  vec3 ambient = material.ambient;  // TODO: fix ambient
+  vec3 ambient = material.ambient * diffuse_sample;  // TODO: fix ambient
 
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UPointLight iupl = upl[i];

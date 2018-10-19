@@ -10,7 +10,7 @@ namespace leo {
   class Texture {
     public:
       Texture();
-      Texture(std::string file_name, std::string directory);
+      Texture(std::string name, std::string file_name, std::string directory);
       Texture(const Texture &other);
       virtual ~Texture();
 

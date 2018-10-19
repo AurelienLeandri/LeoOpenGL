@@ -8,7 +8,7 @@ namespace leo {
     glBindTexture(GL_TEXTURE_2D, this->id);
 
     // Give an empty image to OpenGL ( the last "0" )
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 800, 600, 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 800, 600, 0,GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
     // Poor filtering. Needed !
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -33,17 +33,21 @@ namespace leo {
   }
 
 
-  Texture::Texture(std::string file_name, std::string directory) {
+  Texture::Texture(std::string name, std::string file_name, std::string directory) :
+    name(name)
+  {
     this->_init();
     std::string full = directory + '/' + file_name;
+    this->path = full;
 
     int width, height;
     unsigned char *image = SOIL_load_image(full.c_str(),
-        &width, &height, 0, SOIL_LOAD_RGB);
+        &width, &height, 0, SOIL_LOAD_RGBA);
 
     glBindTexture(GL_TEXTURE_2D, this->id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+    GLuint channels = GL_RGBA;
+    glTexImage2D(GL_TEXTURE_2D, 0, channels, width, height, 0, channels,
         GL_UNSIGNED_BYTE, image);
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
