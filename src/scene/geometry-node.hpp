@@ -2,7 +2,7 @@
 
 #include <global.hpp>
 
-#include <scene/node.hpp>
+#include <scene/drawable-node.hpp>
 #include <utils/shader.hpp>
 
 namespace leo {
@@ -11,7 +11,7 @@ namespace leo {
     TRANSPARENT = 1 << 0
   };
 
-class GeometryNode : public Node {
+class GeometryNode : public DrawableNode {
   public:
     GeometryNode();
     virtual ~GeometryNode();
@@ -21,7 +21,6 @@ class GeometryNode : public Node {
   public:
     virtual void draw(Shader *shader) = 0;
     virtual void update(double delta) = 0;
-    virtual void addChild(Node *child) override;
 
   public:
     virtual void transform(const glm::mat4x4 &transformation);
