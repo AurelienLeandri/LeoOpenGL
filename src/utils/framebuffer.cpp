@@ -35,9 +35,20 @@ namespace leo {
     std::cout << "initialized fb with id " << this->_id << std::endl;
   }
 
+  Framebuffer::Framebuffer(const Framebuffer &other) :
+    _id(other._id),
+    _colorBuffers(other._colorBuffers)
+  {
+  }
+
   Framebuffer::~Framebuffer() {
     glDeleteFramebuffers(1, &this->_id);
   }
 
+  Framebuffer &Framebuffer::operator=(const Framebuffer &other) {
+    this->_id = other._id;
+    this->_colorBuffers = other._colorBuffers;
+    return *this;
+  }
 
 }  // namespace leo

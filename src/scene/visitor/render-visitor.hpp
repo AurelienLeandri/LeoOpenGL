@@ -45,6 +45,7 @@ class RenderVisitor : public Visitor {
 
   public:
     const Framebuffer &getFramebuffer() const { return this->_fb; }
+    void setFramebuffer(const Framebuffer &value) { this->_fb = value; }
 
   private:
     const Camera *_camera;

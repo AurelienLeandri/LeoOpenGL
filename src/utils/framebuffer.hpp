@@ -9,11 +9,11 @@ namespace leo {
 class Framebuffer {
   public:
     Framebuffer();
-    Framebuffer(const Framebuffer &other) = delete;
+    Framebuffer(const Framebuffer &other);
     virtual ~Framebuffer();
 
   public:
-    Framebuffer &operator=(const Framebuffer &other) = delete;
+    Framebuffer &operator=(const Framebuffer &other);
 
   public:
     GLuint getId() const { return this->_id; }
