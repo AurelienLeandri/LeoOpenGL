@@ -4,7 +4,7 @@
 #include <map>
 
 namespace leo {
-  class AlphaNode : public DrawableNode {
+  class AlphaNode : public Node {
     public:
       AlphaNode();
       virtual ~AlphaNode();
@@ -12,8 +12,8 @@ namespace leo {
       AlphaNode &operator=(const AlphaNode &other) = delete;
 
     public:
-      void draw(Shader *shader) override;
       void addSortedChild(int rank, GeometryNode *child);
+      const std::map<int, GeometryNode*> &getSortedChildren();
 
     private:
       std::map<int, GeometryNode*> _sortedChildren;

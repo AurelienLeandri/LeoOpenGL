@@ -63,15 +63,13 @@ void Engine::_init() {
   // TODO: create FolderNode
   this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
   this->_root2 = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
+  auto alpha = new AlphaNode();
   this->_post_process_quad = Mesh::createPlaneMesh();
   Mesh *c1 = Mesh::createCubeMesh();
-  c1->setGeometryNodeOptions(GeometryNodeOptions::TRANSPARENT);
   c1->addTexture(Texture("texture_diffuse", "red_window.png", "resources/textures/"));
   Mesh *c2 = Mesh::createCubeMesh();
-  c2->setGeometryNodeOptions(GeometryNodeOptions::TRANSPARENT);
   c2->addTexture(Texture("texture_diffuse", "red_window.png", "resources/textures/"));
   Mesh *c3 = Mesh::createCubeMesh();
-  c3->setGeometryNodeOptions(GeometryNodeOptions::TRANSPARENT);
   c3->addTexture(Texture("texture_diffuse", "red_window.png", "resources/textures/"));
   TransformationVisitor tRotate;
   tRotate.rotate(15.0, glm::vec3(3.0f, -2.0f, -1.0f));
@@ -93,9 +91,9 @@ void Engine::_init() {
   this->_root2->addChild(c1);
   this->_root2->addChild(c2);
   this->_root2->addChild(c3);
-  this->_root2->addTransparentChild(glm::distance(this->_camera->getPosition(), c1->getPosition()), c1);
-  this->_root2->addTransparentChild(glm::distance(this->_camera->getPosition(), c2->getPosition()), c2);
-  this->_root2->addTransparentChild(glm::distance(this->_camera->getPosition(), c3->getPosition()), c3);
+  alpha->addSortedChild(glm::distance(this->_camera->getPosition(), c1->getPosition()), c1);
+  alpha->addSortedChild(glm::distance(this->_camera->getPosition(), c2->getPosition()), c2);
+  alpha->addSortedChild(glm::distance(this->_camera->getPosition(), c3->getPosition()), c3);
   bool displayLight = true;
   PointLight *pl = new PointLight(displayLight);
   TransformationVisitor tVisitor1;
@@ -109,15 +107,18 @@ void Engine::_init() {
   TransformationVisitor tVisitor3;
   tVisitor3.translate(glm::vec3(0.0f, 7.0f, -6.0f));
   tVisitor3.visit(pl3);
+  /*
   this->_root->addChild(pl);
   this->_root->addChild(pl2);
   this->_root->addChild(pl3);
+  */
   this->_root2->addChild(pl);
   this->_root2->addChild(pl2);
   this->_root2->addChild(pl3);
   DirectionLight *dl = new DirectionLight();
   this->_root->addChild(dl);
   this->_root2->addChild(dl);
+  this->_root2->addChild(alpha);
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
@@ -158,7 +159,6 @@ void Engine::gameLoop() {
     //this->render_visitor->visit(this->_root, true);
 
     this->render_visitor2->visit(this->_root2,true);
-    this->render_visitor2->visitTransparent(this->_root2,true);
 
     this->post_process_render_visitor->visit(this->_post_process_quad, false);
 

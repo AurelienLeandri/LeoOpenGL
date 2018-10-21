@@ -13,7 +13,6 @@ class DrawableNode : public Node {
     DrawableNode();
     virtual ~DrawableNode();
     DrawableNode(const DrawableNode &other);
-    DrawableNode &operator=(const DrawableNode &other);
 
   public:
     virtual void draw(Shader *shader) = 0;

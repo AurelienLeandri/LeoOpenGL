@@ -28,44 +28,32 @@ void RenderVisitor::visit(Node *node) {
   this->visit(node, false);
 }
 
-void RenderVisitor::visitTransparent(Node *node) {
-  this->visitTransparent(node, false);
-}
-
 void RenderVisitor::visit(Node *node, bool offscreen) {
   this->_setupRendering(offscreen, true);
   this->_visit(node);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void RenderVisitor::visitTransparent(Node *node, bool offscreen) {
-  this->_setupRendering(offscreen, false);
-  this->_visitTransparent(node);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void RenderVisitor::_visitTransparent(Node *node) {
-  for (auto &e: node->getTransparentChildren()) {
-    const glm::mat4 &model = e.second->getModelMatrix();
-    glUniformMatrix4fv(glGetUniformLocation(this->_shader->getProgram(), "model"), 1, GL_FALSE, glm::value_ptr(model));
-    e.second->draw(this->_shader);
-  }
-}
-
 void RenderVisitor::_visit(Node *node) {
-  GeometryNode * g_node = dynamic_cast<GeometryNode*>(node);
-  if (g_node)
+  GeometryNode* geometryNode = dynamic_cast<GeometryNode*>(node);
+  if (geometryNode)
   {
     // Draw the loaded model
-    if (!(g_node->getGeometryNodeOptions() & GeometryNodeOptions::TRANSPARENT)) {
-        const glm::mat4 &model = g_node->getModelMatrix();
-        glUniformMatrix4fv(glGetUniformLocation(this->_shader->getProgram(), "model"), 1, GL_FALSE, glm::value_ptr(model));
-        g_node->draw(this->_shader);
-      }
+    const glm::mat4 &model = geometryNode->getModelMatrix();
+    glUniformMatrix4fv(glGetUniformLocation(this->_shader->getProgram(), "model"), 1, GL_FALSE, glm::value_ptr(model));
+    geometryNode->draw(this->_shader);
+    for (auto *e : node->getChildren())
+      this->_visit(e);
+    return;
   }
-
-  for (auto *e : node->getChildren())
-    this->_visit(e);
+  AlphaNode *alphaNode = dynamic_cast<AlphaNode*>(node);
+  if (alphaNode) {
+    for (auto &e : alphaNode->getSortedChildren())
+      this->_visit(e.second);
+    for (auto *e : node->getChildren())
+      this->_visit(e);
+    return;
+  }
 }
 
 void RenderVisitor::_setupRendering(bool offscreen, bool clear) {

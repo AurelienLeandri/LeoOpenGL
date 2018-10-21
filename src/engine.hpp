@@ -7,6 +7,7 @@
 #include <utils/shader.hpp>
 #include <utils/framebuffer.hpp>
 #include <scene/node.hpp>
+#include <scene/alpha-node.hpp>
 #include <scene/visitor/render-visitor.hpp>
 #include <scene/model.hpp>
 #include <input-manager.hpp>

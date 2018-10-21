@@ -6,6 +6,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/geometry-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/geometry-node.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/drawable-node.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/drawable-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/alpha-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/alpha-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/mesh.cpp

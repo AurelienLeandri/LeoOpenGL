@@ -50,17 +50,19 @@ void main()
   // Light Variables
   vec3 norm = normalize(Normal);
 
-  vec3 diffuse_sample = vec3(texture(material.texture_diffuse1, TexCoords));
+  vec4 diffuse_sample_rgba = texture(material.texture_diffuse1, TexCoords);
+  vec3 diffuse_sample = diffuse_sample_rgba.xyz;
 
   float specularStrength = 0.5;
   vec3 viewDir = normalize(viewPos - FragPos);
-  vec3 specular_sample = vec3(texture(material.texture_specular1, TexCoords));
+  vec4 specular_sample_rgba = texture(material.texture_specular1, TexCoords);
+  vec3 specular_sample = specular_sample_rgba.xyz;
 
   vec3 diffuse = vec3(0.0, 0.0, 0.0);
   vec3 specular = vec3(0.0, 0.0, 0.0);
 
   // Ambient
-  vec3 ambient = material.ambient * diffuse_sample;  // TODO: fix ambient
+  vec3 ambient = material.ambient;  // TODO: fix ambient
 
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UPointLight iupl = upl[i];
@@ -85,4 +87,5 @@ void main()
 
   vec3 result = diffuse + ambient + specular;
   color = vec4(result, 1.0);
+  color = vec4(result, diffuse_sample_rgba.a);
 }

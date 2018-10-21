@@ -10,14 +10,11 @@
 #include <utils/framebuffer.hpp>
 #include <scene/visitor/visitor.hpp>
 #include <scene/geometry-node.hpp>
+#include <scene/alpha-node.hpp>
 #include <scene/lights/point-light.hpp>
 #include <scene/lights/direction-light.hpp>
 
 namespace leo {
-
-  enum RenderVisitorOptions {
-    RENDER_TRANSPARENT = 1 << 0
-  };
 
   #define MAX_NUM_LIGHTS 10
 
@@ -37,8 +34,6 @@ class RenderVisitor : public Visitor {
     void _init();
     virtual void visit(Node *node);
     virtual void visit(Node *node, bool offscreen);
-    void visitTransparent(Node *node);
-    void visitTransparent(Node *node, bool offscreen);
 
   public:
     void registerLight(Light *light);
@@ -46,13 +41,10 @@ class RenderVisitor : public Visitor {
 
   private:
     virtual void _visit(Node *node);
-    void _visitTransparent(Node *node);
     void _setupRendering(bool offscreen, bool clear);
 
   public:
     const Framebuffer &getFramebuffer() const { return this->_fb; }
-    void setRenderOptions(RenderVisitorOptions mask) { this->_renderOptions = mask; }
-    unsigned int getRenderOptions() const { return this->_renderOptions; }
 
   private:
     const Camera *_camera;
@@ -64,7 +56,6 @@ class RenderVisitor : public Visitor {
     std::vector<const Texture *> _colorBuffers;
     uboLights _lightsUBO;
     GLuint _rbo;
-    unsigned int _renderOptions = 0;
 };
 
 }

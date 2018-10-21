@@ -13,7 +13,6 @@ class Node {
     virtual ~Node();
 
   public:
-    virtual void update(double delta) = 0;
     virtual void addChild(Node *child);
 
   private:

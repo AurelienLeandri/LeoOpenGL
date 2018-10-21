@@ -2,7 +2,7 @@
 
 namespace leo {
 
-GeometryNode::GeometryNode() {
+GeometryNode::GeometryNode() : DrawableNode() {
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       this->_modelMatrix[i][j] = i == j ? 1 : 0;
@@ -11,7 +11,7 @@ GeometryNode::GeometryNode() {
 GeometryNode::~GeometryNode() {
 }
 
-GeometryNode::GeometryNode(const GeometryNode &other) :
+GeometryNode::GeometryNode(const GeometryNode &other) : DrawableNode(other),
   _modelMatrix(other._modelMatrix)
 {
 }
