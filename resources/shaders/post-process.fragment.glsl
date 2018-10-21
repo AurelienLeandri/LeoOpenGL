@@ -12,4 +12,5 @@ void main()
     vec4 fbColor1 = texture(fb0, TexCoords);
     vec4 fbColor2 = texture(fb1, TexCoords);
     FragColor = mix(fbColor1, fbColor2, 0.5);
+    FragColor = mix(fbColor1, fbColor2, 1.0);
 }

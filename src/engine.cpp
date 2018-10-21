@@ -50,6 +50,8 @@ void Engine::_init() {
   glDepthFunc(GL_LESS); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
 
   if (glewInit() == GLEW_OK) {
     std::cerr << "Glew initialized successfully" << std::endl;
@@ -76,7 +78,7 @@ void Engine::_init() {
   TransformationVisitor t1;
   t1.translate(glm::vec3(2.0f, 0.0f, 2.0f));
   t1.visit(c1);
-  tRotate.visit(c1);
+  //tRotate.visit(c1);
   TransformationVisitor t2;
   t2.translate(glm::vec3(2.0f, 0.0f, 4.0f));
   t2.visit(c2);

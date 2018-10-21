@@ -43,6 +43,8 @@ namespace leo {
     public:
       static Mesh *createPlaneMesh();
       static Mesh *createCubeMesh();
+      static Mesh *createCubeMesh(glm::vec3 ambient, glm::vec3 diffuse,
+          glm::vec3 specular, GLint shininess);
 
     private:
       void _setupMesh();

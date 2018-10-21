@@ -135,13 +135,13 @@ namespace leo {
     glActiveTexture(GL_TEXTURE0);
 
     glUniform3f(glGetUniformLocation(shader->getProgram(), "material.ambient"),
-          this->_ambient.x, this->_ambient.y, this->_ambient.z);
+        this->_ambient.x, this->_ambient.y, this->_ambient.z);
     glUniform3f(glGetUniformLocation(shader->getProgram(), "material.diffuse"),
-          this->_diffuse.x, this->_diffuse.y, this->_diffuse.z);
+        this->_diffuse.x, this->_diffuse.y, this->_diffuse.z);
     glUniform3f(glGetUniformLocation(shader->getProgram(), "material.specular"),
-          this->_specular.x, this->_specular.y, this->_specular.z);
+        this->_specular.x, this->_specular.y, this->_specular.z);
     glUniform1i(glGetUniformLocation(shader->getProgram(), "material.shininess"),
-          this->_shininess);
+        this->_shininess);
 
     // Draw mesh
     glBindVertexArray(this->_VAO);
@@ -195,44 +195,51 @@ namespace leo {
     return m;
   } // Mesh *createPlaneMesh()
 
-  Mesh *Mesh::createCubeMesh() {
-    Mesh *m = new Mesh(
+  Mesh *Mesh::createCubeMesh()
+  {
+    return createCubeMesh(
         glm::vec3(0.0, 0.0, 0.0),
         glm::vec3(0.0, 0.0, 0.0),
         glm::vec3(0.0, 0.0, 0.0),
         30
         );
+  }
+
+  Mesh *Mesh::createCubeMesh(glm::vec3 ambient, glm::vec3 diffuse,
+      glm::vec3 specular, GLint shininess)
+  {
+    Mesh *m = new Mesh(ambient, diffuse, specular, shininess);
 
     std::vector<GLfloat> pos {
-      1.0f, 0.0f, 0.0f,
-        1.0f,  1.0f, 0.0f, 
+      0.0f, 0.0f, 0.0f,
         0.0f,  1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
+        1.0f,  1.0f, 0.0f, 
+        1.0f, 0.0f, 0.0f,
 
-        1.0f, 0.0f,  1.0f, 
         1.0f,  1.0f,  1.0f,
         0.0f,  1.0f,  1.0f, 
         0.0f, 0.0f,  1.0f, 
+        1.0f, 0.0f,  1.0f, 
 
         0.0f,  1.0f, 0.0f,
         0.0f, 0.0f, 0.0f,
         0.0f, 0.0f,  1.0f,
         0.0f,  1.0f,  1.0f,
 
-        1.0f,  1.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f,  1.0f,
         1.0f,  1.0f,  1.0f,
+        1.0f, 0.0f,  1.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f,  1.0f, 0.0f,
 
         1.0f, 0.0f, 0.0f,
         1.0f, 0.0f,  1.0f,
         0.0f, 0.0f,  1.0f,
         0.0f, 0.0f, 0.0f,
 
-        1.0f,  1.0f, 0.0f,
-        1.0f,  1.0f,  1.0f,
-        0.0f,  1.0f,  1.0f,
         0.0f,  1.0f, 0.0f,
+        0.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f, 0.0f,
     };
 
     std::vector<GLfloat> tex {
@@ -269,7 +276,7 @@ namespace leo {
     };
 
     std::vector<GLfloat> norm{
-        0.0f, 0.0f, -1.0f,
+      0.0f, 0.0f, -1.0f,
         0.0f, 0.0f, -1.0f,
         0.0f, 0.0f, -1.0f,
         0.0f, 0.0f, -1.0f,

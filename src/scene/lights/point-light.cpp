@@ -73,11 +73,11 @@ namespace leo {
   void PointLight::_generateMesh() {
     TransformationVisitor tVisitor;
     tVisitor.translate(glm::vec3(-0.5f, -0.5f, -0.5f));
-    Mesh *mesh = new Mesh(
-        glm::vec3(1.0, 1.0, 1.0),
-        glm::vec3(0.0, 0.0, 0.0),
-        glm::vec3(0.0, 0.0, 0.0),
-        30
+    Mesh *mesh = Mesh::createCubeMesh(
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        0
         );
     this->addChild(mesh);
     tVisitor.visit(mesh);
