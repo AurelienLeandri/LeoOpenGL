@@ -35,6 +35,34 @@ void RenderVisitor::visit(Node *node, bool offscreen) {
 }
 
 void RenderVisitor::_visit(Node *node) {
+  // TODO: cleaner, as a cube node is also a geometry node!!
+  CubeMap* cubeNode = dynamic_cast<CubeMap*>(node);
+  if (cubeNode)
+  {
+    unsigned int ubi = glGetUniformBlockIndex(this->_shader->getProgram(), "Matrices");
+    glUniformBlockBinding(this->_shader->getProgram(), ubi, 0);
+    unsigned int uboMatrices;
+    glGenBuffers(1, &uboMatrices);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatrices);
+
+    glm::mat4 projection = glm::perspective(this->_camera->getZoom(), (float)800/(float)600, 0.1f, 100.0f);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+    glm::mat4 view = glm::mat4(glm::mat3(this->_camera->getViewMatrix()));
+    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+
+    glDepthMask(GL_FALSE);
+    cubeNode->draw(this->_shader);
+    glDepthMask(GL_TRUE);
+    return;
+  }
   GeometryNode* geometryNode = dynamic_cast<GeometryNode*>(node);
   if (geometryNode)
   {

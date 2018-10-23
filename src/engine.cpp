@@ -15,6 +15,7 @@ Engine::~Engine() {
   delete this->_root;
   delete this->render_visitor;
   delete this->post_process_render_visitor;
+  delete this->_cubeMap;
 }
 
 void Engine::_init() {
@@ -50,8 +51,10 @@ void Engine::_init() {
   glDepthFunc(GL_LESS); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  /*
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
+  */
 
   if (glewInit() == GLEW_OK) {
     std::cerr << "Glew initialized successfully" << std::endl;
@@ -65,6 +68,7 @@ void Engine::_init() {
   // TODO: create FolderNode
   this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
   this->_root2 = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
+  this->_cubeMap = new CubeMap("skybox", "resources/textures");
   auto alpha = new AlphaNode();
   this->_post_process_quad = Mesh::createPlaneMesh();
   Mesh *c1 = Mesh::createCubeMesh();
@@ -109,11 +113,9 @@ void Engine::_init() {
   TransformationVisitor tVisitor3;
   tVisitor3.translate(glm::vec3(0.0f, 7.0f, -6.0f));
   tVisitor3.visit(pl3);
-  /*
   this->_root->addChild(pl);
   this->_root->addChild(pl2);
   this->_root->addChild(pl3);
-  */
   this->_root2->addChild(pl);
   this->_root2->addChild(pl2);
   this->_root2->addChild(pl3);
@@ -127,6 +129,8 @@ void Engine::_init() {
       "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl");
+  //this->render_visitor->setFramebuffer(this->render_visitor2->getFramebuffer());
+  //this->render_visitor2->setFramebuffer(this->render_visitor->getFramebuffer());
   this->render_visitor->registerLight(pl);
   this->render_visitor->registerLight(pl2);
   this->render_visitor->registerLight(pl3);
@@ -158,7 +162,7 @@ void Engine::gameLoop() {
 
     this->doMovement(deltaTime);
 
-    //this->render_visitor->visit(this->_root, true);
+    this->render_visitor->visit(this->_root,true);
 
     this->render_visitor2->visit(this->_root2,true);
 

@@ -77,7 +77,7 @@ namespace leo {
         glm::vec3(1.0f, 1.0f, 1.0f),
         glm::vec3(1.0f, 1.0f, 1.0f),
         glm::vec3(1.0f, 1.0f, 1.0f),
-        0
+        32
         );
     this->addChild(mesh);
     tVisitor.visit(mesh);

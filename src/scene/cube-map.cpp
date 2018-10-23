@@ -56,6 +56,7 @@ namespace leo {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
   }
 
   CubeMap::~CubeMap() {
@@ -64,7 +65,8 @@ namespace leo {
   void CubeMap::draw(Shader *shader) {
     UNUSED(shader);
     glBindVertexArray(this->_VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3 * 4 * 6);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, this->_texture.id);
+    glDrawArrays(GL_TRIANGLES, 0, 6 * 6);
     glBindVertexArray(0);
   }
 }

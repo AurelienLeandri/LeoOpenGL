@@ -10,6 +10,7 @@
 #include <scene/alpha-node.hpp>
 #include <scene/visitor/render-visitor.hpp>
 #include <scene/model.hpp>
+#include <scene/cube-map.hpp>
 #include <input-manager.hpp>
 #include <camera.hpp>
 
@@ -41,6 +42,7 @@ class Engine{
     Camera *_camera;
     Node *_root;
     Node *_root2;
+    CubeMap *_cubeMap;
     Node *_post_process_quad;
     RenderVisitor *render_visitor;
     RenderVisitor *render_visitor2;

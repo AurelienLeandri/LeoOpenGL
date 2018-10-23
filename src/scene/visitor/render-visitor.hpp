@@ -10,6 +10,7 @@
 #include <utils/framebuffer.hpp>
 #include <scene/visitor/visitor.hpp>
 #include <scene/geometry-node.hpp>
+#include <scene/cube-map.hpp>
 #include <scene/alpha-node.hpp>
 #include <scene/lights/point-light.hpp>
 #include <scene/lights/direction-light.hpp>
