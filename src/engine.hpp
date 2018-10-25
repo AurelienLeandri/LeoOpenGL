@@ -14,6 +14,8 @@
 #include <input-manager.hpp>
 #include <camera.hpp>
 
+#include <debug.hpp>
+
 namespace leo {
 
 class Engine{
