@@ -93,7 +93,6 @@ void Engine::_init() {
   TransformationVisitor t1;
   t1.translate(glm::vec3(2.0f, 0.0f, 2.0f));
   t1.visit(c1);
-  //tRotate.visit(c1);
   TransformationVisitor t2;
   t2.translate(glm::vec3(2.0f, 0.0f, 4.0f));
   t2.visit(c2);
@@ -136,12 +135,9 @@ void Engine::_init() {
   this->_root2->addChild(alpha);
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
-  this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
+  this->render_visitor2 = new RenderVisitor(this->_camera, this->_window, this->render_visitor->getShader());
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl");
-  //this->render_visitor->setFramebuffer(this->render_visitor2->getFramebuffer());
-  //this->render_visitor2->setFramebuffer(this->render_visitor->getFramebuffer());
   this->render_visitor->registerLight(pl);
   this->render_visitor->registerLight(pl2);
   this->render_visitor->registerLight(pl3);

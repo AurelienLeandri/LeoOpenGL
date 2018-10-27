@@ -29,6 +29,7 @@ class RenderVisitor : public Visitor {
     RenderVisitor(const Camera *_camera, GLFWwindow *window);
     RenderVisitor(const Camera *_camera, GLFWwindow *window,
         const GLchar *vertex, const GLchar *fragment);
+    RenderVisitor(const Camera *_camera, GLFWwindow *window, std::shared_ptr<Shader> shader);
     virtual ~RenderVisitor();
 
   public:
@@ -46,12 +47,13 @@ class RenderVisitor : public Visitor {
 
   public:
     const Framebuffer &getFramebuffer() const { return this->_fb; }
+    const std::shared_ptr<Shader> getShader() const { return this->_shader; }
     void setFramebuffer(const Framebuffer &value) { this->_fb = value; }
 
   private:
     const Camera *_camera;
     GLFWwindow *_window;
-    Shader *_shader;
+    std::shared_ptr<Shader> _shader;
     std::vector<PointLight *> _pLights;
     std::vector<DirectionLight *> _dLights;
     Framebuffer _fb;
