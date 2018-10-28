@@ -31,8 +31,6 @@ namespace leo {
 
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    std::cout << "initialized fb with id " << this->_id << std::endl;
   }
 
   Framebuffer::Framebuffer(const Framebuffer &other) :

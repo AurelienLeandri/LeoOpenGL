@@ -19,7 +19,6 @@ namespace leo {
     virtual void update(double delta) { UNUSED(delta); }
 
     private:
-      std::vector<GLfloat> _VBOData;
       Texture _texture;
       GLuint _VAO;
       GLuint _VBO;

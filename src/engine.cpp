@@ -15,7 +15,6 @@ Engine::~Engine() {
   delete this->_root;
   delete this->render_visitor;
   delete this->post_process_render_visitor;
-  delete this->_cubeMap;
 }
 
 void Engine::_init() {
@@ -45,7 +44,7 @@ void Engine::_init() {
   glewExperimental = GL_TRUE;
 
   // Define the viewport dimensions
-  glClearColor(0.07, 0.07, 0.07, 1);
+  glClearColor(1.07, 0.07, 0.07, 1);
 
   // Setup some OpenGL options
   glEnable(GL_DEPTH_TEST);
@@ -77,9 +76,10 @@ void Engine::_init() {
 
   // Initialize scene graph
   // TODO: create FolderNode
-  this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
+  //this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
   this->_root2 = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
   this->_cubeMap = new CubeMap("skybox", "resources/textures");
+  this->_root = this->_cubeMap;
   auto alpha = new AlphaNode();
   this->_post_process_quad = Mesh::createPlaneMesh();
   Mesh *c1 = Mesh::createCubeMesh();
@@ -133,9 +133,15 @@ void Engine::_init() {
   this->_root->addChild(dl);
   this->_root2->addChild(dl);
   this->_root2->addChild(alpha);
+  /*
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
-  this->render_visitor2 = new RenderVisitor(this->_camera, this->_window, this->render_visitor->getShader());
+      */
+  this->render_visitor = new RenderVisitor(this->_camera, this->_window,
+      "resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
+  this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
+  this->render_visitor2->setFramebuffer(this->render_visitor->getFramebuffer());
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl");
   this->render_visitor->registerLight(pl);
@@ -159,8 +165,10 @@ void Engine::gameLoop() {
   this->post_process_render_visitor->registerFramebuffer(
       this->render_visitor->getFramebuffer());
 
+  /*
   this->post_process_render_visitor->registerFramebuffer(
       this->render_visitor2->getFramebuffer());
+      */
 
   while(!glfwWindowShouldClose(this->_window)) {
     currentFrame = glfwGetTime();
@@ -169,9 +177,10 @@ void Engine::gameLoop() {
 
     this->doMovement(deltaTime);
 
-    this->render_visitor->visit(this->_root,true);
+    this->render_visitor->visit(this->_root, true);
+    this->render_visitor2->visit(this->_root2, true, false);
 
-    this->render_visitor2->visit(this->_root2,true);
+    //this->render_visitor2->visit(this->_root2,true);
 
     this->post_process_render_visitor->visit(this->_post_process_quad, false);
 

@@ -12,6 +12,6 @@ layout (std140, binding = 0) uniform Matrices
 
 void main() {
   TexCoords = position;
-  mat4 view_no_translations = mat4(mat3(view));
-  gl_Position = projection * view_no_translations * vec4(position, 1.0f);
+  gl_Position = projection * view * vec4(position, 1.0f);
+  //gl_Position = vec4(position, 1.0f);
 }

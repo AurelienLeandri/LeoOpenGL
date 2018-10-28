@@ -43,7 +43,11 @@ namespace leo {
   }
 
   void RenderVisitor::visit(Node *node, bool offscreen) {
-    this->_setupRendering(offscreen, true);
+    visit(node, offscreen, true);
+  }
+
+  void RenderVisitor::visit(Node *node, bool offscreen, bool clear) {
+    this->_setupRendering(offscreen, clear);
     this->_visit(node);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
@@ -137,7 +141,9 @@ namespace leo {
       glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
       unsigned int ubiLights = glGetUniformBlockIndex(this->_shader->getProgram(), "s1");
-      glUniformBlockBinding(this->_shader->getProgram(), ubiLights, 1);
+      if (ubiLights != GL_INVALID_INDEX) {
+        glUniformBlockBinding(this->_shader->getProgram(), ubiLights, 1);
+      }
 
       glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
 

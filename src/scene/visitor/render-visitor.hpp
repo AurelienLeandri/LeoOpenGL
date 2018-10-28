@@ -36,6 +36,7 @@ class RenderVisitor : public Visitor {
     void _init();
     virtual void visit(Node *node);
     virtual void visit(Node *node, bool offscreen);
+    virtual void visit(Node *node, bool offscreen, bool clear);
 
   public:
     void registerLight(Light *light);
