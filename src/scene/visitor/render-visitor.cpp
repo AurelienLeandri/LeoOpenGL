@@ -28,6 +28,14 @@ namespace leo {
   }
 
   void RenderVisitor::_init() {
+      glGenBuffers(1, &this->_lightsUBO);
+
+      glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
+      glBufferData(GL_UNIFORM_BUFFER,
+          MAX_NUM_LIGHTS * (sizeof(PointLightUniform) + sizeof(DirectionLightUniform)),
+          NULL, GL_DYNAMIC_DRAW
+          );
+      glBindBuffer(GL_UNIFORM_BUFFER, 0);
   }
 
   void RenderVisitor::visit(Node *node) {
@@ -130,35 +138,9 @@ namespace leo {
 
       unsigned int ubiLights = glGetUniformBlockIndex(this->_shader->getProgram(), "s1");
       glUniformBlockBinding(this->_shader->getProgram(), ubiLights, 1);
-      unsigned int uboLightsData;
-      glGenBuffers(1, &uboLightsData);
 
-      glBindBuffer(GL_UNIFORM_BUFFER, uboLightsData);
-      glBufferData(GL_UNIFORM_BUFFER,
-          MAX_NUM_LIGHTS * (sizeof(PointLightUniform) + sizeof(DirectionLightUniform)),
-          NULL, GL_DYNAMIC_DRAW
-          );
-      glBindBuffer(GL_UNIFORM_BUFFER, 0);
+      glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
 
-      glBindBufferBase(GL_UNIFORM_BUFFER, 1, uboLightsData);
-
-
-      glBindBuffer(GL_UNIFORM_BUFFER, uboLightsData);
-      unsigned int i = 0;
-      for (; i < this->_pLights.size(); i++) {
-        this->_lightsUBO.pointLights[i] = PointLightUniform(*this->_pLights[i]);
-        auto &pl = this->_lightsUBO.pointLights[i];
-        glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof (PointLightUniform), sizeof (PointLightUniform), &pl);
-      }
-      i = 0;
-      unsigned int offset = MAX_NUM_LIGHTS * sizeof (PointLightUniform);
-      for (; i < this->_dLights.size(); i++) {
-        this->_lightsUBO.directionLights[i] = DirectionLightUniform(*this->_dLights[i]);
-        auto &pl = this->_lightsUBO.directionLights[i];
-        glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof (DirectionLightUniform),
-            sizeof (DirectionLightUniform), &pl);
-      }
-      glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
     for (GLuint i = 0; i < this->_colorBuffers.size(); i++) {
@@ -173,15 +155,31 @@ namespace leo {
 
   void RenderVisitor::registerLight(Light *light) {
     PointLight* pLight = dynamic_cast<PointLight*> (light);
-    if (pLight) {
-      this->_pLights.push_back(pLight);
-      return;
-    }
     DirectionLight* dLight = dynamic_cast<DirectionLight*> (light);
-    if (dLight) {
-      this->_dLights.push_back(dLight);
+    if (pLight)
+      this->_pLights.push_back(pLight);
+    else if (dLight)
+        this->_dLights.push_back(dLight);
+    else
       return;
+
+    glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
+    unsigned int i = 0;
+    for (; i < this->_pLights.size(); i++) {
+      this->_lightsData.pointLights[i] = PointLightUniform(*this->_pLights[i]);
+      auto &pl = this->_lightsData.pointLights[i];
+      glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof (PointLightUniform), sizeof (PointLightUniform), &pl);
     }
+    i = 0;
+    unsigned int offset = MAX_NUM_LIGHTS * sizeof (PointLightUniform);
+    for (; i < this->_dLights.size(); i++) {
+      this->_lightsData.directionLights[i] = DirectionLightUniform(*this->_dLights[i]);
+      auto &pl = this->_lightsData.directionLights[i];
+      glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof (DirectionLightUniform),
+          sizeof (DirectionLightUniform), &pl);
+    }
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
   }
 
   void RenderVisitor::registerFramebuffer(const Framebuffer &fb) {

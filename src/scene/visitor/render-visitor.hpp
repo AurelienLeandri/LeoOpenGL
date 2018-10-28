@@ -58,8 +58,8 @@ class RenderVisitor : public Visitor {
     std::vector<DirectionLight *> _dLights;
     Framebuffer _fb;
     std::vector<const Texture *> _colorBuffers;
-    uboLights _lightsUBO;
-    GLuint _rbo;
+    uboLights _lightsData;
+    GLuint _lightsUBO;
 };
 
 }
