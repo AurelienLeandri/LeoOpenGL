@@ -112,8 +112,10 @@ namespace leo {
   }
 
   void Mesh::draw(Shader *shader) {
+    // TODO: find a better way to load reflexion maps than using ambient textures
     GLuint diffuseNr = 1;
     GLuint specularNr = 1;
+    GLuint ambientNr = 1;
     GLuint offset = shader->getTextureOffset();
     for (GLuint i = 0; i < this->_textures.size(); i++) {
       glActiveTexture(GL_TEXTURE0 + offset + i);
@@ -125,6 +127,8 @@ namespace leo {
         ss << diffuseNr++; // Transfer GLuint to stream
       else if (name == "texture_specular")
         ss << specularNr++; // Transfer GLuint to stream
+      else if (name == "texture_ambient")
+        ss << ambientNr++; // Transfer GLuint to stream
       number = ss.str();
 
       glBindTexture(GL_TEXTURE_2D, this->_textures[i].id);

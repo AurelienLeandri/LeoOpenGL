@@ -99,6 +99,10 @@ namespace leo {
       this->loadMaterialTextures(shader, aiTextureType_SPECULAR,
           "texture_specular");
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+    std::vector<Texture> ambientMaps =
+      this->loadMaterialTextures(shader, aiTextureType_AMBIENT,
+          "texture_ambient");
+    textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
     return Mesh(vertices, indices, textures);
   }
 

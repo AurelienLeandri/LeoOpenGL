@@ -26,6 +26,7 @@ struct Material {
   vec3 ambient;
   vec3 diffuse;
   vec3 specular;
+  sampler2D texture_ambient1;  // Map for reflexion (TODO: not generic, will probably change)
   sampler2D texture_diffuse1;
   sampler2D texture_specular1;
   int shininess;
@@ -86,6 +87,10 @@ void main()
     specular += iudl.specular * spec * (material.specular + specular_sample);
   }
 
-  vec3 result = diffuse + ambient + specular;
+  vec3 reflection = reflect(-viewDir, norm);
+  vec4 reflectionColor = vec4(texture(cubeMap, reflection).rgb, 1.0);
+  float reflectionFactor = texture(material.texture_ambient1, TexCoords).x;
+
+  vec3 result = diffuse + ambient + specular + vec3(reflectionColor * reflectionFactor);
   color = vec4(result, 1.0);
 }

@@ -77,7 +77,8 @@ void Engine::_init() {
   // Initialize scene graph
   // TODO: create FolderNode
   //this->_root = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
-  this->_root2 = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
+  //this->_root2 = new Model((GLchar*)"resources/models/nanosuit/nanosuit.obj");
+  this->_root2 = new Model((GLchar*)"resources/models/nanosuit_reflection/nanosuit.obj");
   this->_cubeMap = new CubeMap("skybox", "resources/textures");
   this->_root = this->_cubeMap;
   auto alpha = new AlphaNode();
@@ -140,7 +141,7 @@ void Engine::_init() {
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
   this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/glass.frag.glsl");
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
   this->render_visitor2->setCubeMapTexture(&this->_cubeMap->getTexture());
   this->render_visitor2->setFramebuffer(this->render_visitor->getFramebuffer());
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
