@@ -48,7 +48,7 @@ void Engine::_init() {
 
   // Setup some OpenGL options
   glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
+  glDepthFunc(GL_LEQUAL); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_CULL_FACE);
@@ -140,7 +140,8 @@ void Engine::_init() {
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
   this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
+      "resources/shaders/model_loading.vs.glsl", "resources/shaders/glass.frag.glsl");
+  this->render_visitor2->setCubeMapTexture(&this->_cubeMap->getTexture());
   this->render_visitor2->setFramebuffer(this->render_visitor->getFramebuffer());
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl");
@@ -177,8 +178,8 @@ void Engine::gameLoop() {
 
     this->doMovement(deltaTime);
 
-    this->render_visitor->visit(this->_root, true);
-    this->render_visitor2->visit(this->_root2, true, false);
+    this->render_visitor2->visit(this->_root2, true);
+    this->render_visitor->visit(this->_root, true, false);
 
     //this->render_visitor2->visit(this->_root2,true);
 

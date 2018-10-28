@@ -44,6 +44,7 @@ out vec4 color;
 
 uniform Material material;
 uniform vec3 viewPos;
+uniform samplerCube cubeMap;
 
 void main()
 {
@@ -86,7 +87,5 @@ void main()
   }
 
   vec3 result = diffuse + ambient + specular;
-  //vec3 result = material.ambient;
   color = vec4(result, 1.0);
-  //color = vec4(result, diffuse_sample_rgba.a);
 }

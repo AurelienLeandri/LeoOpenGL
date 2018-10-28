@@ -50,6 +50,10 @@ class RenderVisitor : public Visitor {
     const Framebuffer &getFramebuffer() const { return this->_fb; }
     const std::shared_ptr<Shader> getShader() const { return this->_shader; }
     void setFramebuffer(const Framebuffer &value) { this->_fb = value; }
+    void setCubeMapTexture(const Texture *texture) {
+      this->_cubeMapTexture = texture;
+      this->_shader->setTextureOffset(this->_colorBuffers.size() + (this->_cubeMapTexture ? 1 : 0));
+    }
 
   private:
     const Camera *_camera;
@@ -61,6 +65,8 @@ class RenderVisitor : public Visitor {
     std::vector<const Texture *> _colorBuffers;
     uboLights _lightsData;
     GLuint _lightsUBO;
+    const Texture *_cubeMapTexture = nullptr;
+
 };
 
 }

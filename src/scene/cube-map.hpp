@@ -18,6 +18,9 @@ namespace leo {
     virtual void draw(Shader *shader);
     virtual void update(double delta) { UNUSED(delta); }
 
+  public:
+    const Texture &getTexture() const { return this->_texture; }
+
     private:
       Texture _texture;
       GLuint _VAO;

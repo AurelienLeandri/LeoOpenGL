@@ -75,10 +75,7 @@ namespace leo {
       glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
       glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-
-      glDepthMask(GL_FALSE);
       cubeNode->draw(this->_shader.get());
-      glDepthMask(GL_TRUE);
       return;
     }
     GeometryNode* geometryNode = dynamic_cast<GeometryNode*>(node);
@@ -156,6 +153,11 @@ namespace leo {
       glBindTexture(GL_TEXTURE_2D, this->_colorBuffers[i]->id);
       glUniform1i(glGetUniformLocation(this->_shader->getProgram(), ("fb" + number.str()).c_str()), i);
     }
+    if (this->_cubeMapTexture) {
+      glActiveTexture(GL_TEXTURE0 + this->_colorBuffers.size());
+      glBindTexture(GL_TEXTURE_CUBE_MAP, this->_cubeMapTexture->id);
+      glUniform1i(glGetUniformLocation(this->_shader->getProgram(), "cubeMap"), this->_colorBuffers.size());
+    }
     glActiveTexture(GL_TEXTURE0);
   }  // void RenderVisitor::_setupRendering(bool offscreen)
 
@@ -192,7 +194,7 @@ namespace leo {
     auto &color_buffers = fb.getColorBuffers();
     for (unsigned int i = 0; i < color_buffers.size(); i++)
       this->_colorBuffers.push_back(&color_buffers[i]);
-    this->_shader->setTextureOffset(this->_colorBuffers.size());
+    this->_shader->setTextureOffset(this->_colorBuffers.size() + (this->_cubeMapTexture ? 1 : 0));
   }
 
 

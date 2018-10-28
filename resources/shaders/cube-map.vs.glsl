@@ -12,6 +12,6 @@ layout (std140, binding = 0) uniform Matrices
 
 void main() {
   TexCoords = position;
-  gl_Position = projection * view * vec4(position, 1.0f);
-  //gl_Position = vec4(position, 1.0f);
+  vec4 p = projection * view * vec4(position, 1.0f);
+  gl_Position = p.xyww;  // To have a z value of 1 after projection division
 }
