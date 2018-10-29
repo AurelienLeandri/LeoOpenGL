@@ -141,7 +141,8 @@ void Engine::_init() {
   this->render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
   this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
-      "resources/shaders/model_loading.vs.glsl", "resources/shaders/model_loading.frag.glsl");
+      std::make_shared<Shader>(Shader("resources/shaders/model_loading.vs.glsl",
+          "resources/shaders/model_loading.frag.glsl", "resources/shaders/explode.geo.glsl")));
   this->render_visitor2->setCubeMapTexture(&this->_cubeMap->getTexture());
   this->render_visitor2->setFramebuffer(this->render_visitor->getFramebuffer());
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,

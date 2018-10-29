@@ -7,22 +7,31 @@ Shader::Shader() {
 
 Shader::Shader(const GLchar *vertexSourcePath,
                const GLchar *fragmentSourcePath) :
-  _vertexCode(FileReader::readFile(vertexSourcePath)),
-  _fragmentCode(FileReader::readFile(fragmentSourcePath))
+  Shader(vertexSourcePath, fragmentSourcePath, nullptr)
+{}
+
+Shader::Shader(const Shader &other) :
+  _vertexCode(other._vertexCode),
+  _fragmentCode(other._fragmentCode),
+  _geometryCode(other._geometryCode)
 {
   this->_initProgram();
 }
 
-Shader::Shader(const Shader &other) :
-  _vertexCode(other._vertexCode),
-  _fragmentCode(other._fragmentCode)
+Shader::Shader(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath,
+    const GLchar *geometrySourcePath) :
+  _vertexCode(FileReader::readFile(vertexSourcePath)),
+  _fragmentCode(FileReader::readFile(fragmentSourcePath))
 {
+  if (geometrySourcePath)
+    _geometryCode = FileReader::readFile(geometrySourcePath);
   this->_initProgram();
 }
 
 Shader &Shader::operator=(const Shader &other) {
   this->_vertexCode = other._vertexCode;
   this->_fragmentCode = other._fragmentCode;
+  this->_geometryCode = other._geometryCode;
   this->_initProgram();
   return *this;
 }
@@ -36,6 +45,12 @@ void Shader::_initProgram() {
   this->_program = glCreateProgram();
   glAttachShader(this->_program, vertex);
   glAttachShader(this->_program, fragment);
+  if (this->_geometryCode.size()) {
+    GLuint geometry;
+    const GLchar *gShaderCode = this->_geometryCode.c_str();
+    this->compileShader(geometry, gShaderCode, GL_GEOMETRY_SHADER);
+    glAttachShader(this->_program, geometry);
+  }
   glLinkProgram(this->_program);
   GLint success;
   GLchar infoLog[512];

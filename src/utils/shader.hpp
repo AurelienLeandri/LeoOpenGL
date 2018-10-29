@@ -15,6 +15,8 @@ class Shader {
   public:
     Shader();
     Shader(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath);
+    Shader(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath,
+        const GLchar *geometrySourcePath);
     Shader(const Shader &other);
     Shader &operator=(const Shader &other);
 
@@ -34,6 +36,7 @@ class Shader {
   protected:
     std::string _vertexCode;
     std::string _fragmentCode;
+    std::string _geometryCode;
     GLuint _program;
     GLuint _textureOffset = 0;
 };
