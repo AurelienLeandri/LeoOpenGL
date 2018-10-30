@@ -142,9 +142,13 @@ void Engine::_init() {
       "resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
   this->render_visitor2 = new RenderVisitor(this->_camera, this->_window,
       std::make_shared<Shader>(Shader("resources/shaders/model_loading.vs.glsl",
-          "resources/shaders/model_loading.frag.glsl", "resources/shaders/explode.geo.glsl")));
+          "resources/shaders/model_loading.frag.glsl")));
+  this->render_visitor3 = new RenderVisitor(this->_camera, this->_window,
+      std::make_shared<Shader>(Shader("resources/shaders/normals.vs.glsl",
+          "resources/shaders/normals.frag.glsl", "resources/shaders/normals.geo.glsl")));
   this->render_visitor2->setCubeMapTexture(&this->_cubeMap->getTexture());
   this->render_visitor2->setFramebuffer(this->render_visitor->getFramebuffer());
+  this->render_visitor3->setFramebuffer(this->render_visitor->getFramebuffer());
   this->post_process_render_visitor = new RenderVisitor(this->_camera, this->_window,
       "resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl");
   this->render_visitor->registerLight(pl);
@@ -156,8 +160,7 @@ void Engine::_init() {
   this->render_visitor2->registerLight(pl3);
   this->render_visitor2->registerLight(dl);
   TransformationVisitor transformGlobal;
-  transformGlobal.rotate(15.0, glm::vec3(-2.0f, 10.0f, 4.0f));
-  transformGlobal.visit(this->_root);
+  transformGlobal.rotate(15.0, glm::vec3(-2.0f, 10.0f, 4.0f)); transformGlobal.visit(this->_root);
 }
 
 void Engine::gameLoop() {
@@ -181,6 +184,7 @@ void Engine::gameLoop() {
     this->doMovement(deltaTime);
 
     this->render_visitor2->visit(this->_root2, true);
+    this->render_visitor3->visit(this->_root2, true, 0);
     this->render_visitor->visit(this->_root, true, false);
 
     //this->render_visitor2->visit(this->_root2,true);

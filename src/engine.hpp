@@ -48,6 +48,7 @@ class Engine{
     Node *_post_process_quad;
     RenderVisitor *render_visitor;
     RenderVisitor *render_visitor2;
+    RenderVisitor *render_visitor3;
     RenderVisitor *post_process_render_visitor;
     GLFWwindow *_window;
     GLuint screenWidth = 800;
