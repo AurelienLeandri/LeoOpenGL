@@ -4,12 +4,15 @@
 #include <vector>
 #include <memory>
 #include <exception>
+#include <model/registered-object.hpp>
+#include <model/component.hpp>
 
 namespace leo {
   namespace model {
 
+    class Component;
+
     class Base : public RegisteredObject {
-      using std::pair<std::string, std::shared_ptr<Component>> = map_entry;
 
       public:
         Base();
@@ -18,7 +21,7 @@ namespace leo {
         const Base &operator=(const Base &other);
 
       public:
-        bool addComponent(std::string id, std::shared_ptr<Component> component);
+        bool addComponent(std::string id, Component *component);
         std::shared_ptr<Component> getComponent(std::string name);
         std::map<std::string, std::shared_ptr<Component>> &getComponents();
 

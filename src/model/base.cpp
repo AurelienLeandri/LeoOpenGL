@@ -13,8 +13,8 @@ namespace leo {
 
     Base::Base(const Base &other)
       : Base()
-      , _components(other._components)
     {
+      this->_components = other._components;
     }
 
     const Base &Base::operator=(const Base &other) {
@@ -26,8 +26,11 @@ namespace leo {
       return this->_components;
     }
 
-    bool Base::addComponent(std::string name, std::shared_ptr<Component> component) {
-      return this->_components.insert(map_entry(id, component)).second;
+    bool Base::addComponent(std::string name, Component *component) {
+      component->addParentBase(this);
+      return this->_components.insert(
+          std::pair<std::string, std::shared_ptr<Component>>(name,
+            std::shared_ptr<Component>(component))).second;
     }
 
     std::shared_ptr<Component> Base::getComponent(std::string name) {
