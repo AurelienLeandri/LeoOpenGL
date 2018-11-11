@@ -1,4 +1,5 @@
 add_subdirectory(scene)
+add_subdirectory(model)
 add_subdirectory(utils)
 
 set(ENGINE_SOURCES ${ENGINE_SOURCES}
