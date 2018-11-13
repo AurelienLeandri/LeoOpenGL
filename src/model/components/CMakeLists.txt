@@ -1,4 +1,6 @@
 set(ENGINE_SOURCES ${ENGINE_SOURCES}
+  ${CMAKE_CURRENT_SOURCE_DIR}/scene-object.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/scene-object.cpp
   PARENT_SCOPE
   )
 

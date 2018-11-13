@@ -14,10 +14,14 @@ namespace leo {
     Base::Base(const Base &other)
       : Base()
     {
+      this->_id = ObjectRegister::generateStringID("base");
+      this->_register.registerObject(std::shared_ptr<RegisteredObject>(this), this->_id);
       this->_components = other._components;
     }
 
     const Base &Base::operator=(const Base &other) {
+      this->_id = ObjectRegister::generateStringID("base");
+      this->_register.registerObject(std::shared_ptr<RegisteredObject>(this), this->_id);
       this->_components = other._components;
       return *this;
     }

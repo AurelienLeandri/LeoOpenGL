@@ -17,6 +17,21 @@ namespace leo {
       }
     }
 
+    Component::Component(const Component &other) :
+      RegisteredObject(other)
+    {
+      this->_id = ObjectRegister::generateStringID("component");
+      this->_register.registerObject(std::shared_ptr<RegisteredObject>(this), this->_id);
+      // TODO copy constructor
+    }
+
+    const Component &Component::operator=(const Component &other) {
+      // TODO assignement operator
+      this->_id = ObjectRegister::generateStringID("component");
+      this->_register.registerObject(std::shared_ptr<RegisteredObject>(this), this->_id);
+      return *this;
+    }
+
     std::map<std::string, std::shared_ptr<Component>> Component::getLinkedComponents() {
       return this->_linkedComponents;
     }

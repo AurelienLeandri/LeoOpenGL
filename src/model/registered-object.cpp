@@ -14,6 +14,11 @@ namespace leo {
       this->_register.unregisterObject(this->_id);
     }
 
+    RegisteredObject::RegisteredObject(const RegisteredObject &other) :
+      _register(ObjectRegister::getInstance())
+    {
+    }
+
     const stringID &RegisteredObject::getId() const {
       return this->_id;
     }

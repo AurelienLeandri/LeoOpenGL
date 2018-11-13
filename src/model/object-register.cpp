@@ -4,8 +4,8 @@
 namespace leo {
   namespace model {
 
-      unsigned int ObjectRegister::base_nb = 0;
-      unsigned int ObjectRegister::component_nb = 0;
+    unsigned int ObjectRegister::base_nb = 0;
+    unsigned int ObjectRegister::component_nb = 0;
 
     ObjectRegister::ObjectRegister() {
     }

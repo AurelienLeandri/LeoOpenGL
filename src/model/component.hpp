@@ -14,6 +14,8 @@ namespace leo {
       public:
         Component();
         Component(std::vector<std::string> prerequisites);
+        Component( const Component &other);
+        const Component &operator=(const Component &other);
 
       public:
         std::map<std::string, std::shared_ptr<Component>> getLinkedComponents();

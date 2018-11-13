@@ -13,13 +13,13 @@ namespace leo {
       public:
         RegisteredObject(std::string prefix);
         virtual ~RegisteredObject();
-        RegisteredObject(const RegisteredObject &other) = delete;
-        const RegisteredObject &operator=(const RegisteredObject &other) = delete;
+        RegisteredObject(const RegisteredObject &other);
+        virtual const RegisteredObject &operator=(const RegisteredObject &other) = 0;
 
       public:
         const stringID &getId() const;
 
-      private:
+      protected:
         ObjectRegister &_register;
         stringID _id;
     };
