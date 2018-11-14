@@ -13,14 +13,9 @@
 #include <string>
 #include <vector>
 #include <assimp/types.h>
+#include <utils/geometry.hpp>
 
 namespace leo {
-
-  struct Vertex {
-    glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec2 texCoords;
-  };
 
   class Mesh : public GeometryNode {
     public:

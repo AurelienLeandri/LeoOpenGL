@@ -14,7 +14,7 @@ namespace leo {
         RegisteredObject(std::string prefix);
         virtual ~RegisteredObject();
         RegisteredObject(const RegisteredObject &other);
-        virtual const RegisteredObject &operator=(const RegisteredObject &other) = 0;
+        virtual const RegisteredObject &operator=(const RegisteredObject &other) = delete;
 
       public:
         const stringID &getId() const;
