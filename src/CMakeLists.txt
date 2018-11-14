@@ -1,6 +1,7 @@
 add_subdirectory(scene)
 add_subdirectory(model)
 add_subdirectory(utils)
+add_subdirectory(controller)
 
 set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.cpp
