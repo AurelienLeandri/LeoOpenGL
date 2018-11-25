@@ -25,9 +25,13 @@ namespace leo {
         void setRelativeTranslation(glm::vec3 value);
         void setRelativeRotation(glm::vec3 value);
         void setRelativeScaling(glm::vec3 value);
+        void translate(glm::vec3 value);
+        void rotate(glm::vec3 value);
+        void scale(glm::vec3 value);
 
       private:
         void _recomputeTransformationMatrix();
+        std::vector<Transformation *> _getChildTransformations();
 
       private:
         glm::vec3 _relativeTranslation;

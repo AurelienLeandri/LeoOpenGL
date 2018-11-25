@@ -24,7 +24,7 @@ namespace leo {
       return *this;
     }
 
-    std::map<std::string, std::shared_ptr<Component>> &Base::getComponents() {
+    const std::map<std::string, std::shared_ptr<Component>> &Base::getComponents() const {
       return this->_components;
     }
 

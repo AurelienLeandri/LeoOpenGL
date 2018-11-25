@@ -21,7 +21,7 @@ namespace leo {
         std::shared_ptr<const Base> getBase();
         void setBase(const Base *base);
 
-      private:
+      protected:
         std::shared_ptr<const Base> _base;
         
     };  // class Component

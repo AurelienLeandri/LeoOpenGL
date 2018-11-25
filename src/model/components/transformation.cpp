@@ -1,5 +1,8 @@
 #include "transformation.hpp"
 
+#include <model/base.hpp>
+#include <model/components/scene-object.hpp>
+
 namespace leo {
   namespace model {
 
@@ -63,21 +66,57 @@ namespace leo {
         }
 
         void Transformation::setRelativeTranslation(glm::vec3 value) {
-          this->_relativeTranslation = value;
           this->_absoluteTranslation += value - this->_relativeTranslation;
+          this->_relativeTranslation = value;
           this->_recomputeTransformationMatrix();
         }
 
         void Transformation::setRelativeRotation(glm::vec3 value) {
-          this->_relativeRotation = value;
           this->_absoluteRotation += value - this->_relativeRotation;
+          this->_relativeRotation = value;
           this->_recomputeTransformationMatrix();
         }
 
         void Transformation::setRelativeScaling(glm::vec3 value) {
-          this->_relativeScaling = value;
           this->_absoluteScaling += value - this->_relativeScaling;
+          this->_relativeScaling = value;
           this->_recomputeTransformationMatrix();
+        }
+
+        void Transformation::translate(glm::vec3 value) {
+          this->setRelativeTranslation(this->_relativeTranslation + value);
+          for (auto childTransformation : this->_getChildTransformations())
+            childTransformation->translate(value);
+        }
+
+        void Transformation::rotate(glm::vec3 value) {
+          this->setRelativeRotation(this->_relativeRotation + value);
+          for (auto childTransformation : this->_getChildTransformations())
+            childTransformation->rotate(value);
+        }
+
+        void Transformation::scale(glm::vec3 value) {
+          this->setRelativeScaling(this->_relativeScaling + value);
+          for (auto childTransformation : this->_getChildTransformations())
+            childTransformation->scale(value);
+        }
+
+        std::vector<Transformation *> Transformation::_getChildTransformations() {
+          std::vector<Transformation *> childTransformations;
+          for (auto component : this->_base->getComponents()) {
+            SceneObject *sceneObject = dynamic_cast<SceneObject *>(component.second.get());
+            if (sceneObject) {
+              for (auto childSceneObject : sceneObject->getChildren()) {
+                const Base *base = childSceneObject.second->getBase().get();
+                for (auto &c : base->getComponents()) {
+                  Transformation *childTransformation = dynamic_cast<Transformation *>(c.second.get());
+                  if (childTransformation)
+                    childTransformations.push_back(childTransformation);
+                }
+              }
+            }
+          }
+          return childTransformations;
         }
 
         void Transformation::_recomputeTransformationMatrix() {

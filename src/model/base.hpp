@@ -22,7 +22,7 @@ namespace leo {
       public:
         bool addComponent(std::string id, Component *component);
         std::shared_ptr<Component> getComponent(std::string name);
-        std::map<std::string, std::shared_ptr<Component>> &getComponents();
+        const std::map<std::string, std::shared_ptr<Component>> &getComponents() const;
 
       private:
         std::map<std::string, std::shared_ptr<Component>> _components;
