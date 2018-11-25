@@ -1,10 +1,12 @@
 #pragma once
 
 #include <controller/event.hpp>
-#include <controller/observer.hpp>
+#include <vector>
 
 namespace leo {
   namespace controller {
+
+    class Observer;
 
     class Subject {
       public:

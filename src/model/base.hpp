@@ -1,18 +1,17 @@
 #pragma once
 
+#include <controller/subject.hpp>
+#include <model/registered-object.hpp>
 #include <map>
 #include <vector>
 #include <memory>
-#include <exception>
-#include <model/registered-object.hpp>
-#include <model/component.hpp>
 
 namespace leo {
   namespace model {
 
     class Component;
 
-    class Base : public RegisteredObject {
+    class Base : public RegisteredObject, public controller::Subject {
 
       public:
         Base();

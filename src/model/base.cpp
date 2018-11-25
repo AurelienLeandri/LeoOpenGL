@@ -1,10 +1,11 @@
 #include "base.hpp"
+#include <model/component.hpp>
 
 namespace leo {
   namespace model {
 
     Base::Base() 
-      : RegisteredObject("base")
+      : RegisteredObject()
     {
     }
 
@@ -12,16 +13,13 @@ namespace leo {
     }
 
     Base::Base(const Base &other)
-      : Base()
+      : RegisteredObject(other)
     {
-      this->_id = ObjectRegister::generateStringID("base");
-      this->_register.registerObject(std::shared_ptr<RegisteredObject>(this), this->_id);
       this->_components = other._components;
     }
 
     const Base &Base::operator=(const Base &other) {
-      this->_id = ObjectRegister::generateStringID("base");
-      this->_register.registerObject(std::shared_ptr<RegisteredObject>(this), this->_id);
+      RegisteredObject::operator=(other);
       this->_components = other._components;
       return *this;
     }
@@ -31,7 +29,7 @@ namespace leo {
     }
 
     bool Base::addComponent(std::string name, Component *component) {
-      component->addParentBase(this);
+      component->setBase(this);
       return this->_components.insert(
           std::pair<std::string, std::shared_ptr<Component>>(name,
             std::shared_ptr<Component>(component))).second;

@@ -1,5 +1,7 @@
 #include "subject.hpp"
 
+#include <controller/observer.hpp>
+
 namespace leo {
   namespace controller {
 

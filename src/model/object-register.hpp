@@ -17,7 +17,7 @@ namespace leo {
 
       public:
         static ObjectRegister &getInstance();
-        static std::string generateStringID(std::string prefix);
+        static std::string generateStringID();
 
       public:
         bool registerObject(std::shared_ptr<const RegisteredObject> object, stringID id);
@@ -28,8 +28,7 @@ namespace leo {
 
       private:
         std::map<stringID, std::weak_ptr<const RegisteredObject>> _register;
-        static unsigned int base_nb;
-        static unsigned int component_nb;
+        static unsigned int _nbObjects;
 
     };
 

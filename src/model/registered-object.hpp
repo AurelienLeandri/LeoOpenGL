@@ -1,20 +1,21 @@
 #pragma once
 
 #include <string>
-#include <model/object-register.hpp>
 
 namespace leo {
   namespace model {
 
     using stringID = std::string;
 
+    class ObjectRegister;
+
     class RegisteredObject {
 
       public:
-        RegisteredObject(std::string prefix);
+        RegisteredObject();
         virtual ~RegisteredObject();
         RegisteredObject(const RegisteredObject &other);
-        virtual const RegisteredObject &operator=(const RegisteredObject &other) = delete;
+        virtual const RegisteredObject &operator=(const RegisteredObject &other);
 
       public:
         const stringID &getId() const;

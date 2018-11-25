@@ -1,11 +1,9 @@
 #include "object-register.hpp"
 
-
 namespace leo {
   namespace model {
 
-    unsigned int ObjectRegister::base_nb = 0;
-    unsigned int ObjectRegister::component_nb = 0;
+    unsigned int ObjectRegister::_nbObjects = 0;
 
     ObjectRegister::ObjectRegister() {
     }
@@ -29,15 +27,9 @@ namespace leo {
       return true;
     }
 
-    std::string ObjectRegister::generateStringID(std::string prefix) {
+    std::string ObjectRegister::generateStringID() {
       std::stringstream ss;
-      ss << prefix;
-      if (prefix == "base")
-        ss << base_nb++;
-      else if (prefix == "component")
-        ss << component_nb++;
-      else
-        assert(false);
+      ss << _nbObjects++;
       return ss.str();
     }
 

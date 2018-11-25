@@ -1,9 +1,9 @@
 #pragma once
 
-#include <model/base.hpp>
 #include <model/registered-object.hpp>
 #include <map>
 #include <vector>
+#include <memory>
 
 namespace leo {
   namespace model {
@@ -13,21 +13,16 @@ namespace leo {
     class Component : public RegisteredObject {
       public:
         Component();
-        Component(std::vector<std::string> prerequisites);
         Component( const Component &other);
         const Component &operator=(const Component &other);
 
       public:
-        std::map<std::string, std::shared_ptr<Component>> getLinkedComponents();
-        bool addLinkedComponent(std::string name, Component *component);
-        std::shared_ptr<Component> getLinkedComponent(std::string name);
         std::map<stringID, std::shared_ptr<const Base>> getParentBases();
-        std::shared_ptr<const Base> getParentBase(stringID id);
-        bool addParentBase(const Base *base);
+        std::shared_ptr<const Base> getBase();
+        void setBase(const Base *base);
 
       private:
-        std::map<std::string, std::shared_ptr<Component>> _linkedComponents;
-        std::map<stringID, std::shared_ptr<const Base>> _parentBases;
+        std::shared_ptr<const Base> _base;
         
     };  // class Component
 

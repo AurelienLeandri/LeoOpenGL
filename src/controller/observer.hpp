@@ -1,7 +1,5 @@
 #pragma once
 
-#include <model/base.hpp>
-#include <model/component.hpp>
 #include <controller/event.hpp>
 
 namespace leo {
