@@ -1,9 +1,9 @@
 #pragma once
 
-#include <global.hpp>
+#include <renderer/global.hpp>
 
-#include <scene/drawable-node.hpp>
-#include <utils/shader.hpp>
+#include <renderer/scene/drawable-node.hpp>
+#include <renderer/utils/shader.hpp>
 
 namespace leo {
 

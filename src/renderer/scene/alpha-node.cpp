@@ -1,4 +1,4 @@
-#include <scene/alpha-node.hpp>
+#include "alpha-node.hpp"
 
 namespace leo {
 

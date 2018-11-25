@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include <engine.hpp>
-#include <scene/visitor/transformation-visitor.hpp>
+#include <renderer/engine.hpp>
+#include <renderer/scene/visitor/transformation-visitor.hpp>
 
 void print_matrix(const glm::mat4x4 &mat) {
   for (int i = 0; i < 4; i++) {

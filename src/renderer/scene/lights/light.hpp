@@ -1,8 +1,8 @@
 #pragma once
 
-#include <global.hpp>
+#include <renderer/global.hpp>
 
-#include <scene/geometry-node.hpp>
+#include <renderer/scene/geometry-node.hpp>
 
 namespace leo {
   class Light;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <scene/geometry-node.hpp>
+#include <renderer/scene/geometry-node.hpp>
 #include <map>
 
 namespace leo {

@@ -1,4 +1,4 @@
-#include <scene/lights/direction-light.hpp>
+#include "direction-light.hpp"
 
 namespace leo {
 

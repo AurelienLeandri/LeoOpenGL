@@ -4,8 +4,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <scene/visitor/visitor.hpp>
-#include <scene/geometry-node.hpp>
+#include <renderer/scene/visitor/visitor.hpp>
+#include <renderer/scene/geometry-node.hpp>
 
 namespace leo {
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <global.hpp>
+#include <renderer/global.hpp>
 
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
-#include <utils/file-reader.hpp>
+#include <renderer/utils/file-reader.hpp>
 
 namespace leo {
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <global.hpp>
+#include <renderer/global.hpp>
 
 #include <SOIL.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <scene/geometry-node.hpp>
-#include <scene/mesh.hpp>
+#include <renderer/scene/geometry-node.hpp>
+#include <renderer/scene/mesh.hpp>
 
 namespace leo {
 

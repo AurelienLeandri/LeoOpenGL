@@ -1,6 +1,6 @@
 #pragma once
 
-#include <global.hpp>
+#include <renderer/global.hpp>
 #include <SOIL.h>
 
 #include <string>

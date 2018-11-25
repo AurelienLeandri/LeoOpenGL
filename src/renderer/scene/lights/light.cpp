@@ -1,4 +1,4 @@
-#include <scene/lights/light.hpp>
+#include "light.hpp"
 
 namespace leo {
 

@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include <global.hpp>
+#include <renderer/global.hpp>
 
-#include <scene/node.hpp>
-#include <utils/shader.hpp>
+#include <renderer/scene/node.hpp>
+#include <renderer/utils/shader.hpp>
 
 namespace leo {
 

@@ -1,20 +1,20 @@
 
 #pragma once
 
-#include <global.hpp>
+#include <renderer/global.hpp>
 #include <SOIL.h>
 
-#include <utils/shader.hpp>
-#include <utils/framebuffer.hpp>
-#include <scene/node.hpp>
-#include <scene/alpha-node.hpp>
-#include <scene/visitor/render-visitor.hpp>
-#include <scene/model.hpp>
-#include <scene/cube-map.hpp>
-#include <input-manager.hpp>
-#include <camera.hpp>
+#include <renderer/utils/shader.hpp>
+#include <renderer/utils/framebuffer.hpp>
+#include <renderer/scene/node.hpp>
+#include <renderer/scene/alpha-node.hpp>
+#include <renderer/scene/visitor/render-visitor.hpp>
+#include <renderer/scene/model.hpp>
+#include <renderer/scene/cube-map.hpp>
+#include <renderer/input-manager.hpp>
+#include <renderer/camera.hpp>
 
-#include <debug.hpp>
+#include <renderer/debug.hpp>
 
 namespace leo {
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <scene/lights/light.hpp>
-#include <scene/mesh.hpp>
-#include <scene/visitor/transformation-visitor.hpp>
+#include <renderer/scene/lights/light.hpp>
+#include <renderer/scene/mesh.hpp>
+#include <renderer/scene/visitor/transformation-visitor.hpp>
 
 namespace leo {
   

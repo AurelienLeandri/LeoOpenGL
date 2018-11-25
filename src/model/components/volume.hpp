@@ -2,7 +2,7 @@
 
 #include <model/components/types/drawable.hpp>
 #include <vector>
-#include <utils/geometry.hpp>
+#include <renderer/utils/geometry.hpp>
 
 namespace leo {
   namespace model {

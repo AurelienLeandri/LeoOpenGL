@@ -4,16 +4,16 @@
 
 #pragma once
 
-#include <global.hpp>
-#include <scene/geometry-node.hpp>
-#include <utils/shader.hpp>
-#include <utils/texture.hpp>
+#include <renderer/global.hpp>
+#include <renderer/scene/geometry-node.hpp>
+#include <renderer/utils/shader.hpp>
+#include <renderer/utils/texture.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 #include <string>
 #include <vector>
 #include <assimp/types.h>
-#include <utils/geometry.hpp>
+#include <renderer/utils/geometry.hpp>
 
 namespace leo {
 

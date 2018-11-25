@@ -1,7 +1,7 @@
 #pragma once
 
-#include <scene/node.hpp>
-#include <global.hpp>
+#include <renderer/scene/node.hpp>
+#include <renderer/global.hpp>
 
 namespace leo {
 

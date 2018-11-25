@@ -1,7 +1,7 @@
 #include "engine.hpp"
 
-  #include <scene/visitor/transformation-visitor.hpp>
-  #include <scene/lights/point-light.hpp>
+  #include <renderer/scene/visitor/transformation-visitor.hpp>
+  #include <renderer/scene/lights/point-light.hpp>
 
 namespace leo {
 

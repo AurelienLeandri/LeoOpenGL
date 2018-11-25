@@ -1,8 +1,8 @@
 #pragma once
 
-#include <scene/geometry-node.hpp>
-#include <utils/shader.hpp>
-#include <scene/mesh.hpp>
+#include <renderer/scene/geometry-node.hpp>
+#include <renderer/utils/shader.hpp>
+#include <renderer/scene/mesh.hpp>
 #include <string>
 
 namespace leo {

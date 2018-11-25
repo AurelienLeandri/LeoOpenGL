@@ -1,4 +1,4 @@
-#include <scene/model.hpp>
+#include "model.hpp"
 
 namespace leo {
 
