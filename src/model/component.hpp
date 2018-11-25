@@ -1,6 +1,7 @@
 #pragma once
 
 #include <model/registered-object.hpp>
+#include <controller/subject.hpp>
 #include <map>
 #include <vector>
 #include <memory>
@@ -10,11 +11,12 @@ namespace leo {
 
     class Base;
 
-    class Component : public RegisteredObject {
+    class Component : public RegisteredObject, public controller::Subject {
       public:
         Component();
         Component( const Component &other);
         const Component &operator=(const Component &other);
+        virtual ~Component();
 
       public:
         std::map<stringID, std::shared_ptr<const Base>> getParentBases();

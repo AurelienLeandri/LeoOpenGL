@@ -25,111 +25,115 @@ namespace leo {
       _transformationMatrix(other._transformationMatrix)
     {
     }
-    
+
     const Transformation &Transformation::operator=(const Transformation &other) {
-        this->_relativeTranslation = other._relativeTranslation;
-        this->_relativeRotation = other._relativeRotation;
-        this->_relativeScaling = other._relativeScaling;
-        this->_absoluteTranslation = other._absoluteTranslation;
-        this->_absoluteRotation = other._absoluteRotation;
-        this->_absoluteScaling = other._absoluteScaling;
-        this->_transformationMatrix = other._transformationMatrix;
-        return *this;
+      this->_relativeTranslation = other._relativeTranslation;
+      this->_relativeRotation = other._relativeRotation;
+      this->_relativeScaling = other._relativeScaling;
+      this->_absoluteTranslation = other._absoluteTranslation;
+      this->_absoluteRotation = other._absoluteRotation;
+      this->_absoluteScaling = other._absoluteScaling;
+      this->_transformationMatrix = other._transformationMatrix;
+      this->_notify(controller::Event::COMPONENT_UPDATED);
+      return *this;
     }
 
-        const glm::vec3 &Transformation::getRelativeTranslation() const {
-          return this->_relativeTranslation;
-        }
+    const glm::vec3 &Transformation::getRelativeTranslation() const {
+      return this->_relativeTranslation;
+    }
 
-        const glm::vec3 &Transformation::getRelativeRotation() const {
-          return this->_relativeRotation;
-        }
+    const glm::vec3 &Transformation::getRelativeRotation() const {
+      return this->_relativeRotation;
+    }
 
-        const glm::vec3 &Transformation::getRelativeScaling() const {
-          return this->_relativeScaling;
-        }
+    const glm::vec3 &Transformation::getRelativeScaling() const {
+      return this->_relativeScaling;
+    }
 
-        const glm::vec3 &Transformation::getAbsoluteTranslation() const {
-          return this->_absoluteTranslation;
-        }
+    const glm::vec3 &Transformation::getAbsoluteTranslation() const {
+      return this->_absoluteTranslation;
+    }
 
-        const glm::vec3 &Transformation::getAbsoluteRotation() const {
-          return this->_absoluteRotation;
-        }
+    const glm::vec3 &Transformation::getAbsoluteRotation() const {
+      return this->_absoluteRotation;
+    }
 
-        const glm::vec3 &Transformation::getAbsoluteScaling() const {
-          return this->_absoluteScaling;
-        }
+    const glm::vec3 &Transformation::getAbsoluteScaling() const {
+      return this->_absoluteScaling;
+    }
 
-        const glm::mat4x4 &Transformation::getTransformationMatrix() const {
-          return this->_transformationMatrix;
-        }
+    const glm::mat4x4 &Transformation::getTransformationMatrix() const {
+      return this->_transformationMatrix;
+    }
 
-        void Transformation::setRelativeTranslation(glm::vec3 value) {
-          this->_absoluteTranslation += value - this->_relativeTranslation;
-          this->_relativeTranslation = value;
-          this->_recomputeTransformationMatrix();
-        }
+    void Transformation::setRelativeTranslation(glm::vec3 value) {
+      this->_absoluteTranslation += value - this->_relativeTranslation;
+      this->_relativeTranslation = value;
+      this->_recomputeTransformationMatrix();
+      this->_notify(controller::Event::COMPONENT_UPDATED);
+    }
 
-        void Transformation::setRelativeRotation(glm::vec3 value) {
-          this->_absoluteRotation += value - this->_relativeRotation;
-          this->_relativeRotation = value;
-          this->_recomputeTransformationMatrix();
-        }
+    void Transformation::setRelativeRotation(glm::vec3 value) {
+      this->_absoluteRotation += value - this->_relativeRotation;
+      this->_relativeRotation = value;
+      this->_recomputeTransformationMatrix();
+      this->_notify(controller::Event::COMPONENT_UPDATED);
+    }
 
-        void Transformation::setRelativeScaling(glm::vec3 value) {
-          this->_absoluteScaling += value - this->_relativeScaling;
-          this->_relativeScaling = value;
-          this->_recomputeTransformationMatrix();
-        }
+    void Transformation::setRelativeScaling(glm::vec3 value) {
+      this->_absoluteScaling += value - this->_relativeScaling;
+      this->_relativeScaling = value;
+      this->_recomputeTransformationMatrix();
+      this->_notify(controller::Event::COMPONENT_UPDATED);
+    }
 
-        void Transformation::translate(glm::vec3 value) {
-          this->setRelativeTranslation(this->_relativeTranslation + value);
-          for (auto childTransformation : this->_getChildTransformations())
-            childTransformation->translate(value);
-        }
+    void Transformation::translate(glm::vec3 value) {
+      this->setRelativeTranslation(this->_relativeTranslation + value);
+      for (auto childTransformation : this->_getChildTransformations())
+        childTransformation->translate(value);
+    }
 
-        void Transformation::rotate(glm::vec3 value) {
-          this->setRelativeRotation(this->_relativeRotation + value);
-          for (auto childTransformation : this->_getChildTransformations())
-            childTransformation->rotate(value);
-        }
+    void Transformation::rotate(glm::vec3 value) {
+      this->setRelativeRotation(this->_relativeRotation + value);
+      for (auto childTransformation : this->_getChildTransformations())
+        childTransformation->rotate(value);
+    }
 
-        void Transformation::scale(glm::vec3 value) {
-          this->setRelativeScaling(this->_relativeScaling + value);
-          for (auto childTransformation : this->_getChildTransformations())
-            childTransformation->scale(value);
-        }
+    void Transformation::scale(glm::vec3 value) {
+      this->setRelativeScaling(this->_relativeScaling + value);
+      for (auto childTransformation : this->_getChildTransformations())
+        childTransformation->scale(value);
+    }
 
-        std::vector<Transformation *> Transformation::_getChildTransformations() {
-          std::vector<Transformation *> childTransformations;
-          for (auto component : this->_base->getComponents()) {
-            SceneObject *sceneObject = dynamic_cast<SceneObject *>(component.second.get());
-            if (sceneObject) {
-              for (auto childSceneObject : sceneObject->getChildren()) {
-                const Base *base = childSceneObject.second->getBase().get();
-                for (auto &c : base->getComponents()) {
-                  Transformation *childTransformation = dynamic_cast<Transformation *>(c.second.get());
-                  if (childTransformation)
-                    childTransformations.push_back(childTransformation);
-                }
-              }
+    std::vector<Transformation *> Transformation::_getChildTransformations() {
+      std::vector<Transformation *> childTransformations;
+      for (auto component : this->_base->getComponents()) {
+        SceneObject *sceneObject = dynamic_cast<SceneObject *>(component.second.get());
+        if (sceneObject) {
+          for (auto childSceneObject : sceneObject->getChildren()) {
+            const Base *base = childSceneObject.second->getBase().get();
+            for (auto &c : base->getComponents()) {
+              Transformation *childTransformation = dynamic_cast<Transformation *>(c.second.get());
+              if (childTransformation)
+                childTransformations.push_back(childTransformation);
             }
           }
-          return childTransformations;
         }
+      }
+      return childTransformations;
+    }
 
-        void Transformation::_recomputeTransformationMatrix() {
-          this->_transformationMatrix = glm::mat4x4();
-          glm::translate(this->_transformationMatrix, this->_absoluteTranslation);
-          glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.x),
-              glm::vec3(1.0f, 0.0f, 0.0f));
-          glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.y),
-              glm::vec3(0.0f, 1.0f, 0.0f));
-          glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.z),
-              glm::vec3(0.0f, 0.0f, 2.0f));
-          glm::scale(this->_transformationMatrix, this->_absoluteScaling);
-        }
+    void Transformation::_recomputeTransformationMatrix() {
+      this->_transformationMatrix = glm::mat4x4();
+      glm::translate(this->_transformationMatrix, this->_absoluteTranslation);
+      glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.x),
+          glm::vec3(1.0f, 0.0f, 0.0f));
+      glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.y),
+          glm::vec3(0.0f, 1.0f, 0.0f));
+      glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.z),
+          glm::vec3(0.0f, 0.0f, 2.0f));
+      glm::scale(this->_transformationMatrix, this->_absoluteScaling);
+    }
 
   }  // model
 }  // leo

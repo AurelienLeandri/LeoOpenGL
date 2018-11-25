@@ -11,15 +11,18 @@ namespace leo {
     {
     }
 
-        const DrawableCollection &DrawableCollection::operator=(const DrawableCollection &other) {
-          return *this;
-        }
+    const DrawableCollection &DrawableCollection::operator=(const DrawableCollection &other) {
+      this->_notify(controller::Event::COMPONENT_UPDATED);
+      return *this;
+    }
 
     const std::map<stringID, std::weak_ptr<Drawable>> &DrawableCollection::getCollection() {
       return this->_collection;
     }
 
     bool DrawableCollection::addDrawable(Drawable *drawable) {
+      this->_notify(controller::Event::COMPONENT_UPDATED);
+      this->_notify(controller::Event::COMPONENT_UPDATED);
       return this->_collection.insert(
           std::pair<std::string, std::shared_ptr<Drawable>>(drawable->getId(),
             std::shared_ptr<Drawable>(drawable))).second;

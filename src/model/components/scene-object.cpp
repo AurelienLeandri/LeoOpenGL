@@ -19,6 +19,7 @@ namespace leo {
 
     const SceneObject &SceneObject::operator=(const SceneObject &other) {
       // TODO assignement operator
+      this->_notify(controller::Event::COMPONENT_UPDATED);
       return *this;
     }
 
@@ -35,6 +36,7 @@ namespace leo {
         child->setParent(this);
         child->_setRootRec(this->_root.lock().get());
       }
+      this->_notify(controller::Event::COMPONENT_UPDATED);
       return success;
     }
 
@@ -44,6 +46,7 @@ namespace leo {
 
     void SceneObject::setParent(SceneObject *parent) {
       this->_parent = std::shared_ptr<SceneObject>(parent);
+      this->_notify(controller::Event::COMPONENT_UPDATED);
     }
 
     std::weak_ptr<const SceneObject> SceneObject::getRoot() {
@@ -52,6 +55,7 @@ namespace leo {
 
     void SceneObject::setRoot(SceneObject *root) {
       this->_setRootRec(root);
+      this->_notify(controller::Event::COMPONENT_UPDATED);
     }
 
     void SceneObject::_setRootRec(SceneObject *root) {

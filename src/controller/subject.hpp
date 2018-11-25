@@ -12,7 +12,9 @@ namespace leo {
       public:
         void watch(Observer *observer);
         void unwatch(Observer *observer);
-        void notify(Event event);
+
+      protected:
+        void _notify(Event event);
 
       private:
         std::vector<Observer *> _observers;

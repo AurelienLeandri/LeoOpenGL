@@ -7,17 +7,24 @@ namespace leo {
     Component::Component()
       : RegisteredObject()
     {
+      this->_notify(controller::Event::COMPONENT_CREATED);
+    }
+
+    Component::~Component() {
+      this->_notify(controller::Event::COMPONENT_DELETED);
     }
 
     Component::Component(const Component &other) :
       RegisteredObject(other)
     {
       // TODO copy constructor
+      this->_notify(controller::Event::COMPONENT_CREATED);
     }
 
     const Component &Component::operator=(const Component &other) {
       // TODO assignement operator
       RegisteredObject::operator=(other);
+      this->_notify(controller::Event::COMPONENT_UPDATED);
       return *this;
     }
 
@@ -26,6 +33,7 @@ namespace leo {
     }
 
     void Component::setBase(const Base *base) {
+      this->_notify(controller::Event::COMPONENT_UPDATED);
       this->_base = std::shared_ptr<const Base>(base);
     }
 

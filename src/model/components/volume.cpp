@@ -20,6 +20,7 @@ namespace leo {
     const Volume &Volume::operator=(const Volume &other) {
       this->_vertices = other._vertices;
       this->_indices = other._indices;
+      this->_notify(controller::Event::COMPONENT_UPDATED);
       return *this;
     }
 
