@@ -16,9 +16,16 @@
 
 #include <renderer/debug.hpp>
 
+#include <model/components/types/drawable.hpp>
+
+#include <vector>
+#include <map>
+
 namespace leo {
 
-class Engine{
+  using stringID = std::string;
+
+class Engine {
   public:
     Engine();
     ~Engine();
@@ -53,6 +60,8 @@ class Engine{
     GLFWwindow *_window;
     GLuint screenWidth = 800;
     GLuint screenHeight = 600;
+    std::map<stringID, std::shared_ptr<model::Drawable>> opaqueObjects;
+    std::map<stringID, std::shared_ptr<model::Drawable>> transparentObjects;
 };
 
 }

@@ -1,7 +1,6 @@
 #include "transformation.hpp"
 
 #include <model/base.hpp>
-#include <model/components/scene-object.hpp>
 
 namespace leo {
   namespace model {
@@ -107,17 +106,11 @@ namespace leo {
 
     std::vector<Transformation *> Transformation::_getChildTransformations() {
       std::vector<Transformation *> childTransformations;
-      for (auto component : this->_base->getComponents()) {
-        SceneObject *sceneObject = dynamic_cast<SceneObject *>(component.second.get());
-        if (sceneObject) {
-          for (auto childSceneObject : sceneObject->getChildren()) {
-            const Base *base = childSceneObject.second->getBase().get();
-            for (auto &c : base->getComponents()) {
-              Transformation *childTransformation = dynamic_cast<Transformation *>(c.second.get());
-              if (childTransformation)
-                childTransformations.push_back(childTransformation);
-            }
-          }
+      for (auto &childBase : _base->getChildren()) {
+        for (auto &c : childBase.second->getComponents()) {
+          Transformation *childTransformation = dynamic_cast<Transformation *>(c.second.get());
+          if (childTransformation)
+            childTransformations.push_back(childTransformation);
         }
       }
       return childTransformations;

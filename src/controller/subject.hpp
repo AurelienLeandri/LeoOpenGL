@@ -2,11 +2,14 @@
 
 #include <controller/event.hpp>
 #include <vector>
+#include <string>
 
 namespace leo {
   namespace controller {
 
     class Observer;
+
+    using stringID = std::string;
 
     class Subject {
       public:
@@ -14,6 +17,7 @@ namespace leo {
         void unwatch(Observer *observer);
 
       protected:
+        void _notify(Subject &subject, Event event);
         void _notify(Event event);
 
       private:

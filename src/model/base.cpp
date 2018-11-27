@@ -48,5 +48,46 @@ namespace leo {
       return it->second;
     }
 
+    const std::map<stringID, std::shared_ptr<Base>> &Base::getChildren() const {
+      return this->_children;
+    }
+
+    bool Base::addChild(Base *child) {
+      bool success;
+      if (success = this->_children.insert(
+          std::pair<stringID, std::shared_ptr<Base>>(child->getId(),
+            std::shared_ptr<Base>(child))).second)
+      {
+        child->setParent(this);
+        child->_setRootRec(this->_root.lock().get());
+      }
+      this->_notify(controller::Event::COMPONENT_UPDATED);
+      return success;
+    }
+
+    std::weak_ptr<const Base> Base::getParent() const {
+      return this->_parent;
+    }
+
+    void Base::setParent(Base *parent) {
+      this->_parent = std::shared_ptr<Base>(parent);
+      this->_notify(controller::Event::COMPONENT_UPDATED);
+    }
+
+    std::weak_ptr<const Base> Base::getRoot() const {
+      return this->_root;
+    }
+
+    void Base::setRoot(Base *root) {
+      this->_setRootRec(root);
+      this->_notify(controller::Event::COMPONENT_UPDATED);
+    }
+
+    void Base::_setRootRec(Base *root) {
+      this->_root = std::shared_ptr<Base>(root);
+      for (auto it: this->_children)
+        it.second->_setRootRec(root);
+    }
+
   } // namespace leo
 } // namespace model

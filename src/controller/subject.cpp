@@ -13,9 +13,13 @@ namespace leo {
       // TODO: unwatch
     }
 
-    void Subject::_notify(Event event) {
+    void Subject::_notify(Subject &subject, Event event) {
       for (auto observer : this->_observers)
-        observer->notified(*this, event);
+        observer->notified(subject, event);
+    }
+
+    void Subject::_notify(Event event) {
+      this->_notify(*this, event);
     }
 
   }  // namespace controller
