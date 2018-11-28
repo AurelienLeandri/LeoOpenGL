@@ -4,6 +4,8 @@ add_subdirectory(utils)
 set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/renderer.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/renderer.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/camera.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/input-manager.cpp
