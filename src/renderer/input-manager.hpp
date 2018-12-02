@@ -4,10 +4,14 @@
 
 #include <vector>
 #include <mutex>
+#include <memory>
 
 namespace leo {
 
   class InputManager {
+    public:
+      static InputManager *getInstance();
+
     public:
       void pressKey(int key);
       void releaseKey(int key);
@@ -18,6 +22,16 @@ namespace leo {
       void setFirstMouse(bool val);
       GLfloat pollYOffset();
       GLfloat pollXOffset();
+
+    private:
+      InputManager();
+
+    private:
+      static std::shared_ptr<InputManager> _instance;
+
+    public:
+      static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
+      static void mouseCallback(GLFWwindow *window, double xpos, double ypos);
 
     public:
       GLfloat lastX = 400;

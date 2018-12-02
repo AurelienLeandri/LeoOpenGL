@@ -23,6 +23,8 @@ namespace leo {
 
   using stringID = std::string;
 
+  class InputManager;
+
 class Engine {
   public:
     Engine();
@@ -38,7 +40,7 @@ class Engine {
     void gameLoop();
 
   public: // Control attributes
-    InputManager inputManager;
+    InputManager *inputManager;
 
   private:
     Camera *_camera;

@@ -59,8 +59,8 @@ namespace leo {
       this->_window = window;
       glfwSetWindowUserPointer(this->_window, this->_inputManager);
       glfwMakeContextCurrent(this->_window);
-      glfwSetKeyCallback(this->_window, this->keyCallback);
-      glfwSetCursorPosCallback(this->_window, this->mouseCallback);
+      glfwSetKeyCallback(this->_window, this->_inputManager->keyCallback);
+      glfwSetCursorPosCallback(this->_window, this->_inputManager->mouseCallback);
       glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
@@ -80,39 +80,6 @@ namespace leo {
         std::vector<const Framebuffer *> inputs) {
       glfwSwapBuffers(this->_window);
       return this->_output;
-    }
-
-
-    // Is called whenever a key is pressed/released via GLFW
-    void Renderer::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode)
-    {
-      UNUSED(scancode); UNUSED(mode);
-      InputManager *im = static_cast<InputManager *>(glfwGetWindowUserPointer(window));
-      if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
-      if (key >= 0 && key < 1024)
-      {
-        if(action == GLFW_PRESS)
-          im->pressKey(key);
-        else if(action == GLFW_RELEASE)
-          im->releaseKey(key);
-      }
-    }
-
-    void Renderer::mouseCallback(GLFWwindow *window, double xpos, double ypos)
-    {
-      InputManager *im = static_cast<InputManager *>(glfwGetWindowUserPointer(window));
-      if(im->firstMouse) {
-        im->setLastX(xpos);
-        im->setLastY(ypos);
-        im->setFirstMouse(false);
-      }
-      GLfloat xoffset = xpos - im->lastX;
-      GLfloat yoffset = im->lastY - ypos;  // Reversed since y-coordinates go from bottom to left
-      im->setLastX(xpos);
-      im->setLastY(ypos);
-      im->setXOffset(xoffset);
-      im->setYOffset(yoffset);
     }
 
   }  // namespace renderer

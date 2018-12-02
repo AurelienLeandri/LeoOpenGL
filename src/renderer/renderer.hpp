@@ -27,10 +27,6 @@ namespace leo {
         Framebuffer &render(model::Base *root,
             std::vector<const Framebuffer *> inputs);
 
-      public:
-        static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
-        static void mouseCallback(GLFWwindow *window, double xpos, double ypos);
-
       private:
         void _init();
         Framebuffer _output;
