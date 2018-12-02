@@ -78,8 +78,47 @@ namespace leo {
 
     Framebuffer &Renderer::render(model::Base *root,
         std::vector<const Framebuffer *> inputs) {
+      this->_renderRec(root, inputs);
       glfwSwapBuffers(this->_window);
       return this->_output;
+    }
+
+    Framebuffer &Renderer::_renderRec(model::Base *root,
+        std::vector<const Framebuffer *> inputs) {
+      model::DrawableCollection *toDraw;
+      auto &components = root->getComponents();
+      for (auto &p : components) {
+        auto id = p.first;
+        auto drawables = dynamic_cast<model::DrawableCollection*>(p.second.get());
+        if (drawables) {
+          toDraw = drawables;
+          continue;
+        }
+        /*
+        auto material = dynamic_cast<model::Material *>(p.second.get());
+        if (material) {
+          this->_setCurrentMaterial(material);
+          continue;
+        }
+        */
+        auto transformation = dynamic_cast<model::Transformation *>(p.second.get());
+        if (transformation) {
+          this->_setModelMatrix(transformation);
+          continue;
+        }
+      }
+      for (auto &child : root->getChildren())
+        this->_renderRec(child.second.get(), inputs);
+    }
+
+    /*
+    void Renderer::setCurrentMaterial(model::Material *material) {
+      UNUSED(material);
+    }
+    */
+
+    void Renderer::_setModelMatrix(model::Transformation *transformation) {
+      UNUSED(transformation);
     }
 
   }  // namespace renderer

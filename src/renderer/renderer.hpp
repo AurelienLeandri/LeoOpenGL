@@ -7,6 +7,10 @@
 #include <renderer/camera.hpp>
 #include <renderer/debug.hpp>
 
+#include <model/components/drawable-collection.hpp>
+#include <model/components/volume.hpp>
+#include <model/components/transformation.hpp>
+
 namespace leo {
   namespace renderer {
 
@@ -26,6 +30,12 @@ namespace leo {
         Framebuffer &render(model::Base *root);
         Framebuffer &render(model::Base *root,
             std::vector<const Framebuffer *> inputs);
+
+      private:
+        Framebuffer &_renderRec(model::Base *root,
+            std::vector<const Framebuffer *> inputs);
+        //void _setCurrentMaterial(model::Material *material);
+        void _setModelMatrix(model::Transformation *transformation);
 
       private:
         void _init();
