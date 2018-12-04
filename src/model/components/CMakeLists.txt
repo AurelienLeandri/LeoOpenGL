@@ -9,6 +9,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/drawable-collection.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/volume.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/volume.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/material.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/material.cpp
   PARENT_SCOPE
   )
 

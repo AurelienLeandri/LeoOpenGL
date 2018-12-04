@@ -28,5 +28,5 @@ namespace leo {
         
     };  // class Component
 
-  }  // namespace leo
+  }  // namespace model
 }  // namespace leo
