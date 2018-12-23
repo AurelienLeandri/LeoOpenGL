@@ -20,14 +20,14 @@ namespace leo {
         static std::string generateStringID();
 
       public:
-        bool registerObject(std::shared_ptr<const RegisteredObject> object, stringID id);
+        bool registerObject(const RegisteredObject *object, stringID id);
         bool unregisterObject(stringID id);
 
       private:
         ObjectRegister();
 
       private:
-        std::map<stringID, std::weak_ptr<const RegisteredObject>> _register;
+        std::map<stringID, const RegisteredObject*> _register;
         static unsigned int _nbObjects;
 
     };

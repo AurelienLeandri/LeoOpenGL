@@ -1,7 +1,10 @@
 #include "framebuffer.hpp"
 
 namespace leo {
-  Framebuffer::Framebuffer() {
+  Framebuffer::Framebuffer() : _id(0) {
+  }
+
+  void Framebuffer::generate() {
     Texture renderedTexture;
     glGenFramebuffers(1, &this->_id);
     glBindFramebuffer(GL_FRAMEBUFFER, this->_id);

@@ -16,7 +16,6 @@ namespace leo {
     _fragmentCode(other._fragmentCode),
     _geometryCode(other._geometryCode)
   {
-    this->_initProgram();
   }
 
   Shader::Shader(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath,
@@ -26,14 +25,12 @@ namespace leo {
   {
     if (geometrySourcePath)
       _geometryCode = FileReader::readFile(geometrySourcePath);
-    this->_initProgram();
   }
 
   Shader &Shader::operator=(const Shader &other) {
     this->_vertexCode = other._vertexCode;
     this->_fragmentCode = other._fragmentCode;
     this->_geometryCode = other._geometryCode;
-    this->_initProgram();
     return *this;
   }
 
@@ -80,7 +77,9 @@ namespace leo {
     }
   }
 
-  void Shader::use() const {
+  void Shader::use() {
+    if (!this->_initialized)
+      this->_initProgram();
     glUseProgram(this->_program);
   }
 

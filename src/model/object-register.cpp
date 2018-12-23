@@ -13,10 +13,9 @@ namespace leo {
       return *r;
     }
 
-    bool ObjectRegister::registerObject(std::shared_ptr<const RegisteredObject> object, stringID id) {
+    bool ObjectRegister::registerObject(const RegisteredObject *object, stringID id) {
       return this->_register.insert(
-          std::pair<std::string, std::weak_ptr<const RegisteredObject>>(id,
-            std::weak_ptr<const RegisteredObject>(object))).second;
+          std::pair<std::string, const RegisteredObject*>(id, object)).second;
     }
 
     bool ObjectRegister::unregisterObject(stringID id) {

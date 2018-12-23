@@ -16,6 +16,7 @@ class Framebuffer {
     Framebuffer &operator=(const Framebuffer &other);
 
   public:
+    void generate();
     GLuint getId() const { return this->_id; }
     const std::vector<Texture> &getColorBuffers() const { return this->_colorBuffers; }
 

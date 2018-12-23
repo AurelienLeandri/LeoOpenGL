@@ -12,12 +12,12 @@ namespace leo {
         DrawableCollection();
         DrawableCollection(const DrawableCollection &other);
         const DrawableCollection &operator=(const DrawableCollection &other);
-        const std::map<stringID, std::weak_ptr<Drawable>> &getCollection();
+        const std::map<stringID, Drawable*> &getCollection();
         bool addDrawable(Drawable *drawable);
-        std::shared_ptr<Drawable> getDrawable(stringID id);
+        Drawable *getDrawable(stringID id);
 
       private:
-        std::map<stringID, std::weak_ptr<Drawable>> _collection;
+        std::map<stringID, Drawable*> _collection;
     };
 
   } // namespace leo

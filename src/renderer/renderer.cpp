@@ -6,9 +6,15 @@
 namespace leo {
   namespace renderer {
 
-    Renderer::Renderer(Shader shader) :
+    Renderer::Renderer(GLFWwindow *window,
+        InputManager *inputManager,
+        Camera *camera,
+        Shader shader
+        ) :
       _shader(shader)
     {
+      this->_setWindowContext(window, inputManager);
+      this->_setCamera(camera);
       this->_init();
     }
 
@@ -16,17 +22,6 @@ namespace leo {
     }
 
     void Renderer::_init() {
-      // Init GLFW
-      glfwInit();
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-      glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-      glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-      glfwWindowHint(GLFW_SAMPLES, 4);
-
-      glfwSwapInterval(1);
-
       // Initialize GLEW to setup the OpenGL Function pointers
       glewExperimental = GL_TRUE;
 
@@ -59,7 +54,7 @@ namespace leo {
       }
     }
 
-    void Renderer::setWindowContext(GLFWwindow *window, InputManager *inputManager) {
+    void Renderer::_setWindowContext(GLFWwindow *window, InputManager *inputManager) {
       this->_inputManager = inputManager;
       this->_window = window;
       glfwSetWindowUserPointer(this->_window, this->_inputManager);
@@ -69,7 +64,7 @@ namespace leo {
       glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
-    void Renderer::setCamera(Camera *camera) {
+    void Renderer::_setCamera(Camera *camera) {
       this->_camera = camera;
     }
 
@@ -95,33 +90,41 @@ namespace leo {
       auto &components = root->getComponents();
       for (auto &p : components) {
         auto id = p.first;
-        auto drawables = dynamic_cast<model::DrawableCollection*>(p.second.get());
+        auto drawables = dynamic_cast<model::DrawableCollection*>(p.second);
         if (drawables) {
           toDraw = drawables;
           continue;
         }
-        auto material = dynamic_cast<model::Material *>(p.second.get());
+        auto material = dynamic_cast<model::Material *>(p.second);
         if (material) {
           this->_setCurrentMaterial(material);
           continue;
         }
-        auto transformation = dynamic_cast<model::Transformation *>(p.second.get());
+        auto transformation = dynamic_cast<model::Transformation *>(p.second);
         if (transformation) {
           this->_setModelMatrix(transformation);
           continue;
         }
       }
       for (auto &child : root->getChildren())
-        this->_renderRec(child.second.get(), inputs);
+        this->_renderRec(child.second, inputs);
     }
 
     void Renderer::_setCurrentMaterial(model::Material *material) {
       this->_shader.setVector3("material.diffuse_value", material->diffuse_value);
-      this->_shader.setTexture("material.diffuse_texture", *material->diffuse_texture, 0);
+      if (material->diffuse_texture) {
+        this->_shader.setTexture("material.diffuse_texture", *material->diffuse_texture, 0);
+      }
+
       this->_shader.setVector3("material.specular_value", material->specular_value);
-      this->_shader.setTexture("material.specular_texture", *material->specular_texture, 1);
       this->_shader.setInt("material.shininess", material->shininess);
-      this->_shader.setTexture("material.reflection_map", *material->reflection_map, 2);
+      if (material->specular_texture) {
+        this->_shader.setTexture("material.specular_texture", *material->specular_texture, 1);
+      }
+
+      if (material->reflection_map) {
+        this->_shader.setTexture("material.reflection_map", *material->reflection_map, 2);
+      }
     }
 
     void Renderer::_setModelMatrix(model::Transformation *transformation) {

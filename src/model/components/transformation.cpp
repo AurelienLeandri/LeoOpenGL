@@ -108,7 +108,7 @@ namespace leo {
       std::vector<Transformation *> childTransformations;
       for (auto &childBase : _base->getChildren()) {
         for (auto &c : childBase.second->getComponents()) {
-          Transformation *childTransformation = dynamic_cast<Transformation *>(c.second.get());
+          Transformation *childTransformation = dynamic_cast<Transformation *>(c.second);
           if (childTransformation)
             childTransformations.push_back(childTransformation);
         }

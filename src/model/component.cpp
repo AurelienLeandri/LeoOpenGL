@@ -28,13 +28,13 @@ namespace leo {
       return *this;
     }
 
-    std::shared_ptr<const Base> Component::getBase() {
+    const Base *Component::getBase() {
       return this->_base;
     }
 
     void Component::setBase(const Base *base) {
       this->_notify(controller::Event::COMPONENT_UPDATED);
-      this->_base = std::shared_ptr<const Base>(base);
+      this->_base = base;
     }
 
   }  // namespace leo

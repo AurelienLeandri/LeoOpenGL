@@ -13,16 +13,36 @@ namespace leo {
 
   Engine::~Engine() {
     delete this->_camera;
-    delete this->_renderer;
+    if (this->_renderer) delete this->_renderer;
   }
 
   void Engine::_init() {
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
+    glfwSwapInterval(1);
+
     this->_window = glfwCreateWindow(this->screenWidth, this->screenHeight, " ~~~ LeoEngine!!", nullptr, nullptr);
     this->_camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
     this->inputManager = InputManager::getInstance();
-    this->_renderer = new renderer::Renderer(Shader("resources/shaders/default.vs.glsl", "resources/shaders/basic.frag.glsl"));
-    this->_renderer->setWindowContext(this->_window, this->inputManager);
-    this->_renderer->setCamera(this->_camera);
+  }
+
+  void Engine::initRenderer(Shader shader) {
+    this->_renderer = new renderer::Renderer(
+        this->_window,
+        this->inputManager,
+        this->_camera,
+        shader
+        );
+  }
+
+  void Engine::setScene(model::Base *scene) {
+    this->_scene = scene;
   }
 
   void Engine::gameLoop() {
@@ -38,7 +58,9 @@ namespace leo {
 
       this->doMovement(deltaTime);
 
-      this->_renderer->render(nullptr);
+      if (this->_scene) {
+        this->_renderer->render(this->_scene);
+      }
 
       // Check and call events
       glfwPollEvents();

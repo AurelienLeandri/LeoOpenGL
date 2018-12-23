@@ -23,15 +23,17 @@ namespace leo {
 
     class Renderer {
       public:
-        Renderer(Shader shader);
+        Renderer(GLFWwindow *window,
+            InputManager *inputManager,
+            Camera *camera,
+            Shader shader
+            );
         virtual ~Renderer();
         Renderer(const Renderer &other) = delete;
 
       public:
         const Renderer &operator=(const Renderer &other) = delete;
         Framebuffer &getOutput();
-        void setWindowContext(GLFWwindow *window, InputManager *inputManager);
-        void setCamera(Camera *camera);
 
       public:
         Framebuffer &render(model::Base *root);
@@ -43,6 +45,8 @@ namespace leo {
             std::vector<const Framebuffer *> inputs);
         void _setCurrentMaterial(model::Material *material);
         void _setModelMatrix(model::Transformation *transformation);
+        void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
+        void _setCamera(Camera *camera);
 
       private:
         void _init();

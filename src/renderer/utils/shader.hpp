@@ -28,7 +28,8 @@ namespace leo {
 
     public:
       const GLuint &getProgram() const;
-      void use() const;
+      void compile();
+      void use();
       GLuint getTextureOffset() const { return this->_textureOffset; }
       void setTextureOffset(GLuint value) { this->_textureOffset = value; }
 
@@ -48,6 +49,7 @@ namespace leo {
       std::string _geometryCode;
       GLuint _program;
       GLuint _textureOffset = 0;
+      bool _initialized = false;
   };
 
 }

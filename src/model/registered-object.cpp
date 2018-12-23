@@ -8,7 +8,7 @@ namespace leo {
       : _register(ObjectRegister::getInstance())
         , _id(ObjectRegister::generateStringID())
     {
-      this->_register.registerObject(std::shared_ptr<RegisteredObject>(this), this->_id);
+      this->_register.registerObject(this, this->_id);
     }
 
     RegisteredObject::~RegisteredObject() {
@@ -19,13 +19,13 @@ namespace leo {
       _register(ObjectRegister::getInstance())
     {
       this->_id = ObjectRegister::generateStringID();
-      this->_register.registerObject(std::shared_ptr<RegisteredObject>(this), this->_id);
+      this->_register.registerObject(this, this->_id);
     }
 
     const RegisteredObject &RegisteredObject::operator=(const RegisteredObject &other) {
       this->_register = ObjectRegister::getInstance();
       this->_id = ObjectRegister::generateStringID();
-      this->_register.registerObject(std::shared_ptr<RegisteredObject>(this), this->_id);
+      this->_register.registerObject(this, this->_id);
       return *this;
     }
 

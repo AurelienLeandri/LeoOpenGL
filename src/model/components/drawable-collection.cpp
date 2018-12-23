@@ -16,7 +16,7 @@ namespace leo {
       return *this;
     }
 
-    const std::map<stringID, std::weak_ptr<Drawable>> &DrawableCollection::getCollection() {
+    const std::map<stringID, Drawable*> &DrawableCollection::getCollection() {
       return this->_collection;
     }
 
@@ -24,15 +24,15 @@ namespace leo {
       this->_notify(controller::Event::COMPONENT_UPDATED);
       this->_notify(controller::Event::COMPONENT_UPDATED);
       return this->_collection.insert(
-          std::pair<std::string, std::shared_ptr<Drawable>>(drawable->getId(),
-            std::shared_ptr<Drawable>(drawable))).second;
+          std::pair<std::string, Drawable*>(drawable->getId(),
+            drawable)).second;
     }
 
-    std::shared_ptr<Drawable> DrawableCollection::getDrawable(stringID id) {
+    Drawable *DrawableCollection::getDrawable(stringID id) {
       auto it = this->_collection.find(id);
       if (it == this->_collection.end())
         return nullptr;
-      return it->second.lock();
+      return it->second;
     }
 
   } // namespace leo

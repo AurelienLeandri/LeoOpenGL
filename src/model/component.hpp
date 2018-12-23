@@ -19,12 +19,12 @@ namespace leo {
         virtual ~Component();
 
       public:
-        std::map<stringID, std::shared_ptr<const Base>> getParentBases();
-        std::shared_ptr<const Base> getBase();
+        std::map<stringID, const Base*> getParentBases();
+        const Base *getBase();
         void setBase(const Base *base);
 
       protected:
-        std::shared_ptr<const Base> _base;
+        const Base *_base;
         
     };  // class Component
 

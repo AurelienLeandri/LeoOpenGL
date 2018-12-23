@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <renderer/renderer.hpp>
+#include <renderer/engine.hpp>
 #include <renderer/utils/shader.hpp>
 #include <model/components/material.hpp>
 #include <model/components/drawable-collection.hpp>
@@ -19,27 +19,30 @@ void print_matrix(const glm::mat4x4 &mat) {
 
 void cubeScene() {
   // Init scene
-  model::Base b;
+  model::Base scene;
   model::Material material;
   model::Volume cube = model::Volume::createCube(1.f);
   model::DrawableCollection drawables;
   drawables.addDrawable(&cube);
   material.diffuse_value = glm::vec3(0.89f, 0.42f, 0.11f);
-  b.addComponent("Material", &material);
-  b.addComponent("CubeVolume", &cube);
-  b.addComponent("Drawables", &drawables);
+  scene.addComponent("Material", &material);
+  scene.addComponent("CubeVolume", &cube);
+  scene.addComponent("Drawables", &drawables);
 
-  // Init renderer
-  renderer::Renderer renderer(Shader(
+  Shader shader(
         "resources/shaders/default.vs.glsl",
         "resources/shaders/basic.frag.glsl"
-        ));
+        );
 
   // Render
-  renderer.render(&b);
+  Engine engine;
+  engine.initRenderer(shader);
+  engine.setScene(&scene);
+  engine.gameLoop();
 }
 
 int main()
 {
+  cubeScene();
   return 0;
 }

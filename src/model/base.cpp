@@ -29,7 +29,7 @@ namespace leo {
       return *this;
     }
 
-    const std::map<std::string, std::shared_ptr<Component>> &Base::getComponents() const {
+    const std::map<std::string, Component*> &Base::getComponents() const {
       return this->_components;
     }
 
@@ -37,44 +37,42 @@ namespace leo {
       component->setBase(this);
       this->_notify(controller::Event::BASE_UPDATED);
       return this->_components.insert(
-          std::pair<std::string, std::shared_ptr<Component>>(name,
-            std::shared_ptr<Component>(component))).second;
+          std::pair<std::string, Component*>(name, component)).second;
     }
 
-    std::shared_ptr<Component> Base::getComponent(std::string name) {
+    Component *Base::getComponent(std::string name) {
       auto it = this->_components.find(name);
       if (it == this->_components.end())
         return nullptr;
       return it->second;
     }
 
-    const std::map<stringID, std::shared_ptr<Base>> &Base::getChildren() const {
+    const std::map<stringID, Base*> &Base::getChildren() const {
       return this->_children;
     }
 
     bool Base::addChild(Base *child) {
       bool success;
       if (success = this->_children.insert(
-          std::pair<stringID, std::shared_ptr<Base>>(child->getId(),
-            std::shared_ptr<Base>(child))).second)
+          std::pair<stringID, Base*>(child->getId(), child)).second)
       {
         child->setParent(this);
-        child->_setRootRec(this->_root.lock().get());
+        child->_setRootRec(this->_root);
       }
       this->_notify(controller::Event::COMPONENT_UPDATED);
       return success;
     }
 
-    std::weak_ptr<const Base> Base::getParent() const {
+    const Base *Base::getParent() const {
       return this->_parent;
     }
 
     void Base::setParent(Base *parent) {
-      this->_parent = std::shared_ptr<Base>(parent);
+      this->_parent = parent;
       this->_notify(controller::Event::COMPONENT_UPDATED);
     }
 
-    std::weak_ptr<const Base> Base::getRoot() const {
+    const Base *Base::getRoot() const {
       return this->_root;
     }
 
@@ -84,7 +82,7 @@ namespace leo {
     }
 
     void Base::_setRootRec(Base *root) {
-      this->_root = std::shared_ptr<Base>(root);
+      this->_root = root;
       for (auto it: this->_children)
         it.second->_setRootRec(root);
     }

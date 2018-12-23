@@ -37,6 +37,8 @@ class Engine {
     void doMovement(float deltaTime);
 
   public:
+    void initRenderer(Shader shader);
+    void setScene(model::Base *scene);
     void gameLoop();
 
   public: // Control attributes
@@ -46,6 +48,7 @@ class Engine {
     Camera *_camera;
     renderer::Renderer *_renderer;
     GLFWwindow *_window;
+    model::Base *_scene;
     GLuint screenWidth = 800;
     GLuint screenHeight = 600;
 };
