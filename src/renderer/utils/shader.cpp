@@ -1,4 +1,5 @@
 #include "shader.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace leo {
 
@@ -93,16 +94,26 @@ namespace leo {
     return ss.str();
   }
 
-  void setVector3(const char *name, glm::vec3 value) {
+  void Shader::setVector3(const char *name, glm::vec3 value) {
+      glUniform3f(glGetUniformLocation(this->_program, name), value.x, value.y, value.z);
   }
 
-  void setFloat(const char *name, GLfloat value) {
+  void Shader::setFloat(const char *name, GLfloat value) {
+      glUniform1f(glGetUniformLocation(this->_program, name), value);
   }
 
-  void setInt(const char *name, GLint value) {
+  void Shader::setInt(const char *name, GLint value) {
+      glUniform1i(glGetUniformLocation(this->_program, name), value);
   }
 
-  void setTexture(const char *name, GLuint value) {
+  void Shader::setTexture(const char *name, Texture &texture, GLuint slot) {
+      glActiveTexture(GL_TEXTURE0 + slot);
+      glBindTexture(GL_TEXTURE_2D, texture.id);
+      glUniform1i(glGetUniformLocation(this->_program, name), slot);
+  }
+
+  void Shader::setMat4(const char *name, glm::mat4 &value) {
+      glUniformMatrix4fv(glGetUniformLocation(this->_program, name), 1, GL_FALSE, glm::value_ptr(value));
   }
 
 }

@@ -21,10 +21,10 @@ struct UDirectionLight {
 };
 
 struct Material {
-  vec3 diffuse;
-  sampler2D texture_diffuse;
-  vec3 specular;
-  sampler2D texture_specular;
+  vec3 diffuse_value;
+  sampler2D diffuse_texture;
+  vec3 specular_value;
+  sampler2D specular_texture;
   sampler2D reflection_map;
   int shininess;
 };
@@ -50,12 +50,12 @@ void main()
   // Light Variables
   vec3 norm = normalize(Normal);
 
-  vec4 diffuse_sample_rgba = texture(material.texture_diffuse, TexCoords);
+  vec4 diffuse_sample_rgba = texture(material.diffuse_texture, TexCoords);
   vec3 diffuse_sample = diffuse_sample_rgba.xyz;
 
   float specularStrength = 0.5;
   vec3 viewDir = normalize(viewPos - FragPos);
-  vec4 specular_sample_rgba = texture(material.texture_specular, TexCoords);
+  vec4 specular_sample_rgba = texture(material.specular_texture, TexCoords);
   vec3 specular_sample = specular_sample_rgba.xyz;
 
   vec3 diffuse = vec3(0.0, 0.0, 0.0);
@@ -65,10 +65,10 @@ void main()
     UPointLight iupl = upl[i];
     vec3 lightDir = normalize(iupl.position - FragPos);
     float diffuseFactor = max(dot(norm, lightDir), 0.0);
-    diffuse += iupl.diffuse * diffuseFactor * (material.diffuse + diffuse_sample);
+    diffuse += iupl.diffuse * diffuseFactor * (material.diffuse_value + diffuse_sample);
     vec3 reflectDir = normalize(reflect(-lightDir, norm));
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    specular += iupl.specular * spec * (material.specular + specular_sample);
+    specular += iupl.specular * spec * (material.specular_value + specular_sample);
   }
 
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
@@ -76,10 +76,10 @@ void main()
     vec3 lightDir = normalize(-iudl.direction);
     //vec3 lightDir = -vec3(0.0, 0.0, 1.0);
     float diffuseFactor = max(dot(norm, lightDir), 0.0);
-    diffuse += iudl.diffuse * diffuseFactor * (material.diffuse + diffuse_sample);
+    diffuse += iudl.diffuse * diffuseFactor * (material.diffuse_value + diffuse_sample);
     vec3 reflectDir = normalize(reflect(-lightDir, norm));
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    specular += iudl.specular * spec * (material.specular + specular_sample);
+    specular += iudl.specular * spec * (material.specular_value + specular_sample);
   }
 
   vec3 reflection = reflect(-viewDir, norm);

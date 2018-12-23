@@ -116,7 +116,12 @@ namespace leo {
     }
 
     void Renderer::_setCurrentMaterial(model::Material *material) {
-      UNUSED(material);
+      this->_shader.setVector3("material.diffuse_value", material->diffuse_value);
+      this->_shader.setTexture("material.diffuse_texture", *material->diffuse_texture, 0);
+      this->_shader.setVector3("material.specular_value", material->specular_value);
+      this->_shader.setTexture("material.specular_texture", *material->specular_texture, 1);
+      this->_shader.setInt("material.shininess", material->shininess);
+      this->_shader.setTexture("material.reflection_map", *material->reflection_map, 2);
     }
 
     void Renderer::_setModelMatrix(model::Transformation *transformation) {
