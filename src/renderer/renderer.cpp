@@ -1,9 +1,14 @@
 #include "renderer.hpp"
 
+#include <renderer/utils/shader.hpp>
+#include <model/components/material.hpp>
+
 namespace leo {
   namespace renderer {
 
-    Renderer::Renderer() {
+    Renderer::Renderer(Shader shader) :
+      _shader(shader)
+    {
       this->_init();
     }
 
@@ -78,12 +83,13 @@ namespace leo {
 
     Framebuffer &Renderer::render(model::Base *root,
         std::vector<const Framebuffer *> inputs) {
+      this->_shader.use();
       this->_renderRec(root, inputs);
       glfwSwapBuffers(this->_window);
       return this->_output;
     }
 
-    Framebuffer &Renderer::_renderRec(model::Base *root,
+    void Renderer::_renderRec(model::Base *root,
         std::vector<const Framebuffer *> inputs) {
       model::DrawableCollection *toDraw;
       auto &components = root->getComponents();
@@ -94,13 +100,11 @@ namespace leo {
           toDraw = drawables;
           continue;
         }
-        /*
         auto material = dynamic_cast<model::Material *>(p.second.get());
         if (material) {
           this->_setCurrentMaterial(material);
           continue;
         }
-        */
         auto transformation = dynamic_cast<model::Transformation *>(p.second.get());
         if (transformation) {
           this->_setModelMatrix(transformation);
@@ -111,11 +115,9 @@ namespace leo {
         this->_renderRec(child.second.get(), inputs);
     }
 
-    /*
-    void Renderer::setCurrentMaterial(model::Material *material) {
+    void Renderer::_setCurrentMaterial(model::Material *material) {
       UNUSED(material);
     }
-    */
 
     void Renderer::_setModelMatrix(model::Transformation *transformation) {
       UNUSED(transformation);

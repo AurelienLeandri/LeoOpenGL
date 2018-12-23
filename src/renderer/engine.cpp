@@ -20,7 +20,7 @@ namespace leo {
     this->_window = glfwCreateWindow(this->screenWidth, this->screenHeight, " ~~~ LeoEngine!!", nullptr, nullptr);
     this->_camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
     this->inputManager = InputManager::getInstance();
-    this->_renderer = new renderer::Renderer();
+    this->_renderer = new renderer::Renderer(Shader("resources/shaders/default.vs.glsl", "resources/shaders/basic.frag.glsl"));
     this->_renderer->setWindowContext(this->_window, this->inputManager);
     this->_renderer->setCamera(this->_camera);
   }

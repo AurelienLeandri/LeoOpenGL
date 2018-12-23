@@ -2,95 +2,107 @@
 
 namespace leo {
 
-Shader::Shader() {
-}
-
-Shader::Shader(const GLchar *vertexSourcePath,
-               const GLchar *fragmentSourcePath) :
-  Shader(vertexSourcePath, fragmentSourcePath, nullptr)
-{}
-
-Shader::Shader(const Shader &other) :
-  _vertexCode(other._vertexCode),
-  _fragmentCode(other._fragmentCode),
-  _geometryCode(other._geometryCode)
-{
-  this->_initProgram();
-}
-
-Shader::Shader(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath,
-    const GLchar *geometrySourcePath) :
-  _vertexCode(FileReader::readFile(vertexSourcePath)),
-  _fragmentCode(FileReader::readFile(fragmentSourcePath))
-{
-  if (geometrySourcePath)
-    _geometryCode = FileReader::readFile(geometrySourcePath);
-  this->_initProgram();
-}
-
-Shader &Shader::operator=(const Shader &other) {
-  this->_vertexCode = other._vertexCode;
-  this->_fragmentCode = other._fragmentCode;
-  this->_geometryCode = other._geometryCode;
-  this->_initProgram();
-  return *this;
-}
-
-void Shader::_initProgram() {
-  const GLchar *vShaderCode = this->_vertexCode.c_str();
-  const GLchar *fShaderCode = this->_fragmentCode.c_str();
-  GLuint vertex, fragment;
-  this->compileShader(vertex, vShaderCode, GL_VERTEX_SHADER);
-  this->compileShader(fragment, fShaderCode, GL_FRAGMENT_SHADER);
-  this->_program = glCreateProgram();
-  glAttachShader(this->_program, vertex);
-  glAttachShader(this->_program, fragment);
-  if (this->_geometryCode.size()) {
-    GLuint geometry;
-    const GLchar *gShaderCode = this->_geometryCode.c_str();
-    this->compileShader(geometry, gShaderCode, GL_GEOMETRY_SHADER);
-    glAttachShader(this->_program, geometry);
+  Shader::Shader() {
   }
-  glLinkProgram(this->_program);
-  GLint success;
-  GLchar infoLog[512];
-  glGetProgramiv(this->_program, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(this->_program, 512, NULL, infoLog);
-    std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
-    << infoLog << std::endl;
+
+  Shader::Shader(const GLchar *vertexSourcePath,
+      const GLchar *fragmentSourcePath) :
+    Shader(vertexSourcePath, fragmentSourcePath, nullptr)
+  {}
+
+  Shader::Shader(const Shader &other) :
+    _vertexCode(other._vertexCode),
+    _fragmentCode(other._fragmentCode),
+    _geometryCode(other._geometryCode)
+  {
+    this->_initProgram();
   }
-  glDeleteShader(vertex);
-  glDeleteShader(fragment);
-}
 
-void Shader::compileShader(GLuint &shader, const GLchar *shaderCode,
-                           GLint shaderType) {
-  GLint success;
-  GLchar infolog[512];
-  shader = glCreateShader(shaderType);
-  glShaderSource(shader, 1, &shaderCode, NULL);
-  glCompileShader(shader);
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(shader, 512, NULL, infolog);
-    std::cout << "ERROR::PROGRAM::COMPILE::COMPILATION_FAILED\n"
-    << infolog << std::endl;
+  Shader::Shader(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath,
+      const GLchar *geometrySourcePath) :
+    _vertexCode(FileReader::readFile(vertexSourcePath)),
+    _fragmentCode(FileReader::readFile(fragmentSourcePath))
+  {
+    if (geometrySourcePath)
+      _geometryCode = FileReader::readFile(geometrySourcePath);
+    this->_initProgram();
   }
-}
 
-void Shader::use() const {
-  glUseProgram(this->_program);
-}
+  Shader &Shader::operator=(const Shader &other) {
+    this->_vertexCode = other._vertexCode;
+    this->_fragmentCode = other._fragmentCode;
+    this->_geometryCode = other._geometryCode;
+    this->_initProgram();
+    return *this;
+  }
 
-const GLuint &Shader::getProgram() const {
-  return this->_program;
-}
+  void Shader::_initProgram() {
+    const GLchar *vShaderCode = this->_vertexCode.c_str();
+    const GLchar *fShaderCode = this->_fragmentCode.c_str();
+    GLuint vertex, fragment;
+    this->_compileShader(vertex, vShaderCode, GL_VERTEX_SHADER);
+    this->_compileShader(fragment, fShaderCode, GL_FRAGMENT_SHADER);
+    this->_program = glCreateProgram();
+    glAttachShader(this->_program, vertex);
+    glAttachShader(this->_program, fragment);
+    if (this->_geometryCode.size()) {
+      GLuint geometry;
+      const GLchar *gShaderCode = this->_geometryCode.c_str();
+      this->_compileShader(geometry, gShaderCode, GL_GEOMETRY_SHADER);
+      glAttachShader(this->_program, geometry);
+    }
+    glLinkProgram(this->_program);
+    GLint success;
+    GLchar infoLog[512];
+    glGetProgramiv(this->_program, GL_LINK_STATUS, &success);
+    if (!success) {
+      glGetProgramInfoLog(this->_program, 512, NULL, infoLog);
+      std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
+        << infoLog << std::endl;
+    }
+    glDeleteShader(vertex);
+    glDeleteShader(fragment);
+  }
 
-std::string Shader::generateParamName(std::string prefix, int nb, std::string suffix) {
-  std::stringstream ss;
-  ss << prefix << nb << suffix;
-  return ss.str();
-}
+  void Shader::_compileShader(GLuint &shader, const GLchar *shaderCode,
+      GLint shaderType) {
+    GLint success;
+    GLchar infolog[512];
+    shader = glCreateShader(shaderType);
+    glShaderSource(shader, 1, &shaderCode, NULL);
+    glCompileShader(shader);
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+      glGetShaderInfoLog(shader, 512, NULL, infolog);
+      std::cout << "ERROR::PROGRAM::COMPILE::COMPILATION_FAILED\n"
+        << infolog << std::endl;
+    }
+  }
+
+  void Shader::use() const {
+    glUseProgram(this->_program);
+  }
+
+  const GLuint &Shader::getProgram() const {
+    return this->_program;
+  }
+
+  std::string Shader::generateParamName(std::string prefix, int nb, std::string suffix) {
+    std::stringstream ss;
+    ss << prefix << nb << suffix;
+    return ss.str();
+  }
+
+  void setVector3(const char *name, glm::vec3 value) {
+  }
+
+  void setFloat(const char *name, GLfloat value) {
+  }
+
+  void setInt(const char *name, GLint value) {
+  }
+
+  void setTexture(const char *name, GLuint value) {
+  }
 
 }

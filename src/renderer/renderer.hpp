@@ -6,17 +6,24 @@
 #include <renderer/input-manager.hpp>
 #include <renderer/camera.hpp>
 #include <renderer/debug.hpp>
+#include <renderer/utils/shader.hpp>
 
 #include <model/components/drawable-collection.hpp>
 #include <model/components/volume.hpp>
 #include <model/components/transformation.hpp>
 
+
 namespace leo {
+
+  namespace model {
+    class Material;
+  }
+
   namespace renderer {
 
     class Renderer {
       public:
-        Renderer();
+        Renderer(Shader shader);
         virtual ~Renderer();
         Renderer(const Renderer &other) = delete;
 
@@ -32,9 +39,9 @@ namespace leo {
             std::vector<const Framebuffer *> inputs);
 
       private:
-        Framebuffer &_renderRec(model::Base *root,
+        void _renderRec(model::Base *root,
             std::vector<const Framebuffer *> inputs);
-        //void _setCurrentMaterial(model::Material *material);
+        void _setCurrentMaterial(model::Material *material);
         void _setModelMatrix(model::Transformation *transformation);
 
       private:
@@ -43,6 +50,7 @@ namespace leo {
         Camera *_camera;
         GLFWwindow *_window;
         InputManager *_inputManager;
+        Shader _shader;
     };
 
   }  // namespace renderer
