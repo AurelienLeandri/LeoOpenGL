@@ -47,6 +47,7 @@ namespace leo {
         void _setModelMatrix(model::Transformation *transformation);
         void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
         void _setCamera(Camera *camera);
+        void _drawCollection(model::DrawableCollection *collection);
 
       private:
         void _init();

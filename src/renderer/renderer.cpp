@@ -106,8 +106,21 @@ namespace leo {
           continue;
         }
       }
+      this->_drawCollection(toDraw);
+
       for (auto &child : root->getChildren())
         this->_renderRec(child.second, inputs);
+    }
+
+    void Renderer::_drawCollection(model::DrawableCollection *collection) {
+      for (auto &pair : collection->getCollection()) {
+        model::Drawable *drawable = pair.second;
+        auto volume = dynamic_cast<model::Volume *>(drawable);
+        if (volume) {
+          const std::vector<Vertex> &vertices = volume->getVertices();
+          const std::vector<GLuint> &indices = volume->getIndices();
+        }
+      }
     }
 
     void Renderer::_setCurrentMaterial(model::Material *material) {
