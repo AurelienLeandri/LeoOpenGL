@@ -48,6 +48,7 @@ namespace leo {
         void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
         void _setCamera(Camera *camera);
         void _drawCollection(model::DrawableCollection *collection);
+        void _drawEBO(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices);
 
       private:
         void _init();

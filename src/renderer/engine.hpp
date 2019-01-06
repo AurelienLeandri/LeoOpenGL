@@ -49,8 +49,8 @@ class Engine {
     renderer::Renderer *_renderer;
     GLFWwindow *_window;
     model::Base *_scene;
-    GLuint screenWidth = 800;
-    GLuint screenHeight = 600;
+    GLuint screenWidth = 1600;
+    GLuint screenHeight = 1200;
 };
 
 }
