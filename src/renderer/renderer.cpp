@@ -26,15 +26,15 @@ namespace leo {
       glewExperimental = GL_TRUE;
 
       // Define the viewport dimensions
-      glClearColor(1.07, 0.07, 0.07, 1);
+      glClearColor(0.07, 0.07, 0.07, 1);
 
       // Setup some OpenGL options
       glEnable(GL_DEPTH_TEST);
       glDepthFunc(GL_LEQUAL); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glEnable(GL_CULL_FACE);
-      glCullFace(GL_BACK);
+      //glEnable(GL_CULL_FACE);
+      //glCullFace(GL_BACK);
 
       if (glewInit() == GLEW_OK)
         std::cerr << "Glew initialized successfully" << std::endl;
@@ -50,8 +50,9 @@ namespace leo {
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(glDebugOutput, nullptr);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
       }
+
     }
 
     void Renderer::_setWindowContext(GLFWwindow *window, InputManager *inputManager) {
@@ -73,19 +74,24 @@ namespace leo {
     }
 
     Framebuffer &Renderer::render(model::Base *root) {
-      return this->render(root, std::vector<const Framebuffer *>());
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      Framebuffer &fb = this->render(root, std::vector<const Framebuffer *>());
+      glfwSwapBuffers(this->_window);
+      return fb;
     }
 
     Framebuffer &Renderer::render(model::Base *root,
         std::vector<const Framebuffer *> inputs) {
       this->_shader.use();
+      this->_shader.setMat4("view", this->_camera->getViewMatrix());
+      this->_shader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)800/(float)600, 0.1f, 100.0f));
       this->_renderRec(root, inputs);
-      glfwSwapBuffers(this->_window);
       return this->_output;
     }
 
     void Renderer::_renderRec(model::Base *root,
         std::vector<const Framebuffer *> inputs) {
+      this->_setModelMatrix();
       model::DrawableCollection *toDraw;
       auto &components = root->getComponents();
       for (auto &p : components) {
@@ -117,49 +123,62 @@ namespace leo {
         model::Drawable *drawable = pair.second;
         auto volume = dynamic_cast<model::Volume *>(drawable);
         if (volume) {
-          const std::vector<Vertex> &vertices = volume->getVertices();
-          const std::vector<GLuint> &indices = volume->getIndices();
-          this->_drawEBO(vertices, indices);
+          this->_drawVolume(volume);
         }
       }
     }
 
-    void Renderer::_drawEBO(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices) {
-      // TODO: initialize Buffers in a map for each mesh once
-      GLuint VAO, VBO, EBO;
-      glGenVertexArrays(1, &VAO);
-      glGenBuffers(1, &VBO);
-      glGenBuffers(1, &EBO);
+    void Renderer::_loadDataBuffers(const model::Volume *volume) {
+      auto it = this->_bufferCollections.find(volume->getId());
+      BufferCollection *bc;
+      if (it == _bufferCollections.end()) {
+        _bufferCollections.insert(std::pair<std::string, BufferCollection>(volume->getId(), BufferCollection())).first;
+        bc = &(*this->_bufferCollections.find(volume->getId())).second;
 
-      glBindVertexArray(VAO);
-      glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glGenVertexArrays(1, &bc->VAO);
+        glGenBuffers(1, &bc->VBO);
+        glGenBuffers(1, &bc->EBO);
 
-      glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
-                   &vertices[0], GL_STATIC_DRAW);
+        const std::vector<Vertex> &vertices = volume->getVertices();
+        const std::vector<GLuint> &indices = volume->getIndices();
 
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
-                   &indices[0], GL_STATIC_DRAW);
-      // Vertex Positions
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                            (GLvoid *) 0);
-      // Vertex Normals
-      glEnableVertexAttribArray(1);
-      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                            (GLvoid *) offsetof(Vertex, normal));
-      // Vertex Texture Coords
-      glEnableVertexAttribArray(2);
-      glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                            (GLvoid *) offsetof(Vertex, texCoords));
+        glBindVertexArray(bc->VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, bc->VBO);
 
-      glBindVertexArray(0);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
+                     &vertices[0], GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
 
+        // Vertex Positions
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (GLvoid *)0);
+        glEnableVertexAttribArray(0);
+        // Vertex Normals
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (GLvoid *)offsetof(Vertex, normal));
+        glEnableVertexAttribArray(1);
+        // Vertex Texture Coords
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (GLvoid *)offsetof(Vertex, texCoords));
+        glEnableVertexAttribArray(2);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bc->EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
+                     &indices[0], GL_STATIC_DRAW);
+      }
+      else {
+        bc = &it->second;
+      }
+      glBindVertexArray(bc->VAO);
+    }
+
+    void Renderer::_drawVolume(const model::Volume *volume) {
+      this->_loadDataBuffers(volume);
       // Draw mesh
-      glBindVertexArray(VAO);
+      const std::vector<GLuint> &indices = volume->getIndices();
       glDrawElements(GL_TRIANGLES, (GLsizei) indices.size(),
                      GL_UNSIGNED_INT, 0);
-      glBindVertexArray(0);
     }
 
     void Renderer::_setCurrentMaterial(model::Material *material) {
@@ -180,7 +199,12 @@ namespace leo {
     }
 
     void Renderer::_setModelMatrix(model::Transformation *transformation) {
-      UNUSED(transformation);
+      this->_shader.setMat4("model", transformation->getTransformationMatrix());
+    }
+
+    void Renderer::_setModelMatrix() {
+      glm::mat4 m;
+      this->_shader.setMat4("model", m);
     }
 
   }  // namespace renderer

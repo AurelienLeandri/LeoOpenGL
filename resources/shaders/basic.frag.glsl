@@ -47,6 +47,7 @@ uniform samplerCube cubeMap;
 
 void main()
 {
+  /*
   // Light Variables
   vec3 norm = normalize(Normal);
 
@@ -88,4 +89,6 @@ void main()
 
   vec3 result = diffuse + specular + vec3(reflectionColor * reflectionFactor);
   color = vec4(result, 1.0);
+  */
+  color = vec4(0.0, 1.0, 0.0, 1.0);
 }

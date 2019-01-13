@@ -21,6 +21,12 @@ namespace leo {
 
   namespace renderer {
 
+    typedef struct BufferCollection {
+      GLuint VAO;
+      GLuint VBO;
+      GLuint EBO;
+    } BufferCollection;
+
     class Renderer {
       public:
         Renderer(GLFWwindow *window,
@@ -45,10 +51,12 @@ namespace leo {
             std::vector<const Framebuffer *> inputs);
         void _setCurrentMaterial(model::Material *material);
         void _setModelMatrix(model::Transformation *transformation);
+        void _setModelMatrix();
         void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
         void _setCamera(Camera *camera);
         void _drawCollection(model::DrawableCollection *collection);
-        void _drawEBO(const std::vector<Vertex> &vertices, const std::vector<GLuint> &indices);
+        void _drawVolume(const model::Volume *volume);
+        void _loadDataBuffers(const model::Volume *volume);
 
       private:
         void _init();
@@ -57,6 +65,10 @@ namespace leo {
         GLFWwindow *_window;
         InputManager *_inputManager;
         Shader _shader;
+        std::map<std::string, GLuint> _VAOs;
+        std::map<std::string, GLuint> _VBOs;
+        std::map<std::string, GLuint> _EBOs;
+        std::map<std::string, BufferCollection> _bufferCollections;
     };
 
   }  // namespace renderer

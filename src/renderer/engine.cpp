@@ -28,6 +28,15 @@ namespace leo {
     glfwSwapInterval(1);
 
     this->_window = glfwCreateWindow(this->screenWidth, this->screenHeight, " ~~~ LeoEngine!!", nullptr, nullptr);
+
+    if (this->_window == NULL)
+    {
+        std::cerr << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        exit(1);
+    }
+    glfwMakeContextCurrent(this->_window);
+
     this->_camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
     this->inputManager = InputManager::getInstance();
   }
