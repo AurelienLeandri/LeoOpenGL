@@ -12,7 +12,8 @@ namespace leo {
     public:
       Texture();
       Texture(bool generate_empty);  // TODO, refactor texture constructors
-      Texture(std::string name, std::string file_name, std::string directory);
+      Texture(const char *path);
+      Texture(std::string name, std::string file_name, std::string directory);  // TODO: remove when possible
       Texture(const Texture &other);
       virtual ~Texture();
 
@@ -27,6 +28,7 @@ namespace leo {
 
     public:
       GLuint id = 0;
+      bool initialized;
       std::string name;
       std::string path;  // TODO: need to store path, file name etc??
   };  // class Texture

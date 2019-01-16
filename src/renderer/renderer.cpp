@@ -84,7 +84,7 @@ namespace leo {
         std::vector<const Framebuffer *> inputs) {
       this->_shader.use();
       this->_shader.setMat4("view", this->_camera->getViewMatrix());
-      this->_shader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)800/(float)600, 0.1f, 100.0f));
+      this->_shader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)1620/(float)1080, 0.1f, 100.0f));
       this->_renderRec(root, inputs);
       return this->_output;
     }
@@ -92,7 +92,7 @@ namespace leo {
     void Renderer::_renderRec(model::Base *root,
         std::vector<const Framebuffer *> inputs) {
       this->_setModelMatrix();
-      model::DrawableCollection *toDraw;
+      model::DrawableCollection *toDraw = nullptr;
       auto &components = root->getComponents();
       for (auto &p : components) {
         auto id = p.first;
@@ -112,7 +112,9 @@ namespace leo {
           continue;
         }
       }
-      this->_drawCollection(toDraw);
+      if (toDraw) {
+        this->_drawCollection(toDraw);
+      }
 
       for (auto &child : root->getChildren())
         this->_renderRec(child.second, inputs);
@@ -147,8 +149,6 @@ namespace leo {
 
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
                      &vertices[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
 
         // Vertex Positions
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
@@ -159,7 +159,7 @@ namespace leo {
                               (GLvoid *)offsetof(Vertex, normal));
         glEnableVertexAttribArray(1);
         // Vertex Texture Coords
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                               (GLvoid *)offsetof(Vertex, texCoords));
         glEnableVertexAttribArray(2);
 

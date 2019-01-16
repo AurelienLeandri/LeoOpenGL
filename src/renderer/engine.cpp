@@ -25,7 +25,7 @@ namespace leo {
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     this->_window = glfwCreateWindow(this->screenWidth, this->screenHeight, " ~~~ LeoEngine!!", nullptr, nullptr);
 

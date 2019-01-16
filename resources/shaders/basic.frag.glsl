@@ -90,5 +90,9 @@ void main()
   vec3 result = diffuse + specular + vec3(reflectionColor * reflectionFactor);
   color = vec4(result, 1.0);
   */
-  color = vec4(0.0, 1.0, 0.0, 1.0);
+  //color = vec4(0.0, 1.0, 0.0, 1.0);
+  //color = vec4(texture(material.diffuse_texture, TexCoords).rgb, 1.0);
+  //color = vec4(texture(material.specular_texture, TexCoords).rgb, 1.0);
+  color = vec4(texture(material.reflection_map, TexCoords).rgb, 1.0);
+  //color = vec4(TexCoords, 1.0, 1.0);
 }

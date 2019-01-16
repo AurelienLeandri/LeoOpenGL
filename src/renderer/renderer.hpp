@@ -65,9 +65,6 @@ namespace leo {
         GLFWwindow *_window;
         InputManager *_inputManager;
         Shader _shader;
-        std::map<std::string, GLuint> _VAOs;
-        std::map<std::string, GLuint> _VBOs;
-        std::map<std::string, GLuint> _EBOs;
         std::map<std::string, BufferCollection> _bufferCollections;
     };
 

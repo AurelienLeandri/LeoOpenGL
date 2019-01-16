@@ -68,7 +68,7 @@ namespace leo {
 
       glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatrices);
 
-      glm::mat4 projection = glm::perspective(this->_camera->getZoom(), (float)800/(float)600, 0.1f, 100.0f);
+      glm::mat4 projection = glm::perspective(this->_camera->getZoom(), (float)1620/(float)1080, 0.1f, 100.0f);
       glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
       glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
       glm::mat4 view = glm::mat4(glm::mat3(this->_camera->getViewMatrix()));
@@ -130,7 +130,7 @@ namespace leo {
 
       glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatrices);
 
-      glm::mat4 projection = glm::perspective(this->_camera->getZoom(), (float)800/(float)600, 0.1f, 100.0f);
+      glm::mat4 projection = glm::perspective(this->_camera->getZoom(), (float)1620/(float)1080, 0.1f, 100.0f);
       glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
       glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
       glm::mat4 view = this->_camera->getViewMatrix();

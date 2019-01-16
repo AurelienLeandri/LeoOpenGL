@@ -106,9 +106,9 @@ namespace leo {
   }
 
   void Shader::setTexture(const char *name, Texture texture, GLuint slot) {
+      glUniform1i(glGetUniformLocation(this->_program, name), slot);
       glActiveTexture(GL_TEXTURE0 + slot);
       glBindTexture(GL_TEXTURE_2D, texture.id);
-      glUniform1i(glGetUniformLocation(this->_program, name), slot);
   }
 
   void Shader::setMat4(const char *name, glm::mat4 value) {
