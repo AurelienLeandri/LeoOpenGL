@@ -1,8 +1,6 @@
 add_subdirectory(types)
 
 set(ENGINE_SOURCES ${ENGINE_SOURCES}
-  # ${CMAKE_CURRENT_SOURCE_DIR}/scene-object.hpp
-  # ${CMAKE_CURRENT_SOURCE_DIR}/scene-object.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/transformation.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/transformation.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/drawable-collection.hpp
@@ -11,6 +9,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/volume.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/material.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/material.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/globals.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/globals.cpp
   PARENT_SCOPE
   )
 
