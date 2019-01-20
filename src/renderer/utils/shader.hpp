@@ -37,7 +37,7 @@ namespace leo {
       void setVector3(const char *name, glm::vec3 value);
       void setFloat(const char *name, GLfloat value);
       void setInt(const char *name, GLint value);
-      void setTexture(const char *name, Texture texture, GLuint slot);
+      void setTexture(const char *name, GLuint textureId, GLuint slot);
       void setMat4(const char *name, glm::mat4 value);
 
     public:

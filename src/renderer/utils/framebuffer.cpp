@@ -10,7 +10,7 @@ namespace leo {
     glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
 
     // Set "renderedTexture" as our colour attachement #0
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderedTexture.id, 0);
+    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderedTexture.id, 0); BROKEN
 
     // The depth buffer
     GLuint depthrenderbuffer;
@@ -19,7 +19,7 @@ namespace leo {
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1620, 1080);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
 
-     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture.id, 0);
+     // glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture.id, 0); BROKEN
 
     // Set the list of draw buffers.
     glDrawBuffers(1, this->_drawBuffers); // "1" is the size of DrawBuffers
@@ -30,15 +30,15 @@ namespace leo {
       exit(1);
     }
 
-    this->_colorBuffers.push_back(renderedTexture);
+    //this->_colorBuffers.push_back(renderedTexture); BROKEN
 
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 
   Framebuffer::Framebuffer(const Framebuffer &other) :
-    _id(other._id),
-    _colorBuffers(other._colorBuffers)
+    _id(other._id)
+    //_colorBuffers(other._colorBuffers) BROKEN
   {
   }
 
@@ -48,7 +48,7 @@ namespace leo {
 
   Framebuffer &Framebuffer::operator=(const Framebuffer &other) {
     this->_id = other._id;
-    this->_colorBuffers = other._colorBuffers;
+    //this->_colorBuffers = other._colorBuffers; BROKEN
     return *this;
   }
 

@@ -27,14 +27,12 @@ namespace leo {
   }
 
   Mesh::Mesh(std::vector<Vertex> vertices,
-      std::vector<GLuint> indices,
-      std::vector<Texture> textures) :
-    Mesh(vertices, indices, textures,
-        glm::vec3(0.0, 0.0, 0.0),
-        glm::vec3(0.0, 0.0, 0.0),
-        glm::vec3(0.0, 0.0, 0.0),
-        32
-        )
+             std::vector<GLuint> indices,
+             std::vector<Texture> textures) /*: Mesh(vertices, indices, textures,
+                                                   glm::vec3(0.0, 0.0, 0.0),
+                                                   glm::vec3(0.0, 0.0, 0.0),
+                                                   glm::vec3(0.0, 0.0, 0.0),
+                                                   32) */
   {
   }
 
@@ -43,7 +41,7 @@ namespace leo {
       glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, GLint shininess) :
     _vertices(vertices),
     _indices(indices),
-    _textures(textures),
+    //_textures(textures),
     _ambient(ambient),
     _diffuse(diffuse),
     _specular(specular),
@@ -59,7 +57,7 @@ namespace leo {
     GeometryNode(other),
     _vertices(other._vertices),
     _indices(other._indices),
-    _textures(other._textures),
+    //_textures(other._textures),
     _ambient(other._ambient),
     _diffuse(other._diffuse),
     _specular(other._specular),
@@ -72,7 +70,7 @@ namespace leo {
     GeometryNode::operator=(other);
     this->_vertices = other._vertices;
     this->_indices = other._indices;
-    this->_textures = other._textures;
+    //this->_textures = other._textures;
     this->_ambient = other._ambient;
     this->_diffuse = other._diffuse;
     this->_specular = other._specular;
@@ -122,7 +120,7 @@ namespace leo {
       // Retrieve texture number (the N in diffuse_textureN)
       std::stringstream ss;
       std::string number;
-      std::string name = this->_textures[i].name;
+      std::string name;// = this->_textures[i].name; BROKEN
       if (name == "texture_diffuse")
         ss << diffuseNr++; // Transfer GLuint to stream
       else if (name == "texture_specular")
@@ -131,7 +129,7 @@ namespace leo {
         ss << ambientNr++; // Transfer GLuint to stream
       number = ss.str();
 
-      glBindTexture(GL_TEXTURE_2D, this->_textures[i].id);
+      // glBindTexture(GL_TEXTURE_2D, this->_textures[i].id); BROKEN
       glUniform1i(glGetUniformLocation(shader->getProgram(),
             ("material." + name + number).c_str()),
           offset + i);
@@ -162,7 +160,7 @@ namespace leo {
   }
 
   void Mesh::addTexture(Texture t) {
-    this->_textures.push_back(t);
+    //this->_textures.push_back(t);
   }
 
   Mesh *Mesh::createPlaneMesh() {

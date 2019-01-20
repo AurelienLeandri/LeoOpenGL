@@ -1,8 +1,7 @@
 #include "cube-map.hpp"
 
 namespace leo {
-  CubeMap::CubeMap(std::string name, std::string path) :
-    _texture(Texture::createCubeMapTexture(name, path))
+  CubeMap::CubeMap(std::string name, std::string path) // : _texture(Texture::createCubeMapTexture(name, path))
   {
     GLfloat data[] = {
       -1.0f,  1.0f, -1.0f,
@@ -65,7 +64,7 @@ namespace leo {
   void CubeMap::draw(Shader *shader) {
     UNUSED(shader);
     glBindVertexArray(this->_VAO);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, this->_texture.id);
+    // glBindTexture(GL_TEXTURE_CUBE_MAP, this->_texture.id);
     glDrawArrays(GL_TRIANGLES, 0, 6 * 6);
     glBindVertexArray(0);
   }

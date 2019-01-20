@@ -184,18 +184,28 @@ namespace leo {
     void Renderer::_setCurrentMaterial(model::Material *material) {
       this->_shader.setVector3("material.diffuse_value", material->diffuse_value);
       if (material->diffuse_texture) {
-        this->_shader.setTexture("material.diffuse_texture", *material->diffuse_texture, 0);
+        this->_loadTextureToShader("material.diffuse_texture", 0, *material->diffuse_texture);
       }
 
       this->_shader.setVector3("material.specular_value", material->specular_value);
       this->_shader.setInt("material.shininess", material->shininess);
       if (material->specular_texture) {
-        this->_shader.setTexture("material.specular_texture", *material->specular_texture, 1);
+        this->_loadTextureToShader("material.specular_texture", 1, *material->specular_texture);
       }
 
       if (material->reflection_map) {
-        this->_shader.setTexture("material.reflection_map", *material->reflection_map, 2);
+        this->_loadTextureToShader("material.reflection_map", 2, *material->reflection_map);
       }
+    }
+
+    void Renderer::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
+    {
+      auto it = this->_textures.find(texture.path);
+      if (it == this->_textures.end())
+      {
+        it = this->_textures.insert(std::pair<std::string, TextureWrapper>(texture.path, texture)).first;
+      }
+      this->_shader.setTexture(uniformName, it->second.getId(), textureSlot);
     }
 
     void Renderer::_setModelMatrix(model::Transformation *transformation) {

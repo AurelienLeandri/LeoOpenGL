@@ -1,6 +1,7 @@
 #pragma once
 
 #include <renderer/global.hpp>
+#include <renderer/texture-wrapper.hpp>
 #include <renderer/utils/framebuffer.hpp>
 #include <model/base.hpp>
 #include <renderer/input-manager.hpp>
@@ -57,6 +58,7 @@ namespace leo {
         void _drawCollection(model::DrawableCollection *collection);
         void _drawVolume(const model::Volume *volume);
         void _loadDataBuffers(const model::Volume *volume);
+        void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
 
       private:
         void _init();
@@ -66,6 +68,7 @@ namespace leo {
         InputManager *_inputManager;
         Shader _shader;
         std::map<std::string, BufferCollection> _bufferCollections;
+        std::map<std::string, TextureWrapper> _textures;
     };
 
   }  // namespace renderer

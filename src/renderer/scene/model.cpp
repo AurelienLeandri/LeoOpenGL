@@ -15,7 +15,7 @@ namespace leo {
 
   Model::Model(const Model &other) :
     GeometryNode(other),
-    _loadedTextures(other._loadedTextures),
+    //_loadedTextures(other._loadedTextures),
     _meshes(other._meshes),
     _directory(other._directory)
   {
@@ -23,7 +23,7 @@ namespace leo {
 
   Model &Model::operator=(const Model &other) {
     GeometryNode::operator=(other);
-    this->_loadedTextures = other._loadedTextures;
+    //this->_loadedTextures = other._loadedTextures;
     this->_meshes = other._meshes;
     this->_directory = other._directory;
     return *this;
@@ -94,16 +94,16 @@ namespace leo {
     std::vector<Texture> diffuseMaps =
       this->loadMaterialTextures(shader, aiTextureType_DIFFUSE,
           "texture_diffuse");
-    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+    // textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
     std::vector<Texture> specularMaps =
       this->loadMaterialTextures(shader, aiTextureType_SPECULAR,
           "texture_specular");
-    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+    //textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     std::vector<Texture> ambientMaps =
       this->loadMaterialTextures(shader, aiTextureType_AMBIENT,
           "texture_ambient");
-    textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
-    return Mesh(vertices, indices, textures);
+    //textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
+    //return Mesh(vertices, indices, textures);
   }
 
   std::vector<Texture>
@@ -118,15 +118,15 @@ namespace leo {
         for (unsigned int j = 0; j < _loadedTextures.size(); j++) {
           // Check if texture is not already loaded
           if (_loadedTextures[j].path == path) {
-            textures.push_back(_loadedTextures[j]);
+            //textures.push_back(_loadedTextures[j]);
             skip = true;
             break;
           }
         }
         if (!skip) {   // If texture hasn't been loaded already, load it
           Texture texture(typeName, path, this->_directory);
-          textures.push_back(texture);
-          this->_loadedTextures.push_back(texture);  // Add to loaded _textures
+          //textures.push_back(texture);
+          //this->_loadedTextures.push_back(texture);  // Add to loaded _textures
         }
       }
       return textures;

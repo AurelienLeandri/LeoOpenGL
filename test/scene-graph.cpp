@@ -57,8 +57,8 @@ void cubeScene()
   Engine engine;
   engine.initRenderer(shader);
   material.diffuse_texture = std::make_shared<Texture>("resources/textures/lasereye.jpg");
-  material.specular_texture = std::make_shared<Texture>("resources/textures/lasereye.jpg");
-  material.reflection_map = std::make_shared<Texture>("resources/textures/lasereye.jpg");
+  material.specular_texture = std::make_shared<Texture>("resources/textures/specular.png");
+  material.reflection_map = std::make_shared<Texture>("resources/textures/specular.png");
   engine.setScene(&scene);
   engine.gameLoop();
 }

@@ -10,27 +10,25 @@ namespace leo {
 
   class Texture {
     public:
-      Texture();
-      Texture(bool generate_empty);  // TODO, refactor texture constructors
+      Texture();  // DEPRECATED
+      Texture(int witdh, int height);
+      Texture(bool generate_empty); // DEPRECATED
       Texture(const char *path);
-      Texture(std::string name, std::string file_name, std::string directory);  // TODO: remove when possible
-      Texture(const Texture &other);
+      Texture(std::string name, std::string file_name, std::string directory);  // TODO: DEPRECATED
+      Texture(const Texture &other) = delete;
       virtual ~Texture();
 
     public:
-      Texture &operator=(const Texture &other);
+      Texture &operator=(const Texture &other) = delete;
 
     public:
       static Texture createCubeMapTexture(std::string name, std::string directory);
 
-    private:
-      void _init();
-
     public:
-      GLuint id = 0;
-      bool initialized;
-      std::string name;
-      std::string path;  // TODO: need to store path, file name etc??
+      unsigned char *data;
+      std::string path;
+      int width;
+      int height;
   };  // class Texture
 
 } // namespace leo

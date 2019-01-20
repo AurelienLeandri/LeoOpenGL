@@ -150,12 +150,12 @@ namespace leo {
       std::stringstream number;
       number << i;
       glActiveTexture(GL_TEXTURE0 + i);
-      glBindTexture(GL_TEXTURE_2D, this->_colorBuffers[i]->id);
+      //glBindTexture(GL_TEXTURE_2D, this->_colorBuffers[i]->id);  BROKEN
       glUniform1i(glGetUniformLocation(this->_shader->getProgram(), ("fb" + number.str()).c_str()), i);
     }
     if (this->_cubeMapTexture) {
       glActiveTexture(GL_TEXTURE0 + this->_colorBuffers.size());
-      glBindTexture(GL_TEXTURE_CUBE_MAP, this->_cubeMapTexture->id);
+      //glBindTexture(GL_TEXTURE_CUBE_MAP, this->_cubeMapTexture->id); BROKEN
       glUniform1i(glGetUniformLocation(this->_shader->getProgram(), "cubeMap"), this->_colorBuffers.size());
     }
     glActiveTexture(GL_TEXTURE0);

@@ -41,36 +41,37 @@ namespace leo {
     }
 
     Volume Volume::createCube(float side) {
+      float half = side / 2;
       std::vector<float> pos {
-        0.0f, 0.0f, 0.0f,
-        0.0f,  side, 0.0f,
-        side,  side, 0.0f, 
-        side, 0.0f, 0.0f,
+        -half, -half, -half,
+        -half,  half, -half,
+        half,  half, -half, 
+        half, -half, -half,
 
-        side,  side,  side,
-        0.0f,  side,  side, 
-        0.0f, 0.0f,  side, 
-        side, 0.0f,  side, 
+        half,  half,  half,
+        -half,  half,  half, 
+        -half, -half,  half, 
+        half, -half,  half, 
 
-        0.0f,  side, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f,  side,
-        0.0f,  side,  side,
+        -half,  half, -half,
+        -half, -half, -half,
+        -half, -half,  half,
+        -half,  half,  half,
 
-        side,  side,  side,
-        side, 0.0f,  side,
-        side, 0.0f, 0.0f,
-        side,  side, 0.0f,
+        half,  half,  half,
+        half, -half,  half,
+        half, -half, -half,
+        half,  half, -half,
 
-        side, 0.0f, 0.0f,
-        side, 0.0f,  side,
-        0.0f, 0.0f,  side,
-        0.0f, 0.0f, 0.0f,
+        half, -half, -half,
+        half, -half,  half,
+        -half, -half,  half,
+        -half, -half, -half,
 
-        0.0f,  side, 0.0f,
-        0.0f,  side,  side,
-        side,  side,  side,
-        side,  side, 0.0f,
+        -half,  half, -half,
+        -half,  half,  half,
+        half,  half,  half,
+        half,  half, -half,
       };
 
       std::vector<float> tex {
