@@ -2,25 +2,10 @@
 
 #include <renderer/global.hpp>
 #include <model/component.hpp>
+#include <renderer/light-uniforms.hpp>
 
 namespace leo {
 namespace model {
-
-  class Light;
-
-  typedef struct LightUniform {
-    LightUniform();
-    LightUniform(const Light &light);
-    ~LightUniform();
-    LightUniform(const LightUniform &other);
-    LightUniform &operator=(const LightUniform &other);
-    glm::vec3 ambient;
-    float constant;
-    glm::vec3 diffuse;
-    float linear;
-    glm::vec3 specular;
-    float quadratic;
-  } LightUniform;
 
   class Light : public Component {
     public:
@@ -54,7 +39,7 @@ namespace model {
       void setDiffuse(const glm::vec3 &value) { this->_diffuse = value; }
       void setSpecular(const glm::vec3 &value) { this->_specular = value; }
 
-      friend LightUniform::LightUniform(const Light &light);
+      friend renderer::LightUniform::LightUniform(const Light &light);
 
   };
 

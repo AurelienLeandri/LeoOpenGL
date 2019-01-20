@@ -1,20 +1,10 @@
 #pragma once
 
 #include <model/components/light.hpp>
+#include <renderer/light-uniforms.hpp>
 
 namespace leo {
   namespace model {
-
-  class PointLight;
-
-  typedef struct PointLightUniform : public LightUniform {
-    PointLightUniform();
-    PointLightUniform(const PointLight &light);
-    ~PointLightUniform();
-    PointLightUniform(const PointLightUniform &other);
-    PointLightUniform &operator=(const PointLightUniform &other);
-    glm::vec4 position;
-  } PointLightUniform;
 
   class PointLight : public Light {
     public:
@@ -40,7 +30,7 @@ namespace leo {
       const glm::vec3 &getPosition() { return this->_position; }
       void getPosition(const glm::vec4 &value) { this->_position = value; }
 
-    friend PointLightUniform::PointLightUniform(const PointLight &light);
+    friend renderer::PointLightUniform::PointLightUniform(const PointLight &light);
   };
 
   }  // namespace model

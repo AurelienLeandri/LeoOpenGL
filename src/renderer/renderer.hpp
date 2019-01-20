@@ -22,10 +22,11 @@ namespace leo {
 
   namespace renderer {
 
-    typedef struct BufferCollection {
-      GLuint VAO;
-      GLuint VBO;
-      GLuint EBO;
+      typedef struct BufferCollection
+      {
+        GLuint VAO;
+        GLuint VBO;
+        GLuint EBO;
     } BufferCollection;
 
     class Renderer {

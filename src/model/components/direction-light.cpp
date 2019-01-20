@@ -3,28 +3,6 @@
 namespace leo {
   namespace model {
 
-  DirectionLightUniform::DirectionLightUniform() {}
-
-  DirectionLightUniform::DirectionLightUniform(const DirectionLight &light) :
-    LightUniform(light)
-  {
-    this->direction = light._direction;
-  }
-
-  DirectionLightUniform::~DirectionLightUniform() {}
-
-  DirectionLightUniform::DirectionLightUniform(const DirectionLightUniform &other) :
-    LightUniform::LightUniform(other)
-  {
-    this->direction = other.direction;
-  }
-
-  DirectionLightUniform &DirectionLightUniform::operator=(const DirectionLightUniform &other) {
-    LightUniform::operator=(other);
-    this->direction = other.direction;
-    return *this;
-  }
-
   DirectionLight::DirectionLight() : Light() {
     this->_direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
   }

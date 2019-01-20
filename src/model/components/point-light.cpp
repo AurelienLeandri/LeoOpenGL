@@ -3,28 +3,6 @@
 namespace leo {
 namespace model {
 
-  PointLightUniform::PointLightUniform() {}
-
-  PointLightUniform::PointLightUniform(const PointLight &light) :
-    LightUniform(light)
-  {
-    this->position = light._position;
-  }
-
-  PointLightUniform::~PointLightUniform() {}
-
-  PointLightUniform::PointLightUniform(const PointLightUniform &other) :
-    LightUniform::LightUniform(other)
-  {
-    this->position = other.position;
-  }
-
-  PointLightUniform &PointLightUniform::operator=(const PointLightUniform &other) {
-    LightUniform::operator=(other);
-    this->position = other.position;
-    return *this;
-  }
-
   PointLight::PointLight() :
     Light()
   {
