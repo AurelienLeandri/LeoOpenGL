@@ -1,6 +1,8 @@
 #include "base.hpp"
 #include <model/component.hpp>
 #include <controller/event.hpp>
+#include <model/scene-graph.hpp>
+#include <model/components/light.hpp>
 
 namespace leo {
   namespace model {
@@ -40,6 +42,16 @@ namespace leo {
           std::pair<std::string, Component*>(name, component)).second;
     }
 
+    bool Base::addComponent(std::string name, PointLight *component) {
+      this->_sceneGraph->addLight(component);
+      this->addComponent(name, (Component *) component);
+    }
+
+    bool Base::addComponent(std::string name, DirectionLight *component) {
+      this->_sceneGraph->addLight(component);
+      this->addComponent(name, (Component *) component);
+    }
+
     Component *Base::getComponent(std::string name) {
       auto it = this->_components.find(name);
       if (it == this->_components.end())
@@ -57,7 +69,7 @@ namespace leo {
           std::pair<stringID, Base*>(child->getId(), child)).second)
       {
         child->setParent(this);
-        child->_setRootRec(this->_root);
+        child->_setSceneGraphRec(this->_sceneGraph);
       }
       this->_notify(controller::Event::COMPONENT_UPDATED);
       return success;
@@ -72,19 +84,19 @@ namespace leo {
       this->_notify(controller::Event::COMPONENT_UPDATED);
     }
 
-    const Base *Base::getRoot() const {
-      return this->_root;
+    const SceneGraph *Base::getSceneGraph() const {
+      return this->_sceneGraph;
     }
 
-    void Base::setRoot(Base *root) {
-      this->_setRootRec(root);
+    void Base::setSceneGraph(SceneGraph *sceneGraph) {
+      this->_setSceneGraphRec(sceneGraph);
       this->_notify(controller::Event::COMPONENT_UPDATED);
     }
 
-    void Base::_setRootRec(Base *root) {
-      this->_root = root;
+    void Base::_setSceneGraphRec(SceneGraph *sceneGraph) {
+      this->_sceneGraph = sceneGraph;
       for (auto it: this->_children)
-        it.second->_setRootRec(root);
+        it.second->_setSceneGraphRec(sceneGraph);
     }
 
   } // namespace leo

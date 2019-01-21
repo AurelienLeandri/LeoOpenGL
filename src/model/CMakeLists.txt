@@ -9,6 +9,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/base.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/component.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/component.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/scene-graph.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/scene-graph.cpp
   PARENT_SCOPE
   )
 

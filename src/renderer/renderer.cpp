@@ -2,6 +2,7 @@
 
 #include <renderer/utils/shader.hpp>
 #include <model/components/material.hpp>
+#include <model/scene-graph.hpp>
 
 namespace leo {
   namespace renderer {
@@ -73,23 +74,23 @@ namespace leo {
       return this->_output;
     }
 
-    Framebuffer &Renderer::render(model::Base *root) {
+    Framebuffer &Renderer::render(const model::SceneGraph *sceneGraph) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      Framebuffer &fb = this->render(root, std::vector<const Framebuffer *>());
+      Framebuffer &fb = this->render(sceneGraph, std::vector<const Framebuffer *>());
       glfwSwapBuffers(this->_window);
       return fb;
     }
 
-    Framebuffer &Renderer::render(model::Base *root,
+    Framebuffer &Renderer::render(const model::SceneGraph *sceneGraph,
         std::vector<const Framebuffer *> inputs) {
       this->_shader.use();
       this->_shader.setMat4("view", this->_camera->getViewMatrix());
       this->_shader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)1620/(float)1080, 0.1f, 100.0f));
-      this->_renderRec(root, inputs);
+      this->_renderRec(sceneGraph->getRoot(), inputs);
       return this->_output;
     }
 
-    void Renderer::_renderRec(model::Base *root,
+    void Renderer::_renderRec(const model::Base *root,
         std::vector<const Framebuffer *> inputs) {
       this->_setModelMatrix();
       model::DrawableCollection *toDraw = nullptr;

@@ -6,6 +6,7 @@
 #include <model/components/drawable-collection.hpp>
 #include <model/components/volume.hpp>
 #include <model/base.hpp>
+#include <model/scene-graph.hpp>
 
 using namespace leo;
 
@@ -39,15 +40,15 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 void cubeScene()
 {
   // Init scene
-  model::Base scene;
+  model::Base root;
   model::Material material;
   model::Volume cube = model::Volume::createCube(1.f);
   model::DrawableCollection drawables;
   drawables.addDrawable(&cube);
   material.diffuse_value = glm::vec3(0.89f, 0.42f, 0.11f);
-  scene.addComponent("Material", &material);
-  scene.addComponent("CubeVolume", &cube);
-  scene.addComponent("Drawables", &drawables);
+  root.addComponent("Material", &material);
+  root.addComponent("CubeVolume", &cube);
+  root.addComponent("Drawables", &drawables);
 
   Shader shader(
       "resources/shaders/basic.vs.glsl",
@@ -59,6 +60,8 @@ void cubeScene()
   material.diffuse_texture = std::make_shared<Texture>("resources/textures/crate_diffuse.png");
   material.specular_texture = std::make_shared<Texture>("resources/textures/crate_specular.png");
   material.reflection_map = std::make_shared<Texture>("resources/textures/specular.png");
+  model::SceneGraph scene;
+  scene.setRoot(&root);
   engine.setScene(&scene);
   engine.gameLoop();
 }

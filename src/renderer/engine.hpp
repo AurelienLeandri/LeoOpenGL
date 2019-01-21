@@ -38,7 +38,7 @@ class Engine {
 
   public:
     void initRenderer(Shader shader);
-    void setScene(model::Base *scene);
+    void setScene(model::SceneGraph *scene);
     void gameLoop();
 
   public: // Control attributes
@@ -48,7 +48,7 @@ class Engine {
     Camera *_camera;
     renderer::Renderer *_renderer;
     GLFWwindow *_window;
-    model::Base *_scene;
+    model::SceneGraph *_scene;
     GLuint screenWidth = 1620;
     GLuint screenHeight = 1080;
 };

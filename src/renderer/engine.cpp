@@ -50,7 +50,7 @@ namespace leo {
         );
   }
 
-  void Engine::setScene(model::Base *scene) {
+  void Engine::setScene(model::SceneGraph *scene) {
     this->_scene = scene;
   }
 

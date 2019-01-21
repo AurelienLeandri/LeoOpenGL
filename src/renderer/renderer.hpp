@@ -1,6 +1,7 @@
 #pragma once
 
 #include <renderer/global.hpp>
+#include <renderer/light-uniforms.hpp>
 #include <renderer/texture-wrapper.hpp>
 #include <renderer/utils/framebuffer.hpp>
 #include <model/base.hpp>
@@ -21,6 +22,9 @@ namespace leo {
   }
 
   namespace renderer {
+
+    class DirectionLightUniform;
+    class PointLightUniform;
 
       typedef struct BufferCollection
       {
@@ -44,12 +48,12 @@ namespace leo {
         Framebuffer &getOutput();
 
       public:
-        Framebuffer &render(model::Base *root);
-        Framebuffer &render(model::Base *root,
+        Framebuffer &render(const model::SceneGraph *sceneGraph);
+        Framebuffer &render(const model::SceneGraph *sceneGraph,
             std::vector<const Framebuffer *> inputs);
 
       private:
-        void _renderRec(model::Base *root,
+        void _renderRec(const model::Base *root,
             std::vector<const Framebuffer *> inputs);
         void _setCurrentMaterial(model::Material *material);
         void _setModelMatrix(model::Transformation *transformation);
@@ -70,6 +74,9 @@ namespace leo {
         Shader _shader;
         std::map<std::string, BufferCollection> _bufferCollections;
         std::map<std::string, TextureWrapper> _textures;
+        std::map<std::string, DirectionLightUniform> _directionLights;
+        std::map<std::string, PointLightUniform> _pointLights;
+
     };
 
   }  // namespace renderer
