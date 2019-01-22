@@ -1,4 +1,5 @@
 #include "scene-graph.hpp"
+#include <model/base.hpp>
 
 namespace leo
 {
@@ -21,6 +22,7 @@ const Base *SceneGraph::getRoot() const
 void SceneGraph::setRoot(Base *root)
 {
     this->_root = root;
+    this->_root->setSceneGraph(this);
 }
 
 void SceneGraph::addLight(PointLight *light)
@@ -43,12 +45,12 @@ void SceneGraph::removeLight(DirectionLight *light)
     this->_directionLights.erase(light->getId());
 }
 
-const std::map<stringID, PointLight *> &SceneGraph::getPointLights()
+const std::map<stringID, PointLight *> &SceneGraph::getPointLights() const
 {
     return this->_pointLights;
 }
 
-const std::map<stringID, DirectionLight *> &SceneGraph::getDirectionLights()
+const std::map<stringID, DirectionLight *> &SceneGraph::getDirectionLights() const
 {
     return this->_directionLights;
 }

@@ -20,15 +20,7 @@ namespace leo {
       glm::vec4 getTransformedPosition(const glm::mat4x4 &transformation);
 
     private:
-      void _generateMesh();
-
-    private:
       glm::vec4 _position;
-      bool _genMesh;
-
-    public:
-      const glm::vec3 &getPosition() { return this->_position; }
-      void getPosition(const glm::vec4 &value) { this->_position = value; }
 
     friend renderer::PointLightUniform::PointLightUniform(const PointLight &light);
   };

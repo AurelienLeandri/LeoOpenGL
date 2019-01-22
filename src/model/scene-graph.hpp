@@ -31,8 +31,8 @@ class SceneGraph
     void addLight(DirectionLight *light);
     void removeLight(PointLight *light);
     void removeLight(DirectionLight *light);
-    const std::map<stringID, PointLight *> &getPointLights();
-    const std::map<stringID, DirectionLight *> &getDirectionLights();
+    const std::map<stringID, PointLight *> &getPointLights() const;
+    const std::map<stringID, DirectionLight *> &getDirectionLights() const;
 
   private:
     std::map<stringID, PointLight *> _pointLights;

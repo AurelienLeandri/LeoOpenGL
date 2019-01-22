@@ -6,7 +6,8 @@ namespace leo {
   namespace model {
 
     Transformation::Transformation() :
-      _relativeScaling(1.0f, 1.0f, 1.0f)
+      _relativeScaling(1.0f, 1.0f, 1.0f),
+      _absoluteScaling(1.0f, 1.0f, 1.0f)
     {
     }
 
@@ -118,14 +119,14 @@ namespace leo {
 
     void Transformation::_recomputeTransformationMatrix() {
       this->_transformationMatrix = glm::mat4x4();
-      glm::translate(this->_transformationMatrix, this->_absoluteTranslation);
-      glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.x),
+      this->_transformationMatrix = glm::translate(this->_transformationMatrix, this->_absoluteTranslation);
+      this->_transformationMatrix = glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.x),
           glm::vec3(1.0f, 0.0f, 0.0f));
-      glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.y),
+      this->_transformationMatrix = glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.y),
           glm::vec3(0.0f, 1.0f, 0.0f));
-      glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.z),
-          glm::vec3(0.0f, 0.0f, 2.0f));
-      glm::scale(this->_transformationMatrix, this->_absoluteScaling);
+      this->_transformationMatrix = glm::rotate(this->_transformationMatrix, glm::degrees(this->_absoluteRotation.z),
+          glm::vec3(0.0f, 0.0f, 1.0f));
+      this->_transformationMatrix = glm::scale(this->_transformationMatrix, this->_absoluteScaling);
     }
 
   }  // model

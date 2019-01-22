@@ -5,6 +5,8 @@
 #include <model/components/material.hpp>
 #include <model/components/drawable-collection.hpp>
 #include <model/components/volume.hpp>
+#include <model/components/point-light.hpp>
+#include <model/components/direction-light.hpp>
 #include <model/base.hpp>
 #include <model/scene-graph.hpp>
 
@@ -39,16 +41,52 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 void cubeScene()
 {
-  // Init scene
-  model::Base root;
+  model::Base node1;
+  model::SceneGraph scene;
+  scene.setRoot(&node1);
   model::Material material;
   model::Volume cube = model::Volume::createCube(1.f);
   model::DrawableCollection drawables;
   drawables.addDrawable(&cube);
+  node1.addComponent("Material", &material);
+  node1.addComponent("CubeVolume", &cube);
+  node1.addComponent("Drawables", &drawables);
   material.diffuse_value = glm::vec3(0.89f, 0.42f, 0.11f);
-  root.addComponent("Material", &material);
-  root.addComponent("CubeVolume", &cube);
-  root.addComponent("Drawables", &drawables);
+  material.diffuse_texture = std::make_shared<Texture>("resources/textures/crate_diffuse.png");
+  material.specular_texture = std::make_shared<Texture>("resources/textures/crate_specular.png");
+  material.reflection_map = std::make_shared<Texture>("resources/textures/specular.png");
+
+  model::Transformation t2;
+  model::PointLight pl(
+      glm::vec3(0.2f, 0.2f, 0.2f),
+      glm::vec3(0.6f, 0.6f, 0.6f),
+      glm::vec3(0.6f, 0.6f, 0.6f) );
+  t2.setRelativeTranslation(glm::vec3(3.f, 0.f, 0.f));
+  t2.setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
+  t2.setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
+  model::Base node2;
+  node1.addChild(&node2);
+  node2.addComponent("Material", &material);
+  node2.addComponent("CubeVolume", &cube);
+  node2.addComponent("Drawables", &drawables);
+  node2.addComponent("Transformation", &t2);
+  node2.addComponent("PointLight", &pl);
+
+  model::Transformation t3;
+  model::DirectionLight dl(
+      glm::vec3(0.2f, 0.2f, 0.2f),
+      glm::vec3(0.6f, 0.6f, 0.6f),
+      glm::vec3(0.6f, 0.6f, 0.6f) );
+  t3.setRelativeTranslation(glm::vec3(4.f, 2.f, 0.f));
+  t3.setRelativeRotation(glm::vec3(45.f, 0.f, 0.f));
+  t3.setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
+  model::Base node3;
+  node1.addChild(&node3);
+  node3.addComponent("Material", &material);
+  node3.addComponent("CubeVolume", &cube);
+  node3.addComponent("Drawables", &drawables);
+  node3.addComponent("Transformation", &t3);
+  node3.addComponent("DirectionLight", &dl);
 
   Shader shader(
       "resources/shaders/basic.vs.glsl",
@@ -57,11 +95,7 @@ void cubeScene()
   // Render
   Engine engine;
   engine.initRenderer(shader);
-  material.diffuse_texture = std::make_shared<Texture>("resources/textures/crate_diffuse.png");
-  material.specular_texture = std::make_shared<Texture>("resources/textures/crate_specular.png");
-  material.reflection_map = std::make_shared<Texture>("resources/textures/specular.png");
-  model::SceneGraph scene;
-  scene.setRoot(&root);
+
   engine.setScene(&scene);
   engine.gameLoop();
 }

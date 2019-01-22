@@ -64,6 +64,7 @@ namespace leo {
         void _drawVolume(const model::Volume *volume);
         void _loadDataBuffers(const model::Volume *volume);
         void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
+        void _registerLightUniforms(const model::Base *root);
 
       private:
         void _init();
