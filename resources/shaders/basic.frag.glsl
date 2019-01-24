@@ -61,31 +61,25 @@ void main()
   vec3 diffuse = vec3(0.0, 0.0, 0.0);
   vec3 specular = vec3(0.0, 0.0, 0.0);
 
-  //for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
-    //UPointLight iupl = upl[i];
-    //vec3 lightDir = normalize(iupl.position - FragPos);
-    vec3 lightDir = normalize(vec3(4.0, 7.0, 2.0) - FragPos);
+  for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
+    UPointLight iupl = upl[i];
+    vec3 lightDir = normalize(iupl.position - FragPos);
     float diffuseFactor = max(dot(norm, lightDir), 0.0);
-    //diffuse += iupl.diffuse * diffuseFactor * (material.diffuse_value + diffuse_sample);
-    diffuse += vec3(1.0, 0.2, 0.8) * diffuseFactor * (material.diffuse_value + diffuse_sample);
+    diffuse += iupl.diffuse * diffuseFactor * (material.diffuse_value + diffuse_sample);
     vec3 reflectDir = normalize(reflect(-lightDir, norm));
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    //specular += iupl.specular * spec * (material.specular_value + specular_sample);
-    specular += vec3(1.0, 1.0, 1.0) * spec * (material.specular_value + specular_sample);
-  //}
+    specular += iupl.specular * spec * (material.specular_value + specular_sample);
+  }
 
-  //for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
-    //UDirectionLight iudl = udl[i];
-    //vec3 lightDir = normalize(-iudl.direction);
-    lightDir = -vec3(1.0, -1.0, -1.0);
-    diffuseFactor = max(dot(norm, lightDir), 0.0);
-    //diffuse += iudl.diffuse * diffuseFactor * (material.diffuse_value + diffuse_sample);
-    diffuse += vec3(0.8, 1.0, 0.1) * diffuseFactor * (material.diffuse_value + diffuse_sample);
-    reflectDir = normalize(reflect(-lightDir, norm));
-    spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    //specular += iudl.specular * spec * (material.specular_value + specular_sample);
-    specular += vec3(1.0, 1.0, 1.0) * spec * (material.specular_value + specular_sample);
-  //}
+  for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
+    UDirectionLight iudl = udl[i];
+    vec3 lightDir = normalize(-iudl.direction);
+    float diffuseFactor = max(dot(norm, lightDir), 0.0);
+    diffuse += iudl.diffuse * diffuseFactor * (material.diffuse_value + diffuse_sample);
+    vec3 reflectDir = normalize(reflect(-lightDir, norm));
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    specular += iudl.specular * spec * (material.specular_value + specular_sample);
+  }
 
   /*
   vec3 reflection = reflect(-viewDir, norm);
@@ -96,6 +90,7 @@ void main()
   //vec3 result = diffuse + specular + vec3(reflectionColor * reflectionFactor);
   vec3 result = diffuse + specular;
   color = vec4(result, 1.0);
+  //color = vec4(upl[0].diffuse, 1.0);
 
   //color = vec4(0.0, 1.0, 0.0, 1.0);
   //color = vec4(texture(material.diffuse_texture, TexCoords).rgb, 1.0);

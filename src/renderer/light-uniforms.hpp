@@ -22,7 +22,6 @@ typedef struct LightUniform
     ~LightUniform();
     LightUniform(const LightUniform &other);
     LightUniform &operator=(const LightUniform &other);
-    glm::vec3 ambient;
     float constant;
     glm::vec3 diffuse;
     float linear;

@@ -14,6 +14,7 @@
 #include <model/components/volume.hpp>
 #include <model/components/transformation.hpp>
 
+#define MAX_NUM_LIGHTS 10
 
 namespace leo {
 
@@ -64,6 +65,7 @@ namespace leo {
         void _drawVolume(const model::Volume *volume);
         void _loadDataBuffers(const model::Volume *volume);
         void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
+        void _loadLightsToShader();
         void _registerLightUniforms(const model::Base *root);
 
       private:
@@ -77,6 +79,7 @@ namespace leo {
         std::map<std::string, TextureWrapper> _textures;
         std::map<std::string, DirectionLightUniform> _directionLights;
         std::map<std::string, PointLightUniform> _pointLights;
+        GLuint _lightsUBO;
 
     };
 

@@ -57,6 +57,14 @@ void Renderer::_init()
     glDebugMessageCallback(glDebugOutput, nullptr);
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
   }
+
+  glGenBuffers(1, &this->_lightsUBO);
+
+  glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
+  glBufferData(GL_UNIFORM_BUFFER,
+               MAX_NUM_LIGHTS * (sizeof(PointLightUniform) + sizeof(DirectionLightUniform)),
+               NULL, GL_DYNAMIC_DRAW);
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Renderer::_setWindowContext(GLFWwindow *window, InputManager *inputManager)
@@ -94,8 +102,18 @@ Framebuffer &Renderer::render(const model::SceneGraph *sceneGraph,
   this->_shader.use();
   this->_shader.setMat4("view", this->_camera->getViewMatrix());
   this->_shader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
+  
+  unsigned int ubiLights = glGetUniformBlockIndex(this->_shader.getProgram(), "s1");
+  if (ubiLights != GL_INVALID_INDEX)
+  {
+    glUniformBlockBinding(this->_shader.getProgram(), ubiLights, 1);
+  }
   this->_registerLightUniforms(sceneGraph->getRoot());
+  glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
+  this->_loadLightsToShader();
+  
   this->_renderRec(sceneGraph->getRoot(), inputs);
+  
   return this->_output;
 }
 
@@ -233,6 +251,27 @@ void Renderer::_loadTextureToShader(const char *uniformName, GLuint textureSlot,
     it = this->_textures.insert(std::pair<std::string, TextureWrapper>(texture.path, texture)).first;
   }
   this->_shader.setTexture(uniformName, it->second.getId(), textureSlot);
+}
+
+void Renderer::_loadLightsToShader()
+{
+  glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
+  int i = 0;
+  for (auto &p : this->_pointLights)
+  {
+    PointLightUniform &plu = p.second;
+    glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof(PointLightUniform), sizeof(PointLightUniform), &plu);
+    i++;
+  }
+  i = 0;
+  unsigned int offset = MAX_NUM_LIGHTS * sizeof(PointLightUniform);
+  for (auto p : this->_directionLights)
+  {
+    DirectionLightUniform &dlu = p.second;
+    glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof(DirectionLightUniform), sizeof(DirectionLightUniform), &dlu);
+    i++;
+  }
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Renderer::_registerLightUniforms(const model::Base *root)
