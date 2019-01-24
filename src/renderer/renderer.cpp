@@ -240,10 +240,26 @@ void Renderer::_registerLightUniforms(const model::Base *root)
   for (auto &p : root->getSceneGraph()->getDirectionLights())
   {
     this->_directionLights.insert(std::pair<std::string, DirectionLightUniform>(p.second->getId(), DirectionLightUniform(*p.second)));
+    DirectionLightUniform &dlu = this->_directionLights[p.second->getId()];
+    auto cTransform = p.second->getBase()->getComponents().find("Transformation");
+    if (cTransform != p.second->getBase()->getComponents().end())
+    {
+      model::Transformation *transform = static_cast<model::Transformation *>(cTransform->second);
+      const glm::mat4x4 &transformation = transform->getTransformationMatrix();
+      dlu.direction = p.second->getTransformedDirection(transformation);
+    }
   }
   for (auto &p : root->getSceneGraph()->getPointLights())
   {
     this->_pointLights.insert(std::pair<std::string, PointLightUniform>(p.second->getId(), PointLightUniform(*p.second)));
+    PointLightUniform &plu = this->_pointLights[p.second->getId()];
+    auto cTransform = p.second->getBase()->getComponents().find("Transformation");
+    if (cTransform != p.second->getBase()->getComponents().end())
+    {
+      model::Transformation *transform = static_cast<model::Transformation *>(cTransform->second);
+      const glm::mat4x4 &transformation = transform->getTransformationMatrix();
+      plu.position = p.second->getTransformedPosition(transformation);
+    }
   }
 }
 
