@@ -13,6 +13,7 @@ namespace model
 class Base;
 class PointLight;
 class DirectionLight;
+class CubeMap;
 
 class SceneGraph
 {
@@ -33,10 +34,13 @@ class SceneGraph
     void removeLight(DirectionLight *light);
     const std::map<stringID, PointLight *> &getPointLights() const;
     const std::map<stringID, DirectionLight *> &getDirectionLights() const;
+    const CubeMap *getCubeMap() const;
+    void setCubeMap(CubeMap *cubeMap);
 
   private:
     std::map<stringID, PointLight *> _pointLights;
     std::map<stringID, DirectionLight *> _directionLights;
+    CubeMap *_cubeMap;
 
   private:
     Base *_root;

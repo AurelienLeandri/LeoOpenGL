@@ -11,6 +11,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/component.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/scene-graph.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/scene-graph.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/cube-map.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/cube-map.cpp
   PARENT_SCOPE
   )
 

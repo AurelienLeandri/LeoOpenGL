@@ -55,5 +55,15 @@ const std::map<stringID, DirectionLight *> &SceneGraph::getDirectionLights() con
     return this->_directionLights;
 }
 
+const CubeMap *SceneGraph::getCubeMap() const
+{
+    return this->_cubeMap;
+}
+
+void SceneGraph::setCubeMap(CubeMap *cubeMap)
+{
+    this->_cubeMap = cubeMap;
+}
+
 } // namespace model
 } // namespace leo

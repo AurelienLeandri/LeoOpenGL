@@ -9,6 +9,7 @@
 #include <model/components/direction-light.hpp>
 #include <model/base.hpp>
 #include <model/scene-graph.hpp>
+#include <model/cube-map.hpp>
 
 using namespace leo;
 
@@ -43,6 +44,8 @@ void cubeScene()
 {
   model::Base node1;
   model::SceneGraph scene;
+  model::CubeMap cubeMap("skybox", "resources/textures");
+  scene.setCubeMap(&cubeMap);
   scene.setRoot(&node1);
   model::Material material;
   model::Volume cube = model::Volume::createCube(1.f);
