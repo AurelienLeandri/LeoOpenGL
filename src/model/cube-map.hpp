@@ -20,6 +20,7 @@ public:
 
 public:
   const std::vector<Texture *> &getTextures() const { return this->_textures; }
+  const Volume *getCube() const { return &this->_cube; }
 
 private:
   void _loadCubeMapTextures(std::string name, std::string path);

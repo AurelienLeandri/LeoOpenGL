@@ -17,6 +17,7 @@ namespace leo {
 
   // TODO: Fix
   Texture Texture::createCubeMapTexture(std::string name, std::string directory) {
+    // DEPRECATED
     Texture t(false);
     t.path = directory;
     std::vector<std::string> faces;

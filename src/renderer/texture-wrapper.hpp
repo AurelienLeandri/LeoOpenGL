@@ -10,13 +10,13 @@ namespace renderer
 class TextureWrapper
 {
   public:
-    TextureWrapper(const Texture &texture);
+    TextureWrapper(const Texture &texture, bool bindData=true);
     TextureWrapper(const TextureWrapper &other);
     ~TextureWrapper();
     TextureWrapper &operator=(const TextureWrapper &other);
 
   public:
-    void init();
+    void init(bool bindData=true);
     bool isInitialized();
     GLuint getId();
 

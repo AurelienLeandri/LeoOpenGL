@@ -20,6 +20,7 @@ namespace leo {
 
   namespace model {
     class Material;
+    class CubeMap;
   }
 
   namespace renderer {
@@ -67,6 +68,7 @@ namespace leo {
         void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
         void _loadLightsToShader();
         void _registerLightUniforms(const model::Base *root);
+        void _loadCubeMap(const model::CubeMap *cubeMap);
 
       private:
         void _init();

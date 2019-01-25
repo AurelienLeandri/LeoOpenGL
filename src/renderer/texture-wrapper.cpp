@@ -5,9 +5,9 @@ namespace leo
 namespace renderer
 {
 
-TextureWrapper::TextureWrapper(const Texture &texture) : _initialized(false), _id(0), _texture(&texture)
+TextureWrapper::TextureWrapper(const Texture &texture, bool bindData) : _initialized(false), _id(0), _texture(&texture)
 {
-    init();
+    init(bindData);
 }
 
 TextureWrapper::TextureWrapper(const TextureWrapper &other) : _initialized(other._initialized), _id(other._id), _texture(other._texture) {
@@ -23,8 +23,10 @@ TextureWrapper &TextureWrapper::operator=(const TextureWrapper &other) {
     return *this;
 }
 
-void TextureWrapper::init() {
+void TextureWrapper::init(bool bindData) {
     glGenTextures(1, &this->_id);
+
+    if (!bindData) return;
 
     glBindTexture(GL_TEXTURE_2D, this->_id);
 

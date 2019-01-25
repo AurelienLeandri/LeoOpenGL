@@ -3,6 +3,7 @@
 #include <renderer/utils/shader.hpp>
 #include <model/components/material.hpp>
 #include <model/scene-graph.hpp>
+#include <model/cube-map.hpp>
 
 namespace leo
 {
@@ -102,7 +103,7 @@ Framebuffer &Renderer::render(const model::SceneGraph *sceneGraph,
   this->_shader.use();
   this->_shader.setMat4("view", this->_camera->getViewMatrix());
   this->_shader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
-  
+
   unsigned int ubiLights = glGetUniformBlockIndex(this->_shader.getProgram(), "s1");
   if (ubiLights != GL_INVALID_INDEX)
   {
@@ -111,10 +112,42 @@ Framebuffer &Renderer::render(const model::SceneGraph *sceneGraph,
   this->_registerLightUniforms(sceneGraph->getRoot());
   glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
   this->_loadLightsToShader();
-  
+  const model::CubeMap *cubeMap = sceneGraph->getCubeMap();
+  if (cubeMap)
+  {
+    this->_loadCubeMap(cubeMap);
+  }
+
   this->_renderRec(sceneGraph->getRoot(), inputs);
-  
+
   return this->_output;
+}
+
+void Renderer::_loadCubeMap(const model::CubeMap *cubeMap)
+{
+  auto it = this->_bufferCollections.find(cubeMap->getCube()->getId());
+  if (it == _bufferCollections.end())
+  {
+    const Texture &texture = *cubeMap->getTextures()[0];
+    TextureWrapper &tw = this->_textures.insert(std::pair<std::string, TextureWrapper>(texture.path, TextureWrapper(texture, false))).first->second;
+    glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
+    for (int i = 0; i < 6; ++i) {
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                   0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubeMap->getTextures()[i]->data);
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+  }
+
+  TextureWrapper &tw = this->_textures.find(cubeMap->getTextures()[0]->path)->second;
+  glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
+  this->_drawVolume(cubeMap->getCube());
 }
 
 void Renderer::_renderRec(const model::Base *root,
