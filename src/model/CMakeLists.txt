@@ -13,6 +13,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/scene-graph.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cube-map.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cube-map.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/model-loader.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/model-loader.cpp
   PARENT_SCOPE
   )
 
