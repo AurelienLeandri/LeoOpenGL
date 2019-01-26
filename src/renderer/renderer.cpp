@@ -115,7 +115,7 @@ Framebuffer &Renderer::render(const model::SceneGraph *sceneGraph,
   const model::CubeMap *cubeMap = sceneGraph->getCubeMap();
   if (cubeMap)
   {
-    this->_loadCubeMap(cubeMap);
+    //this->_loadCubeMap(cubeMap);
   }
 
   this->_renderRec(sceneGraph->getRoot(), inputs);

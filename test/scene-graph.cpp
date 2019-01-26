@@ -10,6 +10,7 @@
 #include <model/base.hpp>
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
+#include <model/model-loader.hpp>
 
 using namespace leo;
 
@@ -42,11 +43,15 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 void cubeScene()
 {
-  model::Base node1;
+  model::Base *m = model::ModelLoader::loadModel("resources/models/nanosuit/nanosuit.obj");
   model::SceneGraph scene;
   model::CubeMap cubeMap("skybox", "resources/textures");
   scene.setCubeMap(&cubeMap);
-  scene.setRoot(&node1);
+  scene.setRoot(m);
+
+  model::Base node1;
+  m->addChild(&node1);
+
   model::Material material;
   model::Volume cube = model::Volume::createCube(1.f);
   model::DrawableCollection drawables;

@@ -3,6 +3,7 @@
 #include <model/base.hpp>
 #include <model/components/material.hpp>
 #include <model/components/volume.hpp>
+#include <model/components/drawable-collection.hpp>
 
 #include <SOIL.h>
 
@@ -49,6 +50,8 @@ void ModelLoader::processNode(Base *modelNode, aiNode *node, const aiScene *scen
 Base *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
 {
     Base *base = new Base();
+    DrawableCollection *drawables = new DrawableCollection();
+    base->addComponent("DrawableCollection", drawables);
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
@@ -85,6 +88,7 @@ Base *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
             indices.push_back(face.mIndices[j]);
     }
     Volume *volume = new Volume(vertices, indices);
+    drawables->addDrawable(volume);
 
     // Process shader
     aiMaterial *shader = scene->mMaterials[mesh->mMaterialIndex];
@@ -114,7 +118,7 @@ std::vector<Texture *> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiText
     {
         aiString str;
         mat->GetTexture(type, i, &str);
-        std::string path = str.C_Str();
+        std::string path = std::string("resources/models/nanosuit/") + str.C_Str();
         bool skip = (GLboolean) false;
         for (unsigned int j = 0; j < textureCache.size(); j++)
         {
