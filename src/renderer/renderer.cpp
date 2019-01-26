@@ -62,9 +62,10 @@ void Renderer::_init()
   glGenBuffers(1, &this->_lightsUBO);
 
   glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
+  auto size = sizeof(PointLightUniform);
   glBufferData(GL_UNIFORM_BUFFER,
                MAX_NUM_LIGHTS * (sizeof(PointLightUniform) + sizeof(DirectionLightUniform)),
-               NULL, GL_DYNAMIC_DRAW);
+               NULL, GL_STATIC_DRAW);
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -298,7 +299,7 @@ void Renderer::_loadLightsToShader()
   }
   i = 0;
   unsigned int offset = MAX_NUM_LIGHTS * sizeof(PointLightUniform);
-  for (auto p : this->_directionLights)
+  for (auto &p : this->_directionLights)
   {
     DirectionLightUniform &dlu = p.second;
     glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof(DirectionLightUniform), sizeof(DirectionLightUniform), &dlu);

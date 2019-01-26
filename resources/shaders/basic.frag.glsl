@@ -3,6 +3,7 @@
 #define MAX_NUM_LIGHTS 10
 
 struct UPointLight {
+  vec3 ambient;
   float constant;
   vec3 diffuse;
   float linear;
@@ -12,6 +13,7 @@ struct UPointLight {
 };
 
 struct UDirectionLight {
+  vec3 ambient;
   float constant;
   vec3 diffuse;
   float linear;
@@ -90,7 +92,7 @@ void main()
   //vec3 result = diffuse + specular + vec3(reflectionColor * reflectionFactor);
   vec3 result = diffuse + specular;
   color = vec4(result, 1.0);
-  //color = vec4(upl[0].diffuse, 1.0);
+  //color = vec4(udl[0].diffuse, 1.0);
 
   //color = vec4(0.0, 1.0, 0.0, 1.0);
   //color = vec4(texture(material.diffuse_texture, TexCoords).rgb, 1.0);
