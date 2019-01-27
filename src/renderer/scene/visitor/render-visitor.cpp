@@ -192,8 +192,10 @@ namespace leo {
 
   void RenderVisitor::registerFramebuffer(const Framebuffer &fb) {
     auto &color_buffers = fb.getColorBuffers();
+    /*
     for (unsigned int i = 0; i < color_buffers.size(); i++)
       this->_colorBuffers.push_back(&color_buffers[i]);
+    BROKEN */
     this->_shader->setTextureOffset(this->_colorBuffers.size() + (this->_cubeMapTexture ? 1 : 0));
   }
 

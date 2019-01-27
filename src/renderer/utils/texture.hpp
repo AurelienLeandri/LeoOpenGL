@@ -25,7 +25,7 @@ namespace leo {
       static Texture createCubeMapTexture(std::string name, std::string directory);
 
     public:
-      unsigned char *data;
+      unsigned char *data = nullptr;
       std::string path;
       int width;
       int height;

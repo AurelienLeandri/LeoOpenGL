@@ -10,32 +10,34 @@ TextureWrapper::TextureWrapper(const Texture &texture, bool bindData) : _initial
     init(bindData);
 }
 
-TextureWrapper::TextureWrapper(const TextureWrapper &other) : _initialized(other._initialized), _id(other._id), _texture(other._texture) {
+TextureWrapper::TextureWrapper(const TextureWrapper &other) : _initialized(other._initialized), _id(other._id), _texture(other._texture)
+{
 }
 
-TextureWrapper::~TextureWrapper() {
+TextureWrapper::~TextureWrapper()
+{
 }
 
-TextureWrapper &TextureWrapper::operator=(const TextureWrapper &other) {
+TextureWrapper &TextureWrapper::operator=(const TextureWrapper &other)
+{
     this->_initialized = other._initialized;
     this->_id = other._id;
     this->_texture = other._texture;
     return *this;
 }
 
-void TextureWrapper::init(bool bindData) {
+void TextureWrapper::init(bool bindData)
+{
     glGenTextures(1, &this->_id);
 
-    if (!bindData) return;
+    if (!bindData)
+        return;
 
     glBindTexture(GL_TEXTURE_2D, this->_id);
 
     GLuint channels = GL_RGBA;
-    if (this->_texture->data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, channels, this->_texture->width, this->_texture->height, 0, channels,
-                     GL_UNSIGNED_BYTE, this->_texture->data ? this->_texture->data : 0);
-    }
+    glTexImage2D(GL_TEXTURE_2D, 0, channels, this->_texture->width, this->_texture->height, 0, channels,
+                 GL_UNSIGNED_BYTE, this->_texture->data ? this->_texture->data : 0);
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -47,11 +49,13 @@ void TextureWrapper::init(bool bindData) {
     this->_initialized = true;
 }
 
-bool TextureWrapper::isInitialized() {
+bool TextureWrapper::isInitialized()
+{
     return this->_initialized;
 }
 
-GLuint TextureWrapper::getId() {
+GLuint TextureWrapper::getId() const
+{
     return this->_id;
 }
 

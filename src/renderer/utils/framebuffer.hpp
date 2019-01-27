@@ -1,6 +1,7 @@
 #pragma once
 
 #include <renderer/utils/texture.hpp>
+#include <renderer/texture-wrapper.hpp>
 #include <iostream>
 #include <vector>
 
@@ -18,11 +19,12 @@ class Framebuffer {
   public:
     void generate();
     GLuint getId() const { return this->_id; }
-    const std::vector<Texture> &getColorBuffers() const { return this->_colorBuffers; }
+    const std::vector<renderer::TextureWrapper> &getColorBuffers() const { return this->_colorBuffers; }
+    void loadFrameBuffer();
 
   private:
     GLuint _id;
-    std::vector<Texture> _colorBuffers;
+    std::vector<renderer::TextureWrapper> _colorBuffers;
     GLenum _drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 
 };  // class Framebuffer

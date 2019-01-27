@@ -67,6 +67,12 @@ void Renderer::_init()
                MAX_NUM_LIGHTS * (sizeof(PointLightUniform) + sizeof(DirectionLightUniform)),
                NULL, GL_STATIC_DRAW);
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+  this->_initFramebuffers();
+}
+
+void Renderer::_initFramebuffers() {
+  this->_main.generate();
 }
 
 void Renderer::_setWindowContext(GLFWwindow *window, InputManager *inputManager)
@@ -85,25 +91,24 @@ void Renderer::_setCamera(Camera *camera)
   this->_camera = camera;
 }
 
-Framebuffer &Renderer::getOutput()
-{
-  return this->_output;
-}
-
-Framebuffer &Renderer::render(const model::SceneGraph *sceneGraph)
+void Renderer::render(const model::SceneGraph *sceneGraph)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  Framebuffer &fb = this->render(sceneGraph, std::vector<const Framebuffer *>());
+  glEnable(GL_DEPTH_TEST);
+  this->render(sceneGraph, std::vector<const Framebuffer *>(), nullptr);
+  glDisable(GL_DEPTH_TEST);
   glfwSwapBuffers(this->_window);
-  return fb;
 }
 
-Framebuffer &Renderer::render(const model::SceneGraph *sceneGraph,
-                              std::vector<const Framebuffer *> inputs)
+void Renderer::render(const model::SceneGraph *sceneGraph,
+                              std::vector<const Framebuffer *> inputs, Framebuffer *output)
 {
   this->_shader.use();
   this->_shader.setMat4("view", this->_camera->getViewMatrix());
   this->_shader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
+
+  this->_loadInputFramebuffers(inputs);
+  this->_loadOutputFramebuffer(output);
 
   unsigned int ubiLights = glGetUniformBlockIndex(this->_shader.getProgram(), "s1");
   if (ubiLights != GL_INVALID_INDEX)
@@ -119,40 +124,11 @@ Framebuffer &Renderer::render(const model::SceneGraph *sceneGraph,
     //this->_loadCubeMap(cubeMap);
   }
 
-  this->_renderRec(sceneGraph->getRoot(), inputs);
-
-  return this->_output;
-}
-
-void Renderer::_loadCubeMap(const model::CubeMap *cubeMap)
-{
-  auto it = this->_bufferCollections.find(cubeMap->getCube()->getId());
-  if (it == _bufferCollections.end())
-  {
-    const Texture &texture = *cubeMap->getTextures()[0];
-    TextureWrapper &tw = this->_textures.insert(std::pair<std::string, TextureWrapper>(texture.path, TextureWrapper(texture, false))).first->second;
-    glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
-    for (int i = 0; i < 6; ++i) {
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                   0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubeMap->getTextures()[i]->data);
-    }
-
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-  }
-
-  TextureWrapper &tw = this->_textures.find(cubeMap->getTextures()[0]->path)->second;
-  glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
-  this->_drawVolume(cubeMap->getCube());
+  this->_renderRec(sceneGraph->getRoot(), inputs, output);
 }
 
 void Renderer::_renderRec(const model::Base *root,
-                          std::vector<const Framebuffer *> inputs)
+                          std::vector<const Framebuffer *> inputs, Framebuffer *output)
 {
   this->_setModelMatrix();
   model::DrawableCollection *toDraw = nullptr;
@@ -185,7 +161,7 @@ void Renderer::_renderRec(const model::Base *root,
   }
 
   for (auto &child : root->getChildren())
-    this->_renderRec(child.second, inputs);
+    this->_renderRec(child.second, inputs, output);
 }
 
 void Renderer::_drawCollection(model::DrawableCollection *collection)
@@ -199,6 +175,34 @@ void Renderer::_drawCollection(model::DrawableCollection *collection)
       this->_drawVolume(volume);
     }
   }
+}
+
+void Renderer::_loadCubeMap(const model::CubeMap *cubeMap)
+{
+  auto it = this->_bufferCollections.find(cubeMap->getCube()->getId());
+  if (it == _bufferCollections.end())
+  {
+    const Texture &texture = *cubeMap->getTextures()[0];
+    TextureWrapper &tw = this->_textures.insert(std::pair<std::string, TextureWrapper>(texture.path, TextureWrapper(texture, false))).first->second;
+    glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
+    for (int i = 0; i < 6; ++i)
+    {
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                   0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubeMap->getTextures()[i]->data);
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+  }
+
+  TextureWrapper &tw = this->_textures.find(cubeMap->getTextures()[0]->path)->second;
+  glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
+  this->_drawVolume(cubeMap->getCube());
 }
 
 void Renderer::_loadDataBuffers(const model::Volume *volume)
@@ -261,19 +265,19 @@ void Renderer::_setCurrentMaterial(model::Material *material)
   this->_shader.setVector3("material.diffuse_value", material->diffuse_value);
   if (material->diffuse_texture)
   {
-    this->_loadTextureToShader("material.diffuse_texture", 0, *material->diffuse_texture);
+    this->_loadTextureToShader("material.diffuse_texture", this->_materialTextureOffset + 0, *material->diffuse_texture);
   }
 
   this->_shader.setVector3("material.specular_value", material->specular_value);
   this->_shader.setInt("material.shininess", material->shininess);
   if (material->specular_texture)
   {
-    this->_loadTextureToShader("material.specular_texture", 1, *material->specular_texture);
+    this->_loadTextureToShader("material.specular_texture", this->_materialTextureOffset + 1, *material->specular_texture);
   }
 
   if (material->reflection_map)
   {
-    this->_loadTextureToShader("material.reflection_map", 2, *material->reflection_map);
+    this->_loadTextureToShader("material.reflection_map", this->_materialTextureOffset + 2, *material->reflection_map);
   }
 }
 
@@ -334,6 +338,33 @@ void Renderer::_registerLightUniforms(const model::Base *root)
       plu.position = p.second->getTransformedPosition(transformation);
     }
   }
+}
+
+void Renderer::_loadOutputFramebuffer(Framebuffer *output)
+{
+  if (output)
+  {
+    output->loadFrameBuffer();
+  }
+}
+
+void Renderer::_loadInputFramebuffers(std::vector<const Framebuffer *> &inputs)
+{
+  int inputNumber = 0;
+  for (int j = 0; j < inputs.size(); ++j)
+  {
+    const std::vector<TextureWrapper> &cb = inputs[j]->getColorBuffers();
+    for (GLuint i = 0; i < cb.size(); i++)
+    {
+      std::stringstream number;
+      number << inputNumber;
+      glActiveTexture(GL_TEXTURE0 + inputNumber);
+      glBindTexture(GL_TEXTURE_2D, cb[i].getId());
+      glUniform1i(glGetUniformLocation(this->_shader.getProgram(), ("fb" + number.str()).c_str()), inputNumber);
+      inputNumber++;
+    }
+  }
+  this->_materialTextureOffset = inputNumber;
 }
 
 void Renderer::_setModelMatrix(model::Transformation *transformation)

@@ -47,16 +47,15 @@ namespace leo {
 
       public:
         const Renderer &operator=(const Renderer &other) = delete;
-        Framebuffer &getOutput();
 
       public:
-        Framebuffer &render(const model::SceneGraph *sceneGraph);
-        Framebuffer &render(const model::SceneGraph *sceneGraph,
-            std::vector<const Framebuffer *> inputs);
+        void render(const model::SceneGraph *sceneGraph);
+        void render(const model::SceneGraph *sceneGraph,
+            std::vector<const Framebuffer *> inputs, Framebuffer *output);
 
       private:
         void _renderRec(const model::Base *root,
-            std::vector<const Framebuffer *> inputs);
+            std::vector<const Framebuffer *> inputs, Framebuffer *output);
         void _setCurrentMaterial(model::Material *material);
         void _setModelMatrix(model::Transformation *transformation);
         void _setModelMatrix();
@@ -69,10 +68,13 @@ namespace leo {
         void _loadLightsToShader();
         void _registerLightUniforms(const model::Base *root);
         void _loadCubeMap(const model::CubeMap *cubeMap);
+        void _loadOutputFramebuffer(Framebuffer *output);
+        void _loadInputFramebuffers(std::vector<const Framebuffer *> &inputs);
+        void _initFramebuffers();
 
       private:
         void _init();
-        Framebuffer _output;
+        Framebuffer _main;
         Camera *_camera;
         GLFWwindow *_window;
         InputManager *_inputManager;
@@ -82,6 +84,7 @@ namespace leo {
         std::map<std::string, DirectionLightUniform> _directionLights;
         std::map<std::string, PointLightUniform> _pointLights;
         GLuint _lightsUBO;
+        GLuint _materialTextureOffset = 0;
 
     };
 
