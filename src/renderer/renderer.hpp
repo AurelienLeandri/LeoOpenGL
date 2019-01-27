@@ -54,8 +54,8 @@ namespace leo {
             std::vector<const Framebuffer *> inputs, Framebuffer *output);
 
       private:
-        void _renderRec(const model::Base *root,
-            std::vector<const Framebuffer *> inputs, Framebuffer *output);
+        void _renderRec(const model::Base *root);
+        void _postProcess(Framebuffer *input);
         void _setCurrentMaterial(model::Material *material);
         void _setModelMatrix(model::Transformation *transformation);
         void _setModelMatrix();
@@ -69,7 +69,7 @@ namespace leo {
         void _registerLightUniforms(const model::Base *root);
         void _loadCubeMap(const model::CubeMap *cubeMap);
         void _loadOutputFramebuffer(Framebuffer *output);
-        void _loadInputFramebuffers(std::vector<const Framebuffer *> &inputs);
+        void _loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, Shader &shader);
         void _initFramebuffers();
 
       private:
@@ -79,12 +79,14 @@ namespace leo {
         GLFWwindow *_window;
         InputManager *_inputManager;
         Shader _shader;
+        Shader _postProcessShader;
         std::map<std::string, BufferCollection> _bufferCollections;
         std::map<std::string, TextureWrapper> _textures;
         std::map<std::string, DirectionLightUniform> _directionLights;
         std::map<std::string, PointLightUniform> _pointLights;
         GLuint _lightsUBO;
         GLuint _materialTextureOffset = 0;
+        model::Base _postProcessGeometry;
 
     };
 

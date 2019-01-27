@@ -8,8 +8,8 @@ Framebuffer::Framebuffer() : _id(0)
 
 void Framebuffer::generate()
 {
-  Texture renderedTexture(1620, 1080);
-  this->_colorBuffers.push_back(renderer::TextureWrapper(renderedTexture));
+  this->_renderedTexture = new Texture(1620, 1080);
+  this->_colorBuffers.push_back(renderer::TextureWrapper(*this->_renderedTexture));
   renderer::TextureWrapper &tw = this->_colorBuffers[this->_colorBuffers.size() - 1];
   glGenFramebuffers(1, &this->_id);
   glBindFramebuffer(GL_FRAMEBUFFER, this->_id);

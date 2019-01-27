@@ -13,11 +13,16 @@ namespace renderer
 Renderer::Renderer(GLFWwindow *window,
                    InputManager *inputManager,
                    Camera *camera,
-                   Shader shader) : _shader(shader)
+                   Shader shader) : _shader(shader), _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl")
 {
   this->_setWindowContext(window, inputManager);
   this->_setCamera(camera);
   this->_init();
+  model::Volume *v = new model::Volume(model::Volume::createPlane(1.f, 1.f));
+  this->_postProcessGeometry.addComponent("Volume", v);
+  model::DrawableCollection *dc = new model::DrawableCollection();
+  dc->addDrawable(v);
+  this->_postProcessGeometry.addComponent("DrawableCollection", dc);
 }
 
 Renderer::~Renderer()
@@ -71,7 +76,8 @@ void Renderer::_init()
   this->_initFramebuffers();
 }
 
-void Renderer::_initFramebuffers() {
+void Renderer::_initFramebuffers()
+{
   this->_main.generate();
 }
 
@@ -93,22 +99,24 @@ void Renderer::_setCamera(Camera *camera)
 
 void Renderer::render(const model::SceneGraph *sceneGraph)
 {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glEnable(GL_DEPTH_TEST);
-  this->render(sceneGraph, std::vector<const Framebuffer *>(), nullptr);
-  glDisable(GL_DEPTH_TEST);
+  this->render(sceneGraph, std::vector<const Framebuffer *>(), &this->_main);
+  //this->render(sceneGraph, std::vector<const Framebuffer *>(), nullptr);
+  this->_postProcess(&this->_main);
   glfwSwapBuffers(this->_window);
 }
 
 void Renderer::render(const model::SceneGraph *sceneGraph,
-                              std::vector<const Framebuffer *> inputs, Framebuffer *output)
+                      std::vector<const Framebuffer *> inputs, Framebuffer *output)
 {
   this->_shader.use();
   this->_shader.setMat4("view", this->_camera->getViewMatrix());
   this->_shader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
 
-  this->_loadInputFramebuffers(inputs);
+  this->_loadInputFramebuffers(inputs, this->_shader);
   this->_loadOutputFramebuffer(output);
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glEnable(GL_DEPTH_TEST);
 
   unsigned int ubiLights = glGetUniformBlockIndex(this->_shader.getProgram(), "s1");
   if (ubiLights != GL_INVALID_INDEX)
@@ -124,13 +132,27 @@ void Renderer::render(const model::SceneGraph *sceneGraph,
     //this->_loadCubeMap(cubeMap);
   }
 
-  this->_renderRec(sceneGraph->getRoot(), inputs, output);
+  this->_setModelMatrix();
+  this->_renderRec(sceneGraph->getRoot());
 }
 
-void Renderer::_renderRec(const model::Base *root,
-                          std::vector<const Framebuffer *> inputs, Framebuffer *output)
+void Renderer::_postProcess(Framebuffer *input)
 {
-  this->_setModelMatrix();
+  if (!input)
+    return;
+
+  this->_postProcessShader.use();
+  std::vector<const Framebuffer *> v;
+  v.push_back(input);
+  this->_loadInputFramebuffers(v, this->_postProcessShader);
+  this->_loadOutputFramebuffer(nullptr);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glDisable(GL_DEPTH_TEST);
+  this->_renderRec(&this->_postProcessGeometry);
+}
+
+void Renderer::_renderRec(const model::Base *root)
+{
   model::DrawableCollection *toDraw = nullptr;
   auto &components = root->getComponents();
   for (auto &p : components)
@@ -161,7 +183,7 @@ void Renderer::_renderRec(const model::Base *root,
   }
 
   for (auto &child : root->getChildren())
-    this->_renderRec(child.second, inputs, output);
+    this->_renderRec(child.second);
 }
 
 void Renderer::_drawCollection(model::DrawableCollection *collection)
@@ -346,9 +368,13 @@ void Renderer::_loadOutputFramebuffer(Framebuffer *output)
   {
     output->loadFrameBuffer();
   }
+  else
+  {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  }
 }
 
-void Renderer::_loadInputFramebuffers(std::vector<const Framebuffer *> &inputs)
+void Renderer::_loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, Shader &shader)
 {
   int inputNumber = 0;
   for (int j = 0; j < inputs.size(); ++j)
@@ -358,9 +384,9 @@ void Renderer::_loadInputFramebuffers(std::vector<const Framebuffer *> &inputs)
     {
       std::stringstream number;
       number << inputNumber;
+      glUniform1i(glGetUniformLocation(shader.getProgram(), ("fb" + number.str()).c_str()), inputNumber);
       glActiveTexture(GL_TEXTURE0 + inputNumber);
       glBindTexture(GL_TEXTURE_2D, cb[i].getId());
-      glUniform1i(glGetUniformLocation(this->_shader.getProgram(), ("fb" + number.str()).c_str()), inputNumber);
       inputNumber++;
     }
   }

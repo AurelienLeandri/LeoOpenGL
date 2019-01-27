@@ -16,6 +16,10 @@ namespace leo {
     std::cout << "---------------" << std::endl;
     std::cout << "Debug message (" << id << "): " <<  message << std::endl;
 
+    if (id == 1282) {
+      std::cout << "coucou" << std::endl;
+    }
+
     switch (source)
     {
       case GL_DEBUG_SOURCE_API:             std::cout << "Source: API"; break;
