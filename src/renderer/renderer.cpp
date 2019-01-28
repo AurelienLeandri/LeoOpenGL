@@ -13,7 +13,8 @@ namespace renderer
 Renderer::Renderer(GLFWwindow *window,
                    InputManager *inputManager,
                    Camera *camera,
-                   Shader shader) : _shader(shader), _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl")
+                   Shader shader) : _shader(shader), _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl"),
+                                    _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl")
 {
   this->_setWindowContext(window, inputManager);
   this->_setCamera(camera);
@@ -100,7 +101,6 @@ void Renderer::_setCamera(Camera *camera)
 void Renderer::render(const model::SceneGraph *sceneGraph)
 {
   this->render(sceneGraph, std::vector<const Framebuffer *>(), &this->_main);
-  //this->render(sceneGraph, std::vector<const Framebuffer *>(), nullptr);
   this->_postProcess(&this->_main);
   glfwSwapBuffers(this->_window);
 }
@@ -126,14 +126,15 @@ void Renderer::render(const model::SceneGraph *sceneGraph,
   this->_registerLightUniforms(sceneGraph->getRoot());
   glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
   this->_loadLightsToShader();
-  const model::CubeMap *cubeMap = sceneGraph->getCubeMap();
-  if (cubeMap)
-  {
-    //this->_loadCubeMap(cubeMap);
-  }
 
   this->_setModelMatrix();
   this->_renderRec(sceneGraph->getRoot());
+
+  const model::CubeMap *cubeMap = sceneGraph->getCubeMap();
+  if (cubeMap)
+  {
+    this->_drawCubeMap(*cubeMap, &this->_main);
+  }
 }
 
 void Renderer::_postProcess(Framebuffer *input)
@@ -199,18 +200,30 @@ void Renderer::_drawCollection(model::DrawableCollection *collection)
   }
 }
 
-void Renderer::_loadCubeMap(const model::CubeMap *cubeMap)
+void Renderer::_drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output)
 {
-  auto it = this->_bufferCollections.find(cubeMap->getCube()->getId());
+  this->_cubeMapShader.use();
+  glm::mat4 untranslatedMatrix = glm::mat4(glm::mat3(this->_camera->getViewMatrix()));
+  this->_cubeMapShader.setMat4("view", untranslatedMatrix);
+  this->_cubeMapShader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
+  this->_loadOutputFramebuffer(output);
+  glDepthFunc(GL_LEQUAL);
+  this->_loadCubeMap(cubeMap);
+  glDepthFunc(GL_LESS);
+}
+
+void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
+{
+  auto it = this->_bufferCollections.find(cubeMap.getId());
   if (it == _bufferCollections.end())
   {
-    const Texture &texture = *cubeMap->getTextures()[0];
+    const Texture &texture = *cubeMap.getTextures()[0];
     TextureWrapper &tw = this->_textures.insert(std::pair<std::string, TextureWrapper>(texture.path, TextureWrapper(texture, false))).first->second;
     glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
     for (int i = 0; i < 6; ++i)
     {
       glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                   0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubeMap->getTextures()[i]->data);
+                   0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubeMap.getTextures()[i]->data);
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -222,9 +235,35 @@ void Renderer::_loadCubeMap(const model::CubeMap *cubeMap)
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   }
 
-  TextureWrapper &tw = this->_textures.find(cubeMap->getTextures()[0]->path)->second;
-  glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
-  this->_drawVolume(cubeMap->getCube());
+  TextureWrapper &tw = this->_textures.find(cubeMap.getTextures()[0]->path)->second;
+
+  this->_cubeMapShader.setTexture("skybox", tw.getId(), 0, GL_TEXTURE_CUBE_MAP);
+
+  auto it2 = this->_bufferCollections.find(cubeMap.getId());
+  BufferCollection *bc;
+  if (it2 == _bufferCollections.end()) {
+    _bufferCollections.insert(std::pair<std::string, BufferCollection>(cubeMap.getId(), BufferCollection())).first;
+    bc = &(*this->_bufferCollections.find(cubeMap.getId())).second;
+
+    glGenVertexArrays(1, &bc->VAO);
+    glGenBuffers(1, &bc->VBO);
+
+    glBindVertexArray(bc->VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, bc->VBO);
+
+    const std::vector<float> &vertices = cubeMap.getVertices();
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  }
+  else {
+    bc = &it2->second;
+  }
+
+  glBindVertexArray(bc->VAO);
+  glDrawArrays(GL_TRIANGLES, 0, 36);
+  glBindVertexArray(0);
+
 }
 
 void Renderer::_loadDataBuffers(const model::Volume *volume)

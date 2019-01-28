@@ -10,7 +10,7 @@ namespace leo
 namespace model
 {
 
-class CubeMap
+class CubeMap : public RegisteredObject
 {
 public:
   CubeMap(std::string name, std::string path);
@@ -20,14 +20,15 @@ public:
 
 public:
   const std::vector<Texture *> &getTextures() const { return this->_textures; }
-  const Volume *getCube() const { return &this->_cube; }
+  const std::vector<float> &getVertices() const { return this->_vertices; }
 
 private:
   void _loadCubeMapTextures(std::string name, std::string path);
 
 private:
-  Volume _cube;
+  std::vector<float> _vertices;
   std::vector<Texture *> _textures;
+  GLuint _id;
 };
 
 } // namespace model
