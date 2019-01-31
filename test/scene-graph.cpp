@@ -56,7 +56,7 @@ void cubeScene()
   model::Volume cube = model::Volume::createCube(1.f);
   model::DrawableCollection drawables;
   drawables.addDrawable(&cube);
-  //node1.addComponent("Material", &material);
+  node1.addComponent("Material", &material);
   node1.addComponent("CubeVolume", &cube);
   node1.addComponent("Drawables", &drawables);
   material.diffuse_value = glm::vec3(0.89f, 0.42f, 0.11f);
@@ -74,7 +74,7 @@ void cubeScene()
   t2.setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
   model::Base node2;
   node1.addChild(&node2);
-  //node2.addComponent("Material", &material);
+  node2.addComponent("Material", &material);
   node2.addComponent("CubeVolume", &cube);
   node2.addComponent("Drawables", &drawables);
   node2.addComponent("Transformation", &t2);
@@ -90,7 +90,7 @@ void cubeScene()
   t3.setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
   model::Base node3;
   node1.addChild(&node3);
-  //node3.addComponent("Material", &material);
+  node3.addComponent("Material", &material);
   node3.addComponent("CubeVolume", &cube);
   node3.addComponent("Drawables", &drawables);
   node3.addComponent("Transformation", &t3);

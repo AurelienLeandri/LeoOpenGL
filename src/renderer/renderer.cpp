@@ -214,16 +214,16 @@ void Renderer::_drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output)
 
 void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
 {
-  auto it = this->_bufferCollections.find(cubeMap.getId());
-  if (it == _bufferCollections.end())
+  auto it = this->_textures.find(cubeMap.getId());
+  if (it == this->_textures.end())
   {
     const Texture &texture = *cubeMap.getTextures()[0];
-    TextureWrapper &tw = this->_textures.insert(std::pair<std::string, TextureWrapper>(texture.path, TextureWrapper(texture, false))).first->second;
+    TextureWrapper &tw = this->_textures.insert(std::pair<std::string, TextureWrapper>(cubeMap.getId(), TextureWrapper(texture, false))).first->second;
     glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
     for (int i = 0; i < 6; ++i)
     {
       glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                   0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubeMap.getTextures()[i]->data);
+                   0, GL_RGBA, texture.width, texture.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cubeMap.getTextures()[i]->data);
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -235,7 +235,7 @@ void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   }
 
-  TextureWrapper &tw = this->_textures.find(cubeMap.getTextures()[0]->path)->second;
+  TextureWrapper &tw = this->_textures.find(cubeMap.getId())->second;
 
   this->_cubeMapShader.setTexture("skybox", tw.getId(), 0, GL_TEXTURE_CUBE_MAP);
 
