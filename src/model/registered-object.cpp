@@ -11,24 +11,6 @@ namespace leo {
       this->_register.registerObject(this, this->_id);
     }
 
-    RegisteredObject::~RegisteredObject() {
-      this->_register.unregisterObject(this->_id);
-    }
-
-    RegisteredObject::RegisteredObject(const RegisteredObject &other) :
-      _register(ObjectRegister::getInstance())
-    {
-      this->_id = ObjectRegister::generateStringID();
-      this->_register.registerObject(this, this->_id);
-    }
-
-    const RegisteredObject &RegisteredObject::operator=(const RegisteredObject &other) {
-      this->_register = ObjectRegister::getInstance();
-      this->_id = ObjectRegister::generateStringID();
-      this->_register.registerObject(this, this->_id);
-      return *this;
-    }
-
     const stringID &RegisteredObject::getId() const {
       return this->_id;
     }

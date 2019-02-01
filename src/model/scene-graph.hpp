@@ -19,11 +19,8 @@ class SceneGraph
 {
   public:
     SceneGraph();
-    ~SceneGraph();
-    SceneGraph(const SceneGraph &other) = delete;
 
   public:
-    const SceneGraph &operator=(const SceneGraph &other) = delete;
     const Base *getRoot() const;
     void setRoot(Base *root);
 

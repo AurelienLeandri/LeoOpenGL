@@ -77,12 +77,5 @@ void CubeMap::_loadCubeMapTextures(std::string name, std::string path)
   }
 }
 
-CubeMap::~CubeMap()
-{
-  for (auto pTexture : this->_textures) {
-    delete pTexture;
-  }
-}
-
 } // namespace model
 } // namespace leo

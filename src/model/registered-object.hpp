@@ -13,9 +13,6 @@ namespace leo {
 
       public:
         RegisteredObject();
-        virtual ~RegisteredObject();
-        RegisteredObject(const RegisteredObject &other);
-        virtual const RegisteredObject &operator=(const RegisteredObject &other);
 
       public:
         const stringID &getId() const;

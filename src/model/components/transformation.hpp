@@ -11,9 +11,6 @@ namespace leo {
     class Transformation : public Component {
       public:
         Transformation();
-        virtual ~Transformation();
-        Transformation(const Transformation &other);
-        const Transformation &operator=(const Transformation &other);
 
       public:
         const glm::vec3 &getRelativeTranslation() const;

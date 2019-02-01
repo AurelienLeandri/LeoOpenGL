@@ -10,24 +10,6 @@ namespace leo {
       this->_notify(controller::Event::COMPONENT_CREATED);
     }
 
-    Component::~Component() {
-      this->_notify(controller::Event::COMPONENT_DELETED);
-    }
-
-    Component::Component(const Component &other) :
-      RegisteredObject(other)
-    {
-      // TODO copy constructor
-      this->_notify(controller::Event::COMPONENT_CREATED);
-    }
-
-    const Component &Component::operator=(const Component &other) {
-      // TODO assignement operator
-      RegisteredObject::operator=(other);
-      this->_notify(controller::Event::COMPONENT_UPDATED);
-      return *this;
-    }
-
     const Base *Component::getBase() {
       return this->_base;
     }

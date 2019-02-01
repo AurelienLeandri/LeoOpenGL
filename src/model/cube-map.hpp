@@ -5,6 +5,8 @@
 #include <vector>
 #include <renderer/utils/texture.hpp>
 
+#include <memory>
+
 namespace leo
 {
 namespace model
@@ -14,9 +16,6 @@ class CubeMap : public RegisteredObject
 {
 public:
   CubeMap(std::string name, std::string path);
-  virtual ~CubeMap();
-  CubeMap(const CubeMap &other) = delete;
-  CubeMap &operator=(const CubeMap &other) = delete;
 
 public:
   const std::vector<Texture *> &getTextures() const { return this->_textures; }
@@ -27,7 +26,7 @@ private:
 
 private:
   std::vector<float> _vertices;
-  std::vector<Texture *> _textures;
+  std::vector<std::shared_ptr<Texture>> _textures;
   GLuint _id;
 };
 

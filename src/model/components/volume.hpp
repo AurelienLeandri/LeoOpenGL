@@ -10,9 +10,6 @@ namespace leo {
     class Volume: public Drawable {
       public:
         Volume(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
-        virtual ~Volume();
-        Volume(const Volume &other);
-        virtual const Volume &operator=(const Volume &other);
 
       private:
         Volume();

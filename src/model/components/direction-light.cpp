@@ -20,18 +20,6 @@ namespace leo {
     this->_direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
   }
 
-  DirectionLight::DirectionLight(const DirectionLight &other) :
-    Light(other),
-    _direction(other._direction)
-  {
-  }
-
-  DirectionLight &DirectionLight::operator=(const DirectionLight &other) {
-    Light::operator=(other);
-    this->_direction = other._direction;
-    return *this;
-  }
-
   glm::vec4 DirectionLight::getTransformedDirection(const glm::mat4x4 &transformation) {
     return transformation * this->_direction;
   }

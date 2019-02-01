@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace leo
 {
@@ -24,10 +25,10 @@ class ModelLoader
   private:
     static void processNode(Base *modelNode, aiNode *node, const aiScene *scene);
     static Base *processMesh(aiMesh *mesh, const aiScene *scene);
-    static std::vector<Texture *> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+    static std::vector<std::shared_ptr<Texture>> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 
   private:
-    static std::vector<Texture *> textureCache;
+    static std::vector<std::shared_ptr<Texture>> textureCache;
 };
 
 } // namespace model

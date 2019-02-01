@@ -12,9 +12,6 @@ namespace leo {
       PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
       PointLight(float constant, float linear, float quadratic,
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
-      virtual ~PointLight() {}
-      PointLight(const PointLight &other);
-      PointLight &operator=(const PointLight &other);
 
     public:
       glm::vec4 getTransformedPosition(const glm::mat4x4 &transformation);

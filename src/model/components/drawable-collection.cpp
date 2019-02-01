@@ -6,17 +6,6 @@ namespace leo {
     DrawableCollection::DrawableCollection() {
     }
 
-    DrawableCollection::DrawableCollection(const DrawableCollection &other) :
-      Component(other), _collection(other._collection)
-    {
-    }
-
-    const DrawableCollection &DrawableCollection::operator=(const DrawableCollection &other) {
-      this->_notify(controller::Event::COMPONENT_UPDATED);
-      this->_collection = other._collection;
-      return *this;
-    }
-
     const std::map<stringID, Drawable*> &DrawableCollection::getCollection() {
       return this->_collection;
     }

@@ -11,33 +11,6 @@ namespace leo {
     {
     }
 
-    Transformation::~Transformation() {
-    }
-
-    Transformation::Transformation(const Transformation &other) :
-      Component(other),
-      _relativeTranslation(other._relativeTranslation),
-      _relativeRotation(other._relativeRotation),
-      _relativeScaling(other._relativeScaling),
-      _absoluteTranslation(other._absoluteTranslation),
-      _absoluteRotation(other._absoluteRotation),
-      _absoluteScaling(other._absoluteScaling),
-      _transformationMatrix(other._transformationMatrix)
-    {
-    }
-
-    const Transformation &Transformation::operator=(const Transformation &other) {
-      this->_relativeTranslation = other._relativeTranslation;
-      this->_relativeRotation = other._relativeRotation;
-      this->_relativeScaling = other._relativeScaling;
-      this->_absoluteTranslation = other._absoluteTranslation;
-      this->_absoluteRotation = other._absoluteRotation;
-      this->_absoluteScaling = other._absoluteScaling;
-      this->_transformationMatrix = other._transformationMatrix;
-      this->_notify(controller::Event::COMPONENT_UPDATED);
-      return *this;
-    }
-
     const glm::vec3 &Transformation::getRelativeTranslation() const {
       return this->_relativeTranslation;
     }

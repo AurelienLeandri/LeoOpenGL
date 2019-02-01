@@ -10,8 +10,6 @@ namespace leo {
       public:
         Material();
         Material(bool force);
-        Material(const Material &other) = delete;
-        const Material &operator=(const Material &other) = delete;
 
       public:
         glm::vec3 diffuse_value;

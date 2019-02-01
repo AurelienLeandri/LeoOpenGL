@@ -10,22 +10,6 @@ Volume::Volume(std::vector<Vertex> vertices, std::vector<unsigned int> indices) 
 {
 }
 
-Volume::~Volume()
-{
-}
-
-Volume::Volume(const Volume &other) : Volume(other._vertices, other._indices)
-{
-}
-
-const Volume &Volume::operator=(const Volume &other)
-{
-  this->_vertices = other._vertices;
-  this->_indices = other._indices;
-  this->_notify(controller::Event::COMPONENT_UPDATED);
-  return *this;
-}
-
 Volume::Volume()
 {
 }

@@ -10,10 +10,6 @@ SceneGraph::SceneGraph()
 {
 }
 
-SceneGraph::~SceneGraph()
-{
-}
-
 const Base *SceneGraph::getRoot() const
 {
     return this->_root;

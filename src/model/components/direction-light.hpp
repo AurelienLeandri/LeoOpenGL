@@ -13,9 +13,6 @@ namespace model {
           glm::vec3 specular);
       DirectionLight(float constant, float linear, float quadratic,
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
-      virtual ~DirectionLight() {}
-      DirectionLight(const DirectionLight &other);
-      DirectionLight &operator=(const DirectionLight &other);
 
     public:
       glm::vec4 getTransformedDirection(const glm::mat4x4 &transformation);

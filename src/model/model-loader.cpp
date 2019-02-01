@@ -111,7 +111,7 @@ Base *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
     return base;
 }
 
-std::vector<Texture *> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
+std::vector<std::shared_ptr<Texture>> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
 {
     std::vector<Texture *> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)

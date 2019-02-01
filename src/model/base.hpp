@@ -21,9 +21,6 @@ class Base : public RegisteredObject, public controller::Subject
 
 public:
   Base();
-  virtual ~Base();
-  Base(const Base &other);
-  const Base &operator=(const Base &other);
 
 public:
   bool addComponent(std::string id, Component *component);
