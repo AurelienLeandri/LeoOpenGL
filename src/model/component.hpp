@@ -14,6 +14,7 @@ namespace leo {
     class Component : public RegisteredObject, public controller::Subject {
       public:
         Component();
+        virtual ~Component() = default;
 
       public:
         std::map<stringID, const Base*> getParentBases();

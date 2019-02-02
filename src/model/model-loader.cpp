@@ -12,7 +12,7 @@ namespace leo
 namespace model
 {
 
-std::vector<Texture *> ModelLoader::textureCache;
+std::vector<std::shared_ptr<Texture>> ModelLoader::textureCache;
 
 Base *ModelLoader::loadModel(std::string path)
 {
@@ -92,13 +92,13 @@ Base *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
 
     // Process shader
     aiMaterial *shader = scene->mMaterials[mesh->mMaterialIndex];
-    std::vector<Texture *> diffuseMaps =
+    std::vector<std::shared_ptr<Texture>> diffuseMaps =
         loadMaterialTextures(shader, aiTextureType_DIFFUSE,
                                    "texture_diffuse");
-    std::vector<Texture *> specularMaps =
+    std::vector<std::shared_ptr<Texture>> specularMaps =
         loadMaterialTextures(shader, aiTextureType_SPECULAR,
                                    "texture_specular");
-    std::vector<Texture *> ambientMaps =
+    std::vector<std::shared_ptr<Texture>> ambientMaps =
         loadMaterialTextures(shader, aiTextureType_AMBIENT,
                                    "texture_ambient");
     Material *material = new Material();
@@ -113,7 +113,7 @@ Base *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
 
 std::vector<std::shared_ptr<Texture>> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
 {
-    std::vector<Texture *> textures;
+    std::vector<std::shared_ptr<Texture>> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
     {
         aiString str;
@@ -132,7 +132,7 @@ std::vector<std::shared_ptr<Texture>> ModelLoader::loadMaterialTextures(aiMateri
         }
         if (!skip)
         { // If texture hasn't been loaded already, load it
-            Texture *texture = new Texture(path.c_str());
+            std::shared_ptr<Texture> texture = std::make_shared<Texture>(path.c_str());
             textures.push_back(texture);
             textureCache.push_back(texture); // Add to loaded _textures
         }

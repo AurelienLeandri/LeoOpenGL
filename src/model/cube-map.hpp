@@ -18,7 +18,7 @@ public:
   CubeMap(std::string name, std::string path);
 
 public:
-  const std::vector<Texture *> &getTextures() const { return this->_textures; }
+  const std::vector<std::shared_ptr<Texture>> &getTextures() const { return this->_textures; }
   const std::vector<float> &getVertices() const { return this->_vertices; }
 
 private:

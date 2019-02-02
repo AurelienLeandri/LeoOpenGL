@@ -10,8 +10,6 @@ namespace leo {
     class DrawableCollection : public Component {
       public:
         DrawableCollection();
-        DrawableCollection(const DrawableCollection &other);
-        const DrawableCollection &operator=(const DrawableCollection &other);
         const std::map<stringID, Drawable*> &getCollection();
         bool addDrawable(Drawable *drawable);
         Drawable *getDrawable(stringID id);
