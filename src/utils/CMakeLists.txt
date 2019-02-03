@@ -1,11 +1,7 @@
 set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/file-reader.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/file-reader.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/shader.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/shader.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/texture.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/texture.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/framebuffer.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/framebuffer.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/geometry.hpp
   PARENT_SCOPE)

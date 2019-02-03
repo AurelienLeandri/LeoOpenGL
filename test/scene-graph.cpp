@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <renderer/engine.hpp>
-#include <renderer/utils/shader.hpp>
+#include <renderer/shader.hpp>
 #include <model/components/material.hpp>
 #include <model/components/drawable-collection.hpp>
 #include <model/components/volume.hpp>
@@ -96,12 +96,12 @@ void cubeScene()
   node3.addComponent("Transformation", &t3);
   node3.addComponent("DirectionLight", &dl);
 
-  Shader shader(
+  renderer::Shader shader(
       "resources/shaders/basic.vs.glsl",
       "resources/shaders/basic.frag.glsl");
 
   // Render
-  Engine engine;
+  renderer::Engine engine;
   engine.initRenderer(shader);
 
   engine.setScene(&scene);

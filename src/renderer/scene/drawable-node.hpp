@@ -4,7 +4,7 @@
 #include <renderer/global.hpp>
 
 #include <renderer/scene/node.hpp>
-#include <renderer/utils/shader.hpp>
+#include <renderer/shader.hpp>
 
 namespace leo {
 

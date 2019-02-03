@@ -3,7 +3,7 @@
 #include <model/components/volume.hpp>
 #include <string>
 #include <vector>
-#include <renderer/utils/texture.hpp>
+#include <utils/texture.hpp>
 
 #include <memory>
 

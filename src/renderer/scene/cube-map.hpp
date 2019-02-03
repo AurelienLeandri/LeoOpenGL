@@ -1,7 +1,7 @@
 #pragma once
 
 #include <renderer/scene/geometry-node.hpp>
-#include <renderer/utils/shader.hpp>
+#include <utils/shader.hpp>
 #include <renderer/scene/mesh.hpp>
 #include <string>
 

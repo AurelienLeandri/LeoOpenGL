@@ -3,7 +3,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <renderer/utils/texture.hpp>
+#include <utils/texture.hpp>
 
 #include <string>
 #include <vector>

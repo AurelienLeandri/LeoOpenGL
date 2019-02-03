@@ -2,6 +2,10 @@
 
 namespace leo
 {
+
+namespace renderer
+{
+
 Framebuffer::Framebuffer() : _id(0)
 {
 }
@@ -61,5 +65,7 @@ void Framebuffer::loadFrameBuffer()
 {
   glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
 }
+
+} // namespace renderer
 
 } // namespace leo

@@ -1,19 +1,22 @@
 #include "camera.hpp"
 
-namespace leo {
+namespace leo
+{
+
+namespace renderer
+{
 
 // Constructor with scalar values
 Camera::Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX,
-    GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) :
-  Camera(glm::vec3(posX, posY, posZ), glm::vec3(upX, upY, upZ), yaw, pitch)
-{}
+               GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) : Camera(glm::vec3(posX, posY, posZ), glm::vec3(upX, upY, upZ), yaw, pitch)
+{
+}
 
 // Constructor with vectors
-Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch) :
-  _front(glm::vec3(0.0f, 0.0f, -1.0f)),
-  _movementSpeed(SPEED),
-  _mouseSensitivity(SENSITIVTY),
-  _zoom(ZOOM)
+Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch) : _front(glm::vec3(0.0f, 0.0f, -1.0f)),
+                                                                               _movementSpeed(SPEED),
+                                                                               _mouseSensitivity(SENSITIVTY),
+                                                                               _zoom(ZOOM)
 {
   this->_position = position;
   this->_worldUp = up;
@@ -22,25 +25,26 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch) :
   this->_updateCameraVectors();
 }
 
-Camera::~Camera() {
+Camera::~Camera()
+{
 }
 
-Camera::Camera(const Camera &other) :
-  _position(other._position),
-  _front(other._front),
-  _up(other._up),
-  _right(other._right),
-  _worldUp(other._worldUp),
-  _yaw(other._yaw),
-  _pitch(other._pitch),
-  _movementSpeed(other._movementSpeed),
-  _mouseSensitivity(other._mouseSensitivity),
-  _zoom(other._zoom)
+Camera::Camera(const Camera &other) : _position(other._position),
+                                      _front(other._front),
+                                      _up(other._up),
+                                      _right(other._right),
+                                      _worldUp(other._worldUp),
+                                      _yaw(other._yaw),
+                                      _pitch(other._pitch),
+                                      _movementSpeed(other._movementSpeed),
+                                      _mouseSensitivity(other._mouseSensitivity),
+                                      _zoom(other._zoom)
 {
   this->_updateCameraVectors();
 }
 
-Camera &Camera::operator=(const Camera &other) {
+Camera &Camera::operator=(const Camera &other)
+{
   this->_position = other._position;
   this->_front = other._front;
   this->_up = other._up;
@@ -81,12 +85,12 @@ void Camera::processKeyboard(Camera_Movement direction, GLfloat deltaTime)
 
 // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
 void Camera::processMouse(GLfloat xoffset, GLfloat yoffset,
-    GLboolean constrainPitch)
+                          GLboolean constrainPitch)
 {
   xoffset *= this->_mouseSensitivity;
   yoffset *= this->_mouseSensitivity;
 
-  this->_yaw   += xoffset;
+  this->_yaw += xoffset;
   this->_pitch += yoffset;
 
   // Make sure that when pitch is out of bounds, screen doesn't get flipped
@@ -112,8 +116,10 @@ void Camera::_updateCameraVectors()
   front.z = sin(glm::radians(this->_yaw)) * cos(glm::radians(this->_pitch));
   this->_front = glm::normalize(front);
   // Also re-calculate the Right and Up vector
-  this->_right = glm::normalize(glm::cross(this->_front, this->_worldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-  this->_up    = glm::normalize(glm::cross(this->_right, this->_front));
+  this->_right = glm::normalize(glm::cross(this->_front, this->_worldUp)); // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+  this->_up = glm::normalize(glm::cross(this->_right, this->_front));
 }
 
-}
+} // namespace renderer
+
+} // namespace leo

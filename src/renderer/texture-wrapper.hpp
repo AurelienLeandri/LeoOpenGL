@@ -1,6 +1,6 @@
 #pragma once
 
-#include <renderer/utils/texture.hpp>
+#include <utils/texture.hpp>
 
 namespace leo
 {

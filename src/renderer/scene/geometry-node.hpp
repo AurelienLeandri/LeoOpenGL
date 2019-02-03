@@ -3,7 +3,7 @@
 #include <renderer/global.hpp>
 
 #include <renderer/scene/drawable-node.hpp>
-#include <renderer/utils/shader.hpp>
+#include <renderer/shader.hpp>
 
 namespace leo {
 

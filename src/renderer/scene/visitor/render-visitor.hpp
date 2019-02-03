@@ -6,8 +6,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <renderer/camera.hpp>
-#include <renderer/utils/shader.hpp>
-#include <renderer/utils/framebuffer.hpp>
+#include <utils/shader.hpp>
+#include <utils/framebuffer.hpp>
 #include <renderer/scene/visitor/visitor.hpp>
 #include <renderer/scene/geometry-node.hpp>
 #include <renderer/scene/cube-map.hpp>

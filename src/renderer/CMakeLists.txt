@@ -1,6 +1,3 @@
-add_subdirectory(scene)
-add_subdirectory(utils)
-
 set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.hpp
@@ -16,5 +13,9 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/texture-wrapper.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/debug.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/debug.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/framebuffer.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/framebuffer.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/shader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/shader.hpp
   PARENT_SCOPE
   )

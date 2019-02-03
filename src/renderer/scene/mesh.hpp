@@ -6,14 +6,14 @@
 
 #include <renderer/global.hpp>
 #include <renderer/scene/geometry-node.hpp>
-#include <renderer/utils/shader.hpp>
-#include <renderer/utils/texture.hpp>
+#include <renderer/shader.hpp>
+#include <utils/texture.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 #include <string>
 #include <vector>
 #include <assimp/types.h>
-#include <renderer/utils/geometry.hpp>
+#include <utils/geometry.hpp>
 
 namespace leo {
 

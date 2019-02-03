@@ -1,6 +1,7 @@
 add_subdirectory(model)
 add_subdirectory(controller)
 add_subdirectory(renderer)
+add_subdirectory(utils)
 
 add_library(leo-engine SHARED ${ENGINE_SOURCES})
 

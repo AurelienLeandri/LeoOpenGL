@@ -1,7 +1,7 @@
 #pragma once
 
 #include <model/component.hpp>
-#include <renderer/utils/texture.hpp>
+#include <utils/texture.hpp>
 
 namespace leo {
   namespace model {

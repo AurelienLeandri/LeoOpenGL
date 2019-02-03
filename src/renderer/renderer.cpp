@@ -1,6 +1,6 @@
 #include "renderer.hpp"
 
-#include <renderer/utils/shader.hpp>
+#include <renderer/shader.hpp>
 #include <model/components/material.hpp>
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
