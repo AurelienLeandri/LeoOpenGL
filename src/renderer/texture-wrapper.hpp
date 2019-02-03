@@ -24,9 +24,9 @@ public:
   GLuint getId() const;
 
 private:
-  bool _initialized;
-  GLuint _id;
-  const Texture *_texture;
+  bool _initialized = false;
+  GLuint _id = 0;
+  const Texture *_texture = nullptr;
 };
 
 } // namespace renderer

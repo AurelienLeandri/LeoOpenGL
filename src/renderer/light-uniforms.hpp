@@ -23,11 +23,11 @@ typedef struct LightUniform
     LightUniform(const LightUniform &other);
     LightUniform &operator=(const LightUniform &other);
     glm::vec3 ambient;
-    float constant;
+    float constant = 1.f;
     glm::vec3 diffuse;
-    float linear;
+    float linear = 0.9f;
     glm::vec3 specular;
-    float quadratic;
+    float quadratic = 0.032f;
 } LightUniform;
 
 typedef struct DirectionLightUniform : public LightUniform

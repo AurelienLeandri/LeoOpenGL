@@ -76,9 +76,9 @@ namespace leo {
       private:
         void _init();
         Framebuffer _main;
-        Camera *_camera;
-        GLFWwindow *_window;
-        InputManager *_inputManager;
+        Camera *_camera = nullptr;
+        GLFWwindow *_window = nullptr;
+        InputManager *_inputManager = nullptr;
         Shader _shader;
         Shader _postProcessShader;
         Shader _cubeMapShader;
@@ -86,7 +86,7 @@ namespace leo {
         std::map<std::string, TextureWrapper> _textures;
         std::map<std::string, DirectionLightUniform> _directionLights;
         std::map<std::string, PointLightUniform> _pointLights;
-        GLuint _lightsUBO;
+        GLuint _lightsUBO = 0;
         GLuint _materialTextureOffset = 0;
         model::Base _postProcessGeometry;
 

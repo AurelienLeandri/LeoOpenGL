@@ -45,10 +45,10 @@ class Engine {
     InputManager *inputManager;
 
   private:
-    Camera *_camera;
-    renderer::Renderer *_renderer;
-    GLFWwindow *_window;
-    model::SceneGraph *_scene;
+    Camera *_camera = nullptr;
+    renderer::Renderer *_renderer = nullptr;
+    GLFWwindow *_window = nullptr;
+    model::SceneGraph *_scene = nullptr;
     GLuint screenWidth = 1620;
     GLuint screenHeight = 1080;
 };

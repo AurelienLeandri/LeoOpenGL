@@ -15,9 +15,9 @@ namespace model {
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
 
     protected:
-      float _constant;
-      float _linear;
-      float _quadratic;
+      float _constant = 1.f;
+      float _linear = 0.09f;
+      float _quadratic = 0.032;
       glm::vec3 _ambient;
       glm::vec3 _diffuse;
       glm::vec3 _specular;

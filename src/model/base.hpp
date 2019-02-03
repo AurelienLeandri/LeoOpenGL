@@ -41,8 +41,8 @@ private:
 private:
   std::map<std::string, Component *> _components;
   std::map<stringID, Base *> _children;
-  Base *_parent;
-  SceneGraph *_sceneGraph;
+  Base *_parent = nullptr;
+  SceneGraph *_sceneGraph = nullptr;
 
 }; // class Base
 

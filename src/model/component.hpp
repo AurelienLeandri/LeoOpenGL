@@ -22,7 +22,7 @@ namespace leo {
         void setBase(const Base *base);
 
       protected:
-        const Base *_base;
+        const Base *_base = nullptr;
         
     };  // class Component
 

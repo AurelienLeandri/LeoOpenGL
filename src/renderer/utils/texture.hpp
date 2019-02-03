@@ -27,8 +27,8 @@ namespace leo {
     public:
       unsigned char *data = nullptr;
       std::string path;
-      int width;
-      int height;
+      int width = 0;
+      int height = 0;
   };  // class Texture
 
 } // namespace leo

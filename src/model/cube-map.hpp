@@ -27,7 +27,7 @@ private:
 private:
   std::vector<float> _vertices;
   std::vector<std::shared_ptr<Texture>> _textures;
-  GLuint _id;
+  GLuint _id = 0;
 };
 
 } // namespace model

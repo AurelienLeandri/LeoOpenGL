@@ -37,10 +37,10 @@ class SceneGraph
   private:
     std::map<stringID, PointLight *> _pointLights;
     std::map<stringID, DirectionLight *> _directionLights;
-    CubeMap *_cubeMap;
+    CubeMap *_cubeMap = 0;
 
   private:
-    Base *_root;
+    Base *_root = 0;
 };
 } // namespace model
 } // namespace leo

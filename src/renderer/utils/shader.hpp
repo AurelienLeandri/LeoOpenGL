@@ -47,7 +47,7 @@ namespace leo {
       std::string _vertexCode;
       std::string _fragmentCode;
       std::string _geometryCode;
-      GLuint _program;
+      GLuint _program = 0;
       GLuint _textureOffset = 0;
       bool _initialized = false;
   };

@@ -18,7 +18,7 @@ namespace leo {
         std::shared_ptr<Texture> specular_texture = nullptr;
         std::shared_ptr<Texture> reflection_map = nullptr;
         float shininess = 32.f;
-        bool force;
+        bool force = false;
     };
 
   }  // namespace model

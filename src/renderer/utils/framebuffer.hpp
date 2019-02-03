@@ -23,7 +23,7 @@ class Framebuffer {
     void loadFrameBuffer();
 
   private:
-    GLuint _id;
+    GLuint _id = 0;
     std::vector<renderer::TextureWrapper> _colorBuffers;
     GLenum _drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
     Texture *_renderedTexture = nullptr;
