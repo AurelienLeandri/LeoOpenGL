@@ -13,11 +13,11 @@ LightUniform::LightUniform() {}
 
 LightUniform::LightUniform(const model::Light &light)
 {
-    this->constant = light._constant;
-    this->diffuse = light._diffuse;
-    this->linear = light._linear;
-    this->specular = light._specular;
-    this->quadratic = light._quadratic;
+    this->constant = light.constant;
+    this->diffuse = light.diffuse;
+    this->linear = light.linear;
+    this->specular = light.specular;
+    this->quadratic = light.quadratic;
 }
 
 LightUniform::~LightUniform() {}
@@ -46,7 +46,7 @@ DirectionLightUniform::DirectionLightUniform() {}
 
 DirectionLightUniform::DirectionLightUniform(const model::DirectionLight &light) : LightUniform(light)
 {
-    this->direction = light._direction;
+    this->direction = light.direction;
 }
 
 DirectionLightUniform::~DirectionLightUniform() {}
@@ -69,7 +69,7 @@ PointLightUniform::PointLightUniform() {}
 
 PointLightUniform::PointLightUniform(const model::PointLight &light) : LightUniform(light)
 {
-    this->position = light._position;
+    this->position = light.position;
 }
 
 PointLightUniform::~PointLightUniform() {}

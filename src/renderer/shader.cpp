@@ -1,5 +1,11 @@
 #include "shader.hpp"
-#include <glm/gtc/type_ptr.hpp>
+
+#include <utils/file-reader.hpp>
+#include <utils/texture.hpp>
+
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
 namespace leo
 {

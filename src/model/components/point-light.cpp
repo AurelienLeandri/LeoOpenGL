@@ -6,24 +6,20 @@ namespace model {
   PointLight::PointLight() :
     Light()
   {
-    this->_position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    this->position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
   }
 
   PointLight::PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
     Light(ambient, diffuse, specular)
   {
-    this->_position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    this->position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
   }
 
   PointLight::PointLight(float constant, float linear, float quadratic,
       glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
     Light(constant, linear, quadratic, ambient, diffuse, specular)
   {
-    this->_position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-  }
-
-  glm::vec4 PointLight::getTransformedPosition(const glm::mat4x4 &transformation) {
-    return transformation * this->_position;
+    this->position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
   }
 
 }  // namespace model

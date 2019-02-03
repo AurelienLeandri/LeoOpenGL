@@ -1,9 +1,12 @@
 #pragma once
 
-#include <utils/texture.hpp>
+#include <renderer/global.hpp>
 
 namespace leo
 {
+
+class Texture;
+
 namespace renderer
 {
 

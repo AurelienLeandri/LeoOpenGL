@@ -1,5 +1,7 @@
 #include "texture-wrapper.hpp"
 
+#include <utils/texture.hpp>
+
 namespace leo
 {
 namespace renderer

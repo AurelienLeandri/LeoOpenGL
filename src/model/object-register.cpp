@@ -1,5 +1,8 @@
 #include "object-register.hpp"
 
+#include <sstream>
+#include <memory>
+
 namespace leo {
   namespace model {
 

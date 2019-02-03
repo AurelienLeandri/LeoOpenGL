@@ -1,5 +1,8 @@
 #include "scene-graph.hpp"
+
 #include <model/base.hpp>
+#include <model/components/point-light.hpp>
+#include <model/components/direction-light.hpp>
 
 namespace leo
 {

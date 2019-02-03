@@ -1,18 +1,12 @@
 #pragma once
 
-#include <renderer/global.hpp>
-#include <renderer/light-uniforms.hpp>
-#include <renderer/texture-wrapper.hpp>
 #include <renderer/framebuffer.hpp>
-#include <model/base.hpp>
-#include <renderer/input-manager.hpp>
-#include <renderer/camera.hpp>
-#include <renderer/debug.hpp>
 #include <renderer/shader.hpp>
+#include <renderer/texture-wrapper.hpp>
+#include <renderer/light-uniforms.hpp>
+#include <model/base.hpp>
 
-#include <model/components/drawable-collection.hpp>
-#include <model/components/volume.hpp>
-#include <model/components/transformation.hpp>
+#include <renderer/global.hpp>
 
 #define MAX_NUM_LIGHTS 10
 
@@ -23,13 +17,16 @@ namespace model
 {
 class Material;
 class CubeMap;
+class Transformation;
+class DrawableCollection;
+class Volume;
 } // namespace model
 
 namespace renderer
 {
 
-class DirectionLightUniform;
-class PointLightUniform;
+class InputManager;
+class Camera;
 
 typedef struct BufferCollection
 {

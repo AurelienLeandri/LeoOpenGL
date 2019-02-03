@@ -4,24 +4,20 @@ namespace leo {
   namespace model {
 
   DirectionLight::DirectionLight() : Light() {
-    this->_direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
+    this->direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
   }
 
   DirectionLight::DirectionLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
     Light(ambient, diffuse, specular)
   {
-    this->_direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
+    this->direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
   }
 
   DirectionLight::DirectionLight(float constant, float linear, float quadratic,
       glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
     Light(constant, linear, quadratic, ambient, diffuse, specular)
   {
-    this->_direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
-  }
-
-  glm::vec4 DirectionLight::getTransformedDirection(const glm::mat4x4 &transformation) {
-    return transformation * this->_direction;
+    this->direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
   }
 
 }  // namespace model

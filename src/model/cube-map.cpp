@@ -1,5 +1,7 @@
 #include "cube-map.hpp"
 
+#include <utils/texture.hpp>
+
 #include <iostream>
 
 namespace leo
@@ -72,7 +74,7 @@ void CubeMap::_loadCubeMapTextures(std::string name, std::string path)
     this->_textures.push_back(std::make_shared<Texture>(full.c_str()));
     if (!this->_textures[i]->data)
     {
-      std::cout << "Cubemap texture failed to load at path: " << full << std::endl;
+      std::cerr << "Cubemap texture failed to load at path: " << full << std::endl;
     }
   }
 }

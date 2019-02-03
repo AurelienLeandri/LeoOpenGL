@@ -1,5 +1,7 @@
 #include "framebuffer.hpp"
 
+#include <utils/texture.hpp>
+
 namespace leo
 {
 

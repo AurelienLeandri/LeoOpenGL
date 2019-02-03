@@ -1,9 +1,10 @@
 #pragma once
 
+#include <utils/texture.hpp>
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <utils/texture.hpp>
 
 #include <string>
 #include <vector>

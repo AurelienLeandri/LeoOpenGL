@@ -7,6 +7,7 @@
 #include <model/components/volume.hpp>
 #include <model/components/point-light.hpp>
 #include <model/components/direction-light.hpp>
+#include <model/components/transformation.hpp>
 #include <model/base.hpp>
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>

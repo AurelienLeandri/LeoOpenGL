@@ -2,6 +2,7 @@
 
 #include <controller/subject.hpp>
 #include <model/registered-object.hpp>
+
 #include <map>
 #include <vector>
 #include <memory>

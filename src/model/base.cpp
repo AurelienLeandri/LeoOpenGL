@@ -1,8 +1,8 @@
 #include "base.hpp"
+
 #include <model/component.hpp>
-#include <controller/event.hpp>
 #include <model/scene-graph.hpp>
-#include <model/components/light.hpp>
+#include <controller/event.hpp>
 
 namespace leo {
   namespace model {

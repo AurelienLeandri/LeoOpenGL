@@ -1,8 +1,9 @@
 #pragma once
 
 #include <model/components/types/drawable.hpp>
-#include <vector>
 #include <utils/geometry.hpp>
+
+#include <vector>
 
 namespace leo {
   namespace model {

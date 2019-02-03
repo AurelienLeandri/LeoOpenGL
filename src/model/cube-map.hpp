@@ -1,14 +1,18 @@
 #pragma once
 
-#include <model/components/volume.hpp>
+#include <model/registered-object.hpp>
+
+#include <renderer/global.hpp>
+
 #include <string>
 #include <vector>
-#include <utils/texture.hpp>
-
 #include <memory>
 
 namespace leo
 {
+
+class Texture;
+
 namespace model
 {
 

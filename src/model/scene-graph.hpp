@@ -1,8 +1,5 @@
 #pragma once
 
-#include <model/components/point-light.hpp>
-#include <model/components/direction-light.hpp>
-
 #include <map>
 
 namespace leo
@@ -17,6 +14,9 @@ class CubeMap;
 
 class SceneGraph
 {
+
+  using stringID = std::string;
+
   public:
     SceneGraph();
 

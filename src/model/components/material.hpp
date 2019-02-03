@@ -1,9 +1,13 @@
 #pragma once
 
 #include <model/component.hpp>
-#include <utils/texture.hpp>
+
+#include <renderer/global.hpp>
 
 namespace leo {
+
+  class Texture;
+
   namespace model {
 
     class Material : public Component {

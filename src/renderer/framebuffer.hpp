@@ -1,12 +1,14 @@
 #pragma once
 
-#include <utils/texture.hpp>
 #include <renderer/texture-wrapper.hpp>
+
 #include <iostream>
 #include <vector>
 
 namespace leo
 {
+
+class Texture;
 
 namespace renderer
 {

@@ -2,17 +2,12 @@
 
 #include <renderer/global.hpp>
 
-#include <utils/texture.hpp>
-
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
-#include <utils/file-reader.hpp>
 
 namespace leo
 {
+
+class Texture;
 
 namespace renderer
 {

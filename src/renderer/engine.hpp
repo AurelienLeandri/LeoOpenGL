@@ -2,13 +2,8 @@
 #pragma once
 
 #include <renderer/global.hpp>
+
 #include <SOIL.h>
-
-#include <renderer/shader.hpp>
-#include <renderer/framebuffer.hpp>
-#include <renderer/renderer.hpp>
-
-#include <model/components/types/drawable.hpp>
 
 #include <vector>
 #include <map>
@@ -18,8 +13,17 @@ namespace leo
 
 class InputManager;
 
+namespace model {
+  class SceneGraph;
+}
+
 namespace renderer
 {
+
+class Shader;
+class Renderer;
+class InputManager;
+class Camera;
 
 using stringID = std::string;
 

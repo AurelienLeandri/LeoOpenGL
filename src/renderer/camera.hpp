@@ -1,11 +1,6 @@
 #pragma once
 
-#include <vector>
-
-#include <GL/glew.h>
-#define GLM_FORCE_CTOR_INIT
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <renderer/global.hpp>
 
 namespace leo
 {

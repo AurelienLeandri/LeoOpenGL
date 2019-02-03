@@ -1,5 +1,7 @@
 #include "engine.hpp"
 
+#include <renderer/renderer.hpp>
+#include <renderer/camera.hpp>
 #include <renderer/input-manager.hpp>
 
 namespace leo

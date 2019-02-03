@@ -1,4 +1,5 @@
 #include "drawable-collection.hpp"
+#include <model/components/types/drawable.hpp>
 
 namespace leo {
   namespace model {

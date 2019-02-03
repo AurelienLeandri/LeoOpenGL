@@ -1,9 +1,21 @@
 #include "renderer.hpp"
 
-#include <renderer/shader.hpp>
-#include <model/components/material.hpp>
+#include <utils/texture.hpp>
+
+#include <renderer/input-manager.hpp>
+#include <renderer/camera.hpp>
+#include <renderer/debug.hpp>
+
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
+#include <model/components/material.hpp>
+#include <model/components/transformation.hpp>
+#include <model/components/point-light.hpp>
+#include <model/components/direction-light.hpp>
+#include <model/components/volume.hpp>
+#include <model/components/drawable-collection.hpp>
+
+#include <sstream>
 
 namespace leo
 {
@@ -384,7 +396,7 @@ void Renderer::_registerLightUniforms(const model::Base *root)
     {
       model::Transformation *transform = static_cast<model::Transformation *>(cTransform->second);
       const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-      dlu.direction = p.second->getTransformedDirection(transformation);
+      dlu.direction = transformation * p.second->direction;
     }
   }
   for (auto &p : root->getSceneGraph()->getPointLights())
@@ -396,7 +408,7 @@ void Renderer::_registerLightUniforms(const model::Base *root)
     {
       model::Transformation *transform = static_cast<model::Transformation *>(cTransform->second);
       const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-      plu.position = p.second->getTransformedPosition(transformation);
+      plu.position = transformation * p.second->position;
     }
   }
 }

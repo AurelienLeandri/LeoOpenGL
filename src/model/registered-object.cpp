@@ -1,4 +1,5 @@
 #include "registered-object.hpp"
+
 #include <model/object-register.hpp>
 
 namespace leo {

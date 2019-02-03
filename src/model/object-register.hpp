@@ -1,10 +1,7 @@
 #pragma once
 
 #include <map>
-#include <memory>
 #include <string>
-#include <assert.h>
-#include <sstream>
 
 namespace leo {
   namespace model {

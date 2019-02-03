@@ -20,12 +20,12 @@ namespace model {
 
   Light::Light(float constant, float linear, float quadratic,
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
-    _constant(constant),
-    _linear(linear),
-    _quadratic(quadratic),
-    _ambient(ambient),
-    _diffuse(diffuse),
-    _specular(specular)
+    constant(constant),
+    linear(linear),
+    quadratic(quadratic),
+    ambient(ambient),
+    diffuse(diffuse),
+    specular(specular)
   {}
 
 }  // namespace model

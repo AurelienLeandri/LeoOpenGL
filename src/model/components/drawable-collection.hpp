@@ -1,11 +1,12 @@
 #pragma once
 
 #include <model/component.hpp>
-#include <model/components/types/drawable.hpp>
 #include <map>
 
 namespace leo {
   namespace model {
+
+    class Drawable;
 
     class DrawableCollection : public Component {
       public:

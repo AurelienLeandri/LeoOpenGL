@@ -1,7 +1,6 @@
 #pragma once
 
 #include <model/components/light.hpp>
-#include <renderer/light-uniforms.hpp>
 
 namespace leo {
   namespace model {
@@ -14,12 +13,8 @@ namespace leo {
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
 
     public:
-      glm::vec4 getTransformedPosition(const glm::mat4x4 &transformation);
+      glm::vec4 position;
 
-    private:
-      glm::vec4 _position;
-
-    friend renderer::PointLightUniform::PointLightUniform(const PointLight &light);
   };
 
   }  // namespace model
