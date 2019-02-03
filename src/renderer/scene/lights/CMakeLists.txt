@@ -1,8 +1,0 @@
-set(ENGINE_SOURCES ${ENGINE_SOURCES}
-  ${CMAKE_CURRENT_SOURCE_DIR}/light.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/light.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/point-light.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/point-light.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/direction-light.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/direction-light.hpp
-  PARENT_SCOPE)
