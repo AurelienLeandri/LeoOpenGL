@@ -15,6 +15,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/cube-map.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/model-loader.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/model-loader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/type-id.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/component-manager.hpp
   PARENT_SCOPE
   )
 

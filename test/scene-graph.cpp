@@ -12,6 +12,7 @@
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
 #include <model/model-loader.hpp>
+#include <model/component-manager.hpp>
 
 using namespace leo;
 
@@ -44,6 +45,8 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 void cubeScene()
 {
+  model::ComponentManager componentManager;
+
   model::Entity *m = model::ModelLoader::loadModel("resources/models/nanosuit/nanosuit.obj");
   model::SceneGraph scene;
   model::CubeMap cubeMap("skybox", "resources/textures");
@@ -53,49 +56,49 @@ void cubeScene()
   model::Entity node1;
   m->addChild(&node1);
 
-  model::Material material;
-  model::Volume cube = model::Volume::createCube(1.f);
-  model::DrawableCollection drawables;
-  drawables.addDrawable(&cube);
-  node1.addComponent("Material", &material);
-  node1.addComponent("CubeVolume", &cube);
-  node1.addComponent("Drawables", &drawables);
-  material.diffuse_value = glm::vec3(0.89f, 0.42f, 0.11f);
-  material.diffuse_texture = std::make_shared<Texture>("resources/textures/crate_diffuse.png");
-  material.specular_texture = std::make_shared<Texture>("resources/textures/crate_specular.png");
-  material.reflection_map = std::make_shared<Texture>("resources/textures/specular.png");
+  model::Material *material = componentManager.createComponent<model::Material>();
+  model::Volume *cube = componentManager.createComponent<model::Volume>(model::Volume::createCube(1.f));
+  model::DrawableCollection *drawables = componentManager.createComponent<model::DrawableCollection>();
+  drawables->addDrawable(cube);
+  node1.addComponent("Material", material);
+  node1.addComponent("CubeVolume", cube);
+  node1.addComponent("Drawables", drawables);
+  material->diffuse_value = glm::vec3(0.89f, 0.42f, 0.11f);
+  material->diffuse_texture = std::make_shared<Texture>("resources/textures/crate_diffuse.png");
+  material->specular_texture = std::make_shared<Texture>("resources/textures/crate_specular.png");
+  material->reflection_map = std::make_shared<Texture>("resources/textures/specular.png");
 
-  model::Transformation t2;
-  model::PointLight pl(
+  model::Transformation *t2 = componentManager.createComponent<model::Transformation>();
+  model::PointLight *pl = componentManager.createComponent<model::PointLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f) );
-  t2.setRelativeTranslation(glm::vec3(3.f, 0.f, 0.f));
-  t2.setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
-  t2.setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
+  t2->setRelativeTranslation(glm::vec3(3.f, 0.f, 0.f));
+  t2->setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
+  t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
   model::Entity node2;
   node1.addChild(&node2);
-  node2.addComponent("Material", &material);
-  node2.addComponent("CubeVolume", &cube);
-  node2.addComponent("Drawables", &drawables);
-  node2.addComponent("Transformation", &t2);
-  node2.addComponent("PointLight", &pl);
+  node2.addComponent("Material", material);
+  node2.addComponent("CubeVolume", cube);
+  node2.addComponent("Drawables", drawables);
+  node2.addComponent("Transformation", t2);
+  node2.addComponent("PointLight", pl);
 
-  model::Transformation t3;
-  model::DirectionLight dl(
+  model::Transformation *t3 = componentManager.createComponent<model::Transformation>();
+  model::DirectionLight *dl = componentManager.createComponent<model::DirectionLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f) );
-  t3.setRelativeTranslation(glm::vec3(4.f, 2.f, 0.f));
-  t3.setRelativeRotation(glm::vec3(45.f, 0.f, 0.f));
-  t3.setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
+  t3->setRelativeTranslation(glm::vec3(4.f, 2.f, 0.f));
+  t3->setRelativeRotation(glm::vec3(45.f, 0.f, 0.f));
+  t3->setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
   model::Entity node3;
   node1.addChild(&node3);
-  node3.addComponent("Material", &material);
-  node3.addComponent("CubeVolume", &cube);
-  node3.addComponent("Drawables", &drawables);
-  node3.addComponent("Transformation", &t3);
-  node3.addComponent("DirectionLight", &dl);
+  node3.addComponent("Material", material);
+  node3.addComponent("CubeVolume", cube);
+  node3.addComponent("Drawables", drawables);
+  node3.addComponent("Transformation", t3);
+  node3.addComponent("DirectionLight", dl);
 
   renderer::Shader shader(
       "resources/shaders/basic.vs.glsl",

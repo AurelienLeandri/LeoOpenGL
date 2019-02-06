@@ -20,7 +20,7 @@ namespace leo {
         virtual ~Component() = default;
 
       public:
-        std::map<stringID, const Entity*> getParentEntitys();
+        std::map<stringID, const Entity*> getParentEntities();
         const Entity *getEntity();
         void setEntity(const Entity *entity);
 
