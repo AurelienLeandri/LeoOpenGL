@@ -10,7 +10,9 @@
 namespace leo {
   namespace model {
 
-    class Base;
+    using typeId = unsigned int;
+    
+    class Entity;
 
     class Component : public RegisteredObject, public controller::Subject {
       public:
@@ -18,12 +20,12 @@ namespace leo {
         virtual ~Component() = default;
 
       public:
-        std::map<stringID, const Base*> getParentBases();
-        const Base *getBase();
-        void setBase(const Base *base);
+        std::map<stringID, const Entity*> getParentEntitys();
+        const Entity *getEntity();
+        void setEntity(const Entity *entity);
 
       protected:
-        const Base *_base = nullptr;
+        const Entity *_entity = nullptr;
         
     };  // class Component
 

@@ -7,7 +7,7 @@ namespace leo
 namespace model
 {
 
-class Base;
+class Entity;
 class PointLight;
 class DirectionLight;
 class CubeMap;
@@ -21,8 +21,8 @@ class SceneGraph
     SceneGraph();
 
   public:
-    const Base *getRoot() const;
-    void setRoot(Base *root);
+    const Entity *getRoot() const;
+    void setRoot(Entity *root);
 
   public:
     void addLight(PointLight *light);
@@ -40,7 +40,7 @@ class SceneGraph
     CubeMap *_cubeMap = 0;
 
   private:
-    Base *_root = 0;
+    Entity *_root = 0;
 };
 } // namespace model
 } // namespace leo

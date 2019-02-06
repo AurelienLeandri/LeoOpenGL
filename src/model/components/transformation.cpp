@@ -1,6 +1,6 @@
 #include "transformation.hpp"
 
-#include <model/base.hpp>
+#include <model/entity.hpp>
 
 namespace leo {
   namespace model {
@@ -80,8 +80,8 @@ namespace leo {
 
     std::vector<Transformation *> Transformation::_getChildTransformations() {
       std::vector<Transformation *> childTransformations;
-      for (auto &childBase : _base->getChildren()) {
-        for (auto &c : childBase.second->getComponents()) {
+      for (auto &childEntity : _entity->getChildren()) {
+        for (auto &c : childEntity.second->getComponents()) {
           Transformation *childTransformation = dynamic_cast<Transformation *>(c.second);
           if (childTransformation)
             childTransformations.push_back(childTransformation);

@@ -8,7 +8,7 @@
 #include <model/components/point-light.hpp>
 #include <model/components/direction-light.hpp>
 #include <model/components/transformation.hpp>
-#include <model/base.hpp>
+#include <model/entity.hpp>
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
 #include <model/model-loader.hpp>
@@ -44,13 +44,13 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 void cubeScene()
 {
-  model::Base *m = model::ModelLoader::loadModel("resources/models/nanosuit/nanosuit.obj");
+  model::Entity *m = model::ModelLoader::loadModel("resources/models/nanosuit/nanosuit.obj");
   model::SceneGraph scene;
   model::CubeMap cubeMap("skybox", "resources/textures");
   scene.setCubeMap(&cubeMap);
   scene.setRoot(m);
 
-  model::Base node1;
+  model::Entity node1;
   m->addChild(&node1);
 
   model::Material material;
@@ -73,7 +73,7 @@ void cubeScene()
   t2.setRelativeTranslation(glm::vec3(3.f, 0.f, 0.f));
   t2.setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
   t2.setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
-  model::Base node2;
+  model::Entity node2;
   node1.addChild(&node2);
   node2.addComponent("Material", &material);
   node2.addComponent("CubeVolume", &cube);
@@ -89,7 +89,7 @@ void cubeScene()
   t3.setRelativeTranslation(glm::vec3(4.f, 2.f, 0.f));
   t3.setRelativeRotation(glm::vec3(45.f, 0.f, 0.f));
   t3.setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
-  model::Base node3;
+  model::Entity node3;
   node1.addChild(&node3);
   node3.addComponent("Material", &material);
   node3.addComponent("CubeVolume", &cube);

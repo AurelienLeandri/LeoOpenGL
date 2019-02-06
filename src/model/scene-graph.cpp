@@ -1,6 +1,6 @@
 #include "scene-graph.hpp"
 
-#include <model/base.hpp>
+#include <model/entity.hpp>
 #include <model/components/point-light.hpp>
 #include <model/components/direction-light.hpp>
 
@@ -13,12 +13,12 @@ SceneGraph::SceneGraph()
 {
 }
 
-const Base *SceneGraph::getRoot() const
+const Entity *SceneGraph::getRoot() const
 {
     return this->_root;
 }
 
-void SceneGraph::setRoot(Base *root)
+void SceneGraph::setRoot(Entity *root)
 {
     this->_root = root;
     this->_root->setSceneGraph(this);

@@ -90,7 +90,7 @@ void Engine::gameLoop()
   glfwTerminate();
 }
 
-// Moves/alters the camera positions based on user input
+// Moves/alters the camera positions entityd on user input
 void Engine::doMovement(float deltaTime)
 {
   // Keys controls

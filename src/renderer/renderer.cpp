@@ -164,7 +164,7 @@ void Renderer::_postProcess(Framebuffer *input)
   this->_renderRec(&this->_postProcessGeometry);
 }
 
-void Renderer::_renderRec(const model::Base *root)
+void Renderer::_renderRec(const model::Entity *root)
 {
   model::DrawableCollection *toDraw = nullptr;
   auto &components = root->getComponents();
@@ -385,14 +385,14 @@ void Renderer::_loadLightsToShader()
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void Renderer::_registerLightUniforms(const model::Base *root)
+void Renderer::_registerLightUniforms(const model::Entity *root)
 {
   for (auto &p : root->getSceneGraph()->getDirectionLights())
   {
     this->_directionLights.insert(std::pair<std::string, DirectionLightUniform>(p.second->getId(), DirectionLightUniform(*p.second)));
     DirectionLightUniform &dlu = this->_directionLights[p.second->getId()];
-    auto cTransform = p.second->getBase()->getComponents().find("Transformation");
-    if (cTransform != p.second->getBase()->getComponents().end())
+    auto cTransform = p.second->getEntity()->getComponents().find("Transformation");
+    if (cTransform != p.second->getEntity()->getComponents().end())
     {
       model::Transformation *transform = static_cast<model::Transformation *>(cTransform->second);
       const glm::mat4x4 &transformation = transform->getTransformationMatrix();
@@ -403,8 +403,8 @@ void Renderer::_registerLightUniforms(const model::Base *root)
   {
     this->_pointLights.insert(std::pair<std::string, PointLightUniform>(p.second->getId(), PointLightUniform(*p.second)));
     PointLightUniform &plu = this->_pointLights[p.second->getId()];
-    auto cTransform = p.second->getBase()->getComponents().find("Transformation");
-    if (cTransform != p.second->getBase()->getComponents().end())
+    auto cTransform = p.second->getEntity()->getComponents().find("Transformation");
+    if (cTransform != p.second->getEntity()->getComponents().end())
     {
       model::Transformation *transform = static_cast<model::Transformation *>(cTransform->second);
       const glm::mat4x4 &transformation = transform->getTransformationMatrix();

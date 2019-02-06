@@ -4,7 +4,7 @@
 #include <renderer/shader.hpp>
 #include <renderer/texture-wrapper.hpp>
 #include <renderer/light-uniforms.hpp>
-#include <model/base.hpp>
+#include <model/entity.hpp>
 
 #include <renderer/global.hpp>
 
@@ -54,7 +54,7 @@ public:
               std::vector<const Framebuffer *> inputs, Framebuffer *output);
 
 private:
-  void _renderRec(const model::Base *root);
+  void _renderRec(const model::Entity *root);
   void _drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output);
   void _postProcess(Framebuffer *input);
   void _setCurrentMaterial(model::Material *material);
@@ -67,7 +67,7 @@ private:
   void _loadDataBuffers(const model::Volume *volume);
   void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
   void _loadLightsToShader();
-  void _registerLightUniforms(const model::Base *root);
+  void _registerLightUniforms(const model::Entity *root);
   void _loadCubeMap(const model::CubeMap &cubeMap);
   void _loadOutputFramebuffer(Framebuffer *output);
   void _loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, Shader &shader);
@@ -88,7 +88,7 @@ private:
   std::map<std::string, PointLightUniform> _pointLights;
   GLuint _lightsUBO = 0;
   GLuint _materialTextureOffset = 0;
-  model::Base _postProcessGeometry;
+  model::Entity _postProcessGeometry;
 };
 
 } // namespace renderer

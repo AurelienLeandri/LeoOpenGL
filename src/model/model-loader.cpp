@@ -1,6 +1,6 @@
 #include "model-loader.hpp"
 
-#include <model/base.hpp>
+#include <model/entity.hpp>
 #include <model/components/material.hpp>
 #include <model/components/volume.hpp>
 #include <model/components/drawable-collection.hpp>
@@ -14,7 +14,7 @@ namespace model
 
 std::vector<std::shared_ptr<Texture>> ModelLoader::textureCache;
 
-Base *ModelLoader::loadModel(std::string path)
+Entity *ModelLoader::loadModel(std::string path)
 {
     Assimp::Importer import;
     const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate |
@@ -24,34 +24,34 @@ Base *ModelLoader::loadModel(std::string path)
     {
         return nullptr;
     }
-    Base *base = new Base();
+    Entity *entity = new Entity();
     textureCache.clear();
-    processNode(base, scene->mRootNode, scene);
-    return base;
+    processNode(entity, scene->mRootNode, scene);
+    return entity;
 }
 
-void ModelLoader::processNode(Base *modelNode, aiNode *node, const aiScene *scene)
+void ModelLoader::processNode(Entity *modelNode, aiNode *node, const aiScene *scene)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        Base *child = new Base();
+        Entity *child = new Entity();
         modelNode->addChild(child);
         child->addChild(processMesh(mesh, scene));
     }
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        Base *newNode = new Base();
+        Entity *newNode = new Entity();
         modelNode->addChild(newNode);
         processNode(newNode, node->mChildren[i], scene);
     }
 }
 
-Base *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
+Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
 {
-    Base *base = new Base();
+    Entity *entity = new Entity();
     DrawableCollection *drawables = new DrawableCollection();
-    base->addComponent("DrawableCollection", drawables);
+    entity->addComponent("DrawableCollection", drawables);
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
@@ -106,9 +106,9 @@ Base *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
     if (specularMaps.size()) material->specular_texture = specularMaps[0];
     if (ambientMaps.size()) material->reflection_map = ambientMaps[0];
 
-    base->addComponent("Volume", volume);
-    base->addComponent("Material", material);
-    return base;
+    entity->addComponent("Volume", volume);
+    entity->addComponent("Material", material);
+    return entity;
 }
 
 std::vector<std::shared_ptr<Texture>> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)

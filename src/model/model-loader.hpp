@@ -15,17 +15,17 @@ namespace leo
 namespace model
 {
 
-class Base;
+class Entity;
 class Material;
 
 class ModelLoader
 {
   public:
-    static Base *loadModel(std::string path);
+    static Entity *loadModel(std::string path);
 
   private:
-    static void processNode(Base *modelNode, aiNode *node, const aiScene *scene);
-    static Base *processMesh(aiMesh *mesh, const aiScene *scene);
+    static void processNode(Entity *modelNode, aiNode *node, const aiScene *scene);
+    static Entity *processMesh(aiMesh *mesh, const aiScene *scene);
     static std::vector<std::shared_ptr<Texture>> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 
   private:

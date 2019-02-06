@@ -1,6 +1,6 @@
 #include "component.hpp"
 
-#include <model/base.hpp>
+#include <model/entity.hpp>
 
 namespace leo {
   namespace model {
@@ -11,13 +11,13 @@ namespace leo {
       this->_notify(controller::Event::COMPONENT_CREATED);
     }
 
-    const Base *Component::getBase() {
-      return this->_base;
+    const Entity *Component::getEntity() {
+      return this->_entity;
     }
 
-    void Component::setBase(const Base *base) {
+    void Component::setEntity(const Entity *entity) {
       this->_notify(controller::Event::COMPONENT_UPDATED);
-      this->_base = base;
+      this->_entity = entity;
     }
 
   }  // namespace leo
