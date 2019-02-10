@@ -1,39 +1,38 @@
 #pragma once
 
+#include <model/icomponent.hpp>
 #include <model/registered-object.hpp>
 #include <controller/subject.hpp>
+#include <model/type-id.hpp>
 
 #include <map>
 #include <vector>
 #include <memory>
 
-namespace leo {
-  namespace model {
+namespace leo
+{
+namespace model
+{
 
-    using typeId = unsigned int;
-    using t_componentId = unsigned int;
-    using t_entityId = unsigned int;
-    using t_textureId = unsigned int;
+template <class T>
+class Component : public IComponent
+{
+public:
+  Component() {}
 
-    class Entity;
+public:
+  virtual t_id getTypeId()
+  {
+    return this->_typeId;
+  }
 
-    class Component : public RegisteredObject, public controller::Subject {
-      public:
-        Component();
-        virtual ~Component() = default;
+private:
+  static const t_id _typeId;
 
-      public:
-        std::map<t_id, const Entity*> getParentEntities();
-        const Entity *getEntity();
-        void setEntity(const Entity *entity);
+}; // class Component
 
-      protected:
-        const Entity *_entity = nullptr;
+template <class T>
+const t_id Component<T>::_typeId = TypeId<IComponent>::get<T>();
 
-      private:
-        static t_id _count;
-        
-    };  // class Component
-
-  }  // namespace model
-}  // namespace leo
+} // namespace model
+} // namespace leo

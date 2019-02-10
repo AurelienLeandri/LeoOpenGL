@@ -8,7 +8,7 @@ namespace leo {
 
     class Drawable;
 
-    class DrawableCollection : public Component {
+    class DrawableCollection : public Component<DrawableCollection> {
       public:
         DrawableCollection();
         const std::map<t_id, Drawable*> &getCollection();

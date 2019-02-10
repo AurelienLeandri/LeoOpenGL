@@ -10,7 +10,7 @@ namespace leo {
 
   namespace model {
 
-    class Material : public Component {
+    class Material : public Component<Material> {
       public:
         Material();
         Material(bool force);

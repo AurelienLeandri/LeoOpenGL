@@ -1,6 +1,6 @@
 #pragma once
 
-#include <model/component.hpp>
+#include <model/icomponent.hpp>
 
 #include <vector>
 #include <utility>
@@ -36,7 +36,7 @@ class ComponentManager
         return c;
     }
 
-    Component *getComponent(t_componentId id) {
+    IComponent *getComponent(t_componentId id) {
         auto it = this->_components.find(id);
         if (it == this->_components.end()) {
             return nullptr;
@@ -45,7 +45,7 @@ class ComponentManager
     }
 
   private:
-    std::map<t_componentId, std::unique_ptr<Component>> _components;
+    std::map<t_componentId, std::unique_ptr<IComponent>> _components;
 };
 } // namespace model
 } // namespace leo

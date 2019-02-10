@@ -5,7 +5,7 @@
 namespace leo {
   namespace model {
 
-    class Drawable : public Component {
+    class Drawable : public Component<Drawable> {
     };
 
   }

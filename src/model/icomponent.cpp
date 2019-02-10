@@ -1,23 +1,23 @@
-#include "component.hpp"
+#include "icomponent.hpp"
 
 #include <model/entity.hpp>
 
 namespace leo {
   namespace model {
 
-    t_id Component::_count = 0;
+    t_id IComponent::_count = 0;
 
-    Component::Component()
+    IComponent::IComponent()
       : RegisteredObject(_count++)
     {
       this->_notify(controller::Event::COMPONENT_CREATED);
     }
 
-    const Entity *Component::getEntity() {
+    const Entity *IComponent::getEntity() {
       return this->_entity;
     }
 
-    void Component::setEntity(const Entity *entity) {
+    void IComponent::setEntity(const Entity *entity) {
       this->_notify(controller::Event::COMPONENT_UPDATED);
       this->_entity = entity;
     }

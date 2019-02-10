@@ -1,6 +1,6 @@
 #include "entity.hpp"
 
-#include <model/component.hpp>
+#include <model/icomponent.hpp>
 #include <model/scene-graph.hpp>
 #include <controller/event.hpp>
 
@@ -15,28 +15,28 @@ namespace leo {
       this->_notify(controller::Event::BASE_CREATED);
     }
 
-    const std::map<std::string, Component*> &Entity::getComponents() const {
+    const std::map<std::string, IComponent*> &Entity::getComponents() const {
       return this->_components;
     }
 
-    bool Entity::addComponent(std::string name, Component *component) {
+    bool Entity::addComponent(std::string name, IComponent *component) {
       component->setEntity(this);
       this->_notify(controller::Event::BASE_UPDATED);
       return this->_components.insert(
-          std::pair<std::string, Component*>(name, component)).second;
+          std::pair<std::string, IComponent*>(name, component)).second;
     }
 
     bool Entity::addComponent(std::string name, PointLight *component) {
       this->_sceneGraph->addLight(component);
-      this->addComponent(name, (Component *) component);
+      this->addComponent(name, (IComponent *) component);
     }
 
     bool Entity::addComponent(std::string name, DirectionLight *component) {
       this->_sceneGraph->addLight(component);
-      this->addComponent(name, (Component *) component);
+      this->addComponent(name, (IComponent *) component);
     }
 
-    Component *Entity::getComponent(std::string name) {
+    IComponent *Entity::getComponent(std::string name) {
       auto it = this->_components.find(name);
       if (it == this->_components.end())
         return nullptr;

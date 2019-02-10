@@ -7,7 +7,7 @@
 namespace leo {
   namespace model {
 
-    class Transformation : public Component {
+    class Transformation : public Component<Transformation> {
       public:
         Transformation();
 

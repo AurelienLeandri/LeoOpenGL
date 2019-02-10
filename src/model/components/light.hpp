@@ -6,7 +6,7 @@
 namespace leo {
 namespace model {
 
-  class Light : public Component {
+  class Light : public Component<Light> {
     public:
       Light();
       Light(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
