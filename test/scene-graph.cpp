@@ -14,6 +14,7 @@
 #include <model/model-loader.hpp>
 #include <model/component-manager.hpp>
 #include <model/texture-manager.hpp>
+#include <model/entity-manager.hpp>
 
 using namespace leo;
 
@@ -48,7 +49,8 @@ void cubeScene()
 {
   model::ComponentManager componentManager;
   model::TextureManager textureManager;
-  model::ModelLoader modelLoader(componentManager, textureManager);
+  model::EntityManager entityManager;
+  model::ModelLoader modelLoader(entityManager, componentManager, textureManager);
 
   model::Entity *m = modelLoader.loadModel("resources/models/nanosuit/nanosuit.obj");
   model::SceneGraph scene;

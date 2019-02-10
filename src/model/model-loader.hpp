@@ -19,6 +19,7 @@ class Entity;
 class Material;
 class TextureManager;
 class ComponentManager;
+class EntityManager;
 
 class ModelLoader
 {
@@ -27,7 +28,7 @@ class ModelLoader
   using t_componentId = unsigned int;
 
   public:
-    ModelLoader(ComponentManager &componentManager, TextureManager &textureManager);
+    ModelLoader(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager);
 
   public:
     Entity *loadModel(std::string path);
@@ -39,6 +40,7 @@ class ModelLoader
 
   private:
     std::vector<Texture *> textureCache;
+    EntityManager &_entityManager;
     ComponentManager &_componentManager;
     TextureManager &_textureManager;
 };

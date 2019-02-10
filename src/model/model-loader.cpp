@@ -6,6 +6,7 @@
 #include <model/components/drawable-collection.hpp>
 #include <model/texture-manager.hpp>
 #include <model/component-manager.hpp>
+#include <model/entity-manager.hpp>
 
 #include <SOIL.h>
 
@@ -14,7 +15,7 @@ namespace leo
 namespace model
 {
 
-ModelLoader::ModelLoader(ComponentManager &componentManager, TextureManager &textureManager) : _componentManager(componentManager), _textureManager(textureManager)
+ModelLoader::ModelLoader(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) : _entityManager(entityManager), _componentManager(componentManager), _textureManager(textureManager)
 {
 }
 
@@ -28,7 +29,7 @@ Entity *ModelLoader::loadModel(std::string path)
     {
         return nullptr;
     }
-    Entity *entity = new Entity();
+    Entity *entity = this->_entityManager.createEntity();
     textureCache.clear();
     processNode(entity, scene->mRootNode, scene);
     return entity;
@@ -39,13 +40,13 @@ void ModelLoader::processNode(Entity *modelNode, aiNode *node, const aiScene *sc
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        Entity *child = new Entity();
+        Entity *child = this->_entityManager.createEntity();
         modelNode->addChild(child);
         child->addChild(processMesh(mesh, scene));
     }
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        Entity *newNode = new Entity();
+        Entity *newNode = this->_entityManager.createEntity();
         modelNode->addChild(newNode);
         processNode(newNode, node->mChildren[i], scene);
     }
@@ -53,7 +54,7 @@ void ModelLoader::processNode(Entity *modelNode, aiNode *node, const aiScene *sc
 
 Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
 {
-    Entity *entity = new Entity();
+    Entity *entity = this->_entityManager.createEntity();
     DrawableCollection *drawables = this->_componentManager.createComponent<DrawableCollection>();
     entity->addComponent("DrawableCollection", drawables);
     std::vector<Vertex> vertices;
