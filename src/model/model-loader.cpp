@@ -4,6 +4,8 @@
 #include <model/components/material.hpp>
 #include <model/components/volume.hpp>
 #include <model/components/drawable-collection.hpp>
+#include <model/texture-manager.hpp>
+#include <model/component-manager.hpp>
 
 #include <SOIL.h>
 
@@ -12,7 +14,9 @@ namespace leo
 namespace model
 {
 
-std::vector<std::shared_ptr<Texture>> ModelLoader::textureCache;
+ModelLoader::ModelLoader(ComponentManager &componentManager, TextureManager &textureManager) : _componentManager(componentManager), _textureManager(textureManager)
+{
+}
 
 Entity *ModelLoader::loadModel(std::string path)
 {
@@ -50,7 +54,7 @@ void ModelLoader::processNode(Entity *modelNode, aiNode *node, const aiScene *sc
 Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
 {
     Entity *entity = new Entity();
-    DrawableCollection *drawables = new DrawableCollection();
+    t_componentId drawables = this->_componentManager.createComponent<DrawableCollection>();
     entity->addComponent("DrawableCollection", drawables);
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
@@ -87,33 +91,39 @@ Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
         for (unsigned int j = 0; j < face.mNumIndices; j++)
             indices.push_back(face.mIndices[j]);
     }
-    Volume *volume = new Volume(vertices, indices);
+    t_componentId volume = this->_componentManager.createComponent<Volume>(vertices, indices);
     drawables->addDrawable(volume);
 
-    // Process shader
-    aiMaterial *shader = scene->mMaterials[mesh->mMaterialIndex];
-    std::vector<std::shared_ptr<Texture>> diffuseMaps =
-        loadMaterialTextures(shader, aiTextureType_DIFFUSE,
-                                   "texture_diffuse");
-    std::vector<std::shared_ptr<Texture>> specularMaps =
-        loadMaterialTextures(shader, aiTextureType_SPECULAR,
-                                   "texture_specular");
-    std::vector<std::shared_ptr<Texture>> ambientMaps =
-        loadMaterialTextures(shader, aiTextureType_AMBIENT,
-                                   "texture_ambient");
-    Material *material = new Material();
-    if (diffuseMaps.size()) material->diffuse_texture = diffuseMaps[0];
-    if (specularMaps.size()) material->specular_texture = specularMaps[0];
-    if (ambientMaps.size()) material->reflection_map = ambientMaps[0];
+    aiMaterial *meshMaterial = scene->mMaterials[mesh->mMaterialIndex];
+    std::vector<t_textureId> diffuseMaps =
+        loadMaterialTextures(meshMaterial, aiTextureType_DIFFUSE,
+                             "texture_diffuse");
+    std::vector<t_textureId> specularMaps =
+        loadMaterialTextures(meshMaterial, aiTextureType_SPECULAR,
+                             "texture_specular");
+    std::vector<t_textureId> ambientMaps =
+        loadMaterialTextures(meshMaterial, aiTextureType_AMBIENT,
+                             "texture_ambient");
+    t_componentId materialId = this->_componentManager.createComponent<Material>();
+    Material *material = this->_componentManager.getComponent(materialId);
+    if (material)
+    {
+        if (diffuseMaps.size())
+            material->diffuse_texture = diffuseMaps[0];
+        if (specularMaps.size())
+            material->specular_texture = specularMaps[0];
+        if (ambientMaps.size())
+            material->reflection_map = ambientMaps[0];
+    }
 
     entity->addComponent("Volume", volume);
-    entity->addComponent("Material", material);
+    entity->addComponent("Material", materialId);
     return entity;
 }
 
-std::vector<std::shared_ptr<Texture>> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
+std::vector<Texture *> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
 {
-    std::vector<std::shared_ptr<Texture>> textures;
+    std::vector<Texture *> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
     {
         aiString str;
@@ -123,7 +133,8 @@ std::vector<std::shared_ptr<Texture>> ModelLoader::loadMaterialTextures(aiMateri
         for (unsigned int j = 0; j < textureCache.size(); j++)
         {
             // Check if texture is not already loaded
-            if (textureCache[j]->path == path)
+            Texture *t = this->_textureManager.getTexture(textureCache[j]);
+            if (t && t->path == path)
             {
                 textures.push_back(textureCache[j]);
                 skip = true;
@@ -132,9 +143,9 @@ std::vector<std::shared_ptr<Texture>> ModelLoader::loadMaterialTextures(aiMateri
         }
         if (!skip)
         { // If texture hasn't been loaded already, load it
-            std::shared_ptr<Texture> texture = std::make_shared<Texture>(path.c_str());
-            textures.push_back(texture);
-            textureCache.push_back(texture); // Add to loaded _textures
+            Texture *t = this->_textureManager.createTexture(path.c_str());
+            textures.push_back(t);
+            textureCache.push_back(t); // Add to loaded _textures
         }
     }
     return textures;

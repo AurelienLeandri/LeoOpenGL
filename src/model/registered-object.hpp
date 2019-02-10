@@ -5,9 +5,7 @@
 namespace leo {
   namespace model {
 
-    using stringID = std::string;
-
-    class ObjectRegister;
+    using t_id = unsigned int;
 
     class RegisteredObject {
 
@@ -15,11 +13,10 @@ namespace leo {
         RegisteredObject();
 
       public:
-        const stringID &getId() const;
+        const t_id &getId() const;
 
       protected:
-        ObjectRegister &_register;
-        stringID _id;
+        t_id _id;
     };
 
 

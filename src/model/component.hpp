@@ -11,7 +11,10 @@ namespace leo {
   namespace model {
 
     using typeId = unsigned int;
-    
+    using t_componentId = unsigned int;
+    using t_entityId = unsigned int;
+    using t_textureId = unsigned int;
+
     class Entity;
 
     class Component : public RegisteredObject, public controller::Subject {

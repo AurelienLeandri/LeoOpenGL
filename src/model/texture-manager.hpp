@@ -1,9 +1,10 @@
 #pragma once
 
-#include <model/Texture.hpp>
+#include <utils/texture.hpp>
 
 #include <vector>
 #include <utility>
+#include <memory>
 
 namespace leo
 {
@@ -11,6 +12,9 @@ namespace model
 {
 class TextureManager
 {
+
+    using t_textureId = unsigned int;
+
   public:
     TextureManager()
     {
@@ -18,10 +22,6 @@ class TextureManager
 
     ~TextureManager()
     {
-        for (auto t : this->_textures)
-        {
-            delete t;
-        }
         this->_textures.clear();
     }
 
@@ -32,13 +32,26 @@ class TextureManager
     template <typename... ARGS>
     Texture *createTexture(ARGS &&... args)
     {
-        Texture *t = new Texture(std::forward<ARGS>(args)...);
-        this->_textures.push_back(t);
+        std::unique_ptr<Texture> t(new Texture(std::forward<ARGS>(args)...);
+        this->_textures.insert(std::pair<t_textureId, std::unique_ptr<Texture>>(t->getId(), t));
         return t;
     }
 
+    Texture *getTexture(t_textureId id)
+    {
+        auto it = this->_textures.find(id);
+        if (id == this->_textures.end())
+        {
+            return nullptr;
+        }
+        return it->get();
+    }
+
   private:
-    std::vector<Texture *> _textures;
+    std::map<t_textureId, std::unique_ptr<Texture>> _textures;
 };
+
+t_textureId TextureManager::_count = 0;
+
 } // namespace model
 } // namespace leo

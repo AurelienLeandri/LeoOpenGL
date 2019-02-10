@@ -17,19 +17,30 @@ namespace model
 
 class Entity;
 class Material;
+class TextureManager;
+class ComponentManager;
 
 class ModelLoader
 {
+
+  using t_textureId = unsigned int;
+  using t_componentId = unsigned int;
+
   public:
-    static Entity *loadModel(std::string path);
+    ModelLoader(ComponentManager &componentManager, TextureManager &textureManager);
+
+  public:
+    Entity *loadModel(std::string path);
 
   private:
-    static void processNode(Entity *modelNode, aiNode *node, const aiScene *scene);
-    static Entity *processMesh(aiMesh *mesh, const aiScene *scene);
-    static std::vector<std::shared_ptr<Texture>> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+    void processNode(Entity *modelNode, aiNode *node, const aiScene *scene);
+    Entity *processMesh(aiMesh *mesh, const aiScene *scene);
+    std::vector<Texture *> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 
   private:
-    static std::vector<std::shared_ptr<Texture>> textureCache;
+    std::vector<Texture *> textureCache;
+    ComponentManager &_componentManager;
+    TextureManager &_textureManager;
 };
 
 } // namespace model

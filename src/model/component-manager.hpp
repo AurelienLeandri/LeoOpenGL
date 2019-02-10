@@ -11,6 +11,9 @@ namespace model
 {
 class ComponentManager
 {
+
+  using t_componentId = unsigned int;
+
   public:
     ComponentManager()
     {
@@ -18,10 +21,6 @@ class ComponentManager
 
     ~ComponentManager()
     {
-        for (auto c : this->_components)
-        {
-            delete c;
-        }
         this->_components.clear();
     }
 
@@ -30,15 +29,23 @@ class ComponentManager
 
   public:
     template <typename T, typename... ARGS>
-    T *createComponent(ARGS &&... args)
+    T *CreateComponent(ARGS &&... args)
     {
-        T *c = new T(std::forward<ARGS>(args)...);
-        this->_components.push_back(c);
+        std::unique_ptr<T> c(new T(std::forward<ARGS>(args)...);
+        this->_components.insert(std::pair<t_componentId, std::unique_ptr<T>>(c->getId(), t));
         return c;
     }
 
+    Component *getComponent(t_componentId id) {
+        auto it = this->_components.find(id);
+        if (id == this->_components.end()) {
+            return nullptr;
+        }
+        return it->get();
+    }
+
   private:
-    std::vector<Component *> _components;
+    std::map<t_componentId, std::unique_ptr<Texture>> _components;
 };
 } // namespace model
 } // namespace leo
