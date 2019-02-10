@@ -15,7 +15,7 @@ class CubeMap;
 class SceneGraph
 {
 
-  using t_id = std::string;
+  using t_id = unsigned int;
 
   public:
     SceneGraph();

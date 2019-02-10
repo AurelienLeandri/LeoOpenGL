@@ -6,8 +6,6 @@
 namespace leo {
   namespace model {
 
-    using t_id = std::string;
-
     class RegisteredObject;
 
     class ObjectRegister {

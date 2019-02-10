@@ -54,7 +54,7 @@ namespace leo {
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   }
 
-  Texture::Texture(std::string name, std::string file_name, std::string directory)
+  Texture::Texture(std::string name, std::string file_name, std::string directory) : RegisteredObject(_count++)
   {
     // [DEPRECATED]
   }

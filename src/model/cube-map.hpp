@@ -16,7 +16,7 @@ class Texture;
 namespace model
 {
 
-class CubeMap : public RegisteredObject
+class CubeMap
 {
 public:
   CubeMap(std::string name, std::string path);

@@ -29,23 +29,23 @@ class ComponentManager
 
   public:
     template <typename T, typename... ARGS>
-    T *CreateComponent(ARGS &&... args)
+    T *createComponent(ARGS &&... args)
     {
-        std::unique_ptr<T> c(new T(std::forward<ARGS>(args)...);
-        this->_components.insert(std::pair<t_componentId, std::unique_ptr<T>>(c->getId(), t));
+        T *c = new T(std::forward<ARGS>(args)...);
+        this->_components.insert(std::pair<t_componentId, std::unique_ptr<T>>(c->getId(), c));
         return c;
     }
 
     Component *getComponent(t_componentId id) {
         auto it = this->_components.find(id);
-        if (id == this->_components.end()) {
+        if (it == this->_components.end()) {
             return nullptr;
         }
-        return it->get();
+        return it->second.get();
     }
 
   private:
-    std::map<t_componentId, std::unique_ptr<Texture>> _components;
+    std::map<t_componentId, std::unique_ptr<Component>> _components;
 };
 } // namespace model
 } // namespace leo

@@ -10,7 +10,6 @@ namespace model
 {
 
 CubeMap::CubeMap(std::string name, std::string path)
-  : RegisteredObject()
 {
   this->_vertices = {
         // positions          

@@ -32,26 +32,24 @@ class TextureManager
     template <typename... ARGS>
     Texture *createTexture(ARGS &&... args)
     {
-        std::unique_ptr<Texture> t(new Texture(std::forward<ARGS>(args)...);
-        this->_textures.insert(std::pair<t_textureId, std::unique_ptr<Texture>>(t->getId(), t));
+        Texture *t = new Texture(std::forward<ARGS>(args)...);
+        auto it = this->_textures.insert(std::pair<t_textureId, std::unique_ptr<Texture>>(t->getId(), t));
         return t;
     }
 
     Texture *getTexture(t_textureId id)
     {
         auto it = this->_textures.find(id);
-        if (id == this->_textures.end())
+        if (it == this->_textures.end())
         {
             return nullptr;
         }
-        return it->get();
+        return it->second.get();
     }
 
   private:
     std::map<t_textureId, std::unique_ptr<Texture>> _textures;
 };
-
-t_textureId TextureManager::_count = 0;
 
 } // namespace model
 } // namespace leo

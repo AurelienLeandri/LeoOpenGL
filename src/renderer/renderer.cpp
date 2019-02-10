@@ -226,11 +226,11 @@ void Renderer::_drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output)
 
 void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
 {
-  auto it = this->_textures.find(cubeMap.getId());
+  const Texture &texture = *cubeMap.getTextures()[0];
+  auto it = this->_textures.find(cubeMap.getTextures()[0]->getId());
   if (it == this->_textures.end())
   {
-    const Texture &texture = *cubeMap.getTextures()[0];
-    TextureWrapper &tw = this->_textures.insert(std::pair<std::string, TextureWrapper>(cubeMap.getId(), TextureWrapper(texture, false))).first->second;
+    TextureWrapper &tw = this->_textures.insert(std::pair<model::t_id, TextureWrapper>(texture.getId(), TextureWrapper(texture, false))).first->second;
     glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
     for (int i = 0; i < 6; ++i)
     {
@@ -247,32 +247,26 @@ void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   }
 
-  TextureWrapper &tw = this->_textures.find(cubeMap.getId())->second;
+  TextureWrapper &tw = this->_textures.find(texture.getId())->second;
 
   this->_cubeMapShader.setTexture("skybox", tw.getId(), 0, GL_TEXTURE_CUBE_MAP);
 
-  auto it2 = this->_bufferCollections.find(cubeMap.getId());
-  BufferCollection *bc;
-  if (it2 == _bufferCollections.end()) {
-    _bufferCollections.insert(std::pair<std::string, BufferCollection>(cubeMap.getId(), BufferCollection())).first;
-    bc = &(*this->_bufferCollections.find(cubeMap.getId())).second;
+  BufferCollection &bc = this->_cubeMapBuffer;
+  if (bc.VAO == 0) {
 
-    glGenVertexArrays(1, &bc->VAO);
-    glGenBuffers(1, &bc->VBO);
+    glGenVertexArrays(1, &bc.VAO);
+    glGenBuffers(1, &bc.VBO);
 
-    glBindVertexArray(bc->VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, bc->VBO);
+    glBindVertexArray(bc.VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, bc.VBO);
 
     const std::vector<float> &vertices = cubeMap.getVertices();
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
   }
-  else {
-    bc = &it2->second;
-  }
 
-  glBindVertexArray(bc->VAO);
+  glBindVertexArray(bc.VAO);
   glDrawArrays(GL_TRIANGLES, 0, 36);
   glBindVertexArray(0);
 
@@ -284,7 +278,7 @@ void Renderer::_loadDataBuffers(const model::Volume *volume)
   BufferCollection *bc;
   if (it == _bufferCollections.end())
   {
-    _bufferCollections.insert(std::pair<std::string, BufferCollection>(volume->getId(), BufferCollection())).first;
+    _bufferCollections.insert(std::pair<model::t_id, BufferCollection>(volume->getId(), BufferCollection())).first;
     bc = &(*this->_bufferCollections.find(volume->getId())).second;
 
     glGenVertexArrays(1, &bc->VAO);
@@ -356,10 +350,10 @@ void Renderer::_setCurrentMaterial(model::Material *material)
 
 void Renderer::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
 {
-  auto it = this->_textures.find(texture.path);
+  auto it = this->_textures.find(texture.getId());
   if (it == this->_textures.end())
   {
-    it = this->_textures.insert(std::pair<std::string, TextureWrapper>(texture.path, texture)).first;
+    it = this->_textures.insert(std::pair<model::t_id, TextureWrapper>(texture.getId(), texture)).first;
   }
   this->_shader.setTexture(uniformName, it->second.getId(), textureSlot);
 }
@@ -389,7 +383,7 @@ void Renderer::_registerLightUniforms(const model::Entity *root)
 {
   for (auto &p : root->getSceneGraph()->getDirectionLights())
   {
-    this->_directionLights.insert(std::pair<std::string, DirectionLightUniform>(p.second->getId(), DirectionLightUniform(*p.second)));
+    this->_directionLights.insert(std::pair<model::t_id, DirectionLightUniform>(p.second->getId(), DirectionLightUniform(*p.second)));
     DirectionLightUniform &dlu = this->_directionLights[p.second->getId()];
     auto cTransform = p.second->getEntity()->getComponents().find("Transformation");
     if (cTransform != p.second->getEntity()->getComponents().end())
@@ -401,7 +395,7 @@ void Renderer::_registerLightUniforms(const model::Entity *root)
   }
   for (auto &p : root->getSceneGraph()->getPointLights())
   {
-    this->_pointLights.insert(std::pair<std::string, PointLightUniform>(p.second->getId(), PointLightUniform(*p.second)));
+    this->_pointLights.insert(std::pair<model::t_id, PointLightUniform>(p.second->getId(), PointLightUniform(*p.second)));
     PointLightUniform &plu = this->_pointLights[p.second->getId()];
     auto cTransform = p.second->getEntity()->getComponents().find("Transformation");
     if (cTransform != p.second->getEntity()->getComponents().end())

@@ -17,10 +17,10 @@ namespace leo {
 
       public:
         glm::vec3 diffuse_value;
-        std::shared_ptr<Texture> diffuse_texture = nullptr;
+        Texture * diffuse_texture = nullptr;
         glm::vec3 specular_value;
-        std::shared_ptr<Texture> specular_texture = nullptr;
-        std::shared_ptr<Texture> reflection_map = nullptr;
+        Texture * specular_texture = nullptr;
+        Texture * reflection_map = nullptr;
         float shininess = 32.f;
         bool force = false;
     };

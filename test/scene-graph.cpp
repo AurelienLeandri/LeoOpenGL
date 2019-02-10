@@ -13,6 +13,7 @@
 #include <model/cube-map.hpp>
 #include <model/model-loader.hpp>
 #include <model/component-manager.hpp>
+#include <model/texture-manager.hpp>
 
 using namespace leo;
 
@@ -46,8 +47,10 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 void cubeScene()
 {
   model::ComponentManager componentManager;
+  model::TextureManager textureManager;
+  model::ModelLoader modelLoader(componentManager, textureManager);
 
-  model::Entity *m = model::ModelLoader::loadModel("resources/models/nanosuit/nanosuit.obj");
+  model::Entity *m = modelLoader.loadModel("resources/models/nanosuit/nanosuit.obj");
   model::SceneGraph scene;
   model::CubeMap cubeMap("skybox", "resources/textures");
   scene.setCubeMap(&cubeMap);
@@ -64,9 +67,9 @@ void cubeScene()
   node1.addComponent("CubeVolume", cube);
   node1.addComponent("Drawables", drawables);
   material->diffuse_value = glm::vec3(0.89f, 0.42f, 0.11f);
-  material->diffuse_texture = std::make_shared<Texture>("resources/textures/crate_diffuse.png");
-  material->specular_texture = std::make_shared<Texture>("resources/textures/crate_specular.png");
-  material->reflection_map = std::make_shared<Texture>("resources/textures/specular.png");
+  material->diffuse_texture = textureManager.createTexture("resources/textures/crate_diffuse.png");
+  material->specular_texture = textureManager.createTexture("resources/textures/crate_specular.png");
+  material->reflection_map = textureManager.createTexture("resources/textures/specular.png");
 
   model::Transformation *t2 = componentManager.createComponent<model::Transformation>();
   model::PointLight *pl = componentManager.createComponent<model::PointLight>(

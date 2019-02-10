@@ -34,7 +34,7 @@ public:
   int height = 0;
 
 private:
-  static model:t_id _count;
+  static model::t_id _count;
 
 }; // class Texture
 

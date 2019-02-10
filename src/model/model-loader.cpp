@@ -54,7 +54,7 @@ void ModelLoader::processNode(Entity *modelNode, aiNode *node, const aiScene *sc
 Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
 {
     Entity *entity = new Entity();
-    t_componentId drawables = this->_componentManager.createComponent<DrawableCollection>();
+    DrawableCollection *drawables = this->_componentManager.createComponent<DrawableCollection>();
     entity->addComponent("DrawableCollection", drawables);
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
@@ -91,21 +91,20 @@ Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
         for (unsigned int j = 0; j < face.mNumIndices; j++)
             indices.push_back(face.mIndices[j]);
     }
-    t_componentId volume = this->_componentManager.createComponent<Volume>(vertices, indices);
+    Volume *volume = this->_componentManager.createComponent<Volume>(vertices, indices);
     drawables->addDrawable(volume);
 
     aiMaterial *meshMaterial = scene->mMaterials[mesh->mMaterialIndex];
-    std::vector<t_textureId> diffuseMaps =
+    std::vector<Texture *> diffuseMaps =
         loadMaterialTextures(meshMaterial, aiTextureType_DIFFUSE,
                              "texture_diffuse");
-    std::vector<t_textureId> specularMaps =
+    std::vector<Texture *> specularMaps =
         loadMaterialTextures(meshMaterial, aiTextureType_SPECULAR,
                              "texture_specular");
-    std::vector<t_textureId> ambientMaps =
+    std::vector<Texture *> ambientMaps =
         loadMaterialTextures(meshMaterial, aiTextureType_AMBIENT,
                              "texture_ambient");
-    t_componentId materialId = this->_componentManager.createComponent<Material>();
-    Material *material = this->_componentManager.getComponent(materialId);
+    Material *material = this->_componentManager.createComponent<Material>();
     if (material)
     {
         if (diffuseMaps.size())
@@ -117,7 +116,7 @@ Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
     }
 
     entity->addComponent("Volume", volume);
-    entity->addComponent("Material", materialId);
+    entity->addComponent("Material", material);
     return entity;
 }
 
@@ -133,7 +132,7 @@ std::vector<Texture *> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiText
         for (unsigned int j = 0; j < textureCache.size(); j++)
         {
             // Check if texture is not already loaded
-            Texture *t = this->_textureManager.getTexture(textureCache[j]);
+            Texture *t = this->_textureManager.getTexture(textureCache[j]->getId());
             if (t && t->path == path)
             {
                 textures.push_back(textureCache[j]);

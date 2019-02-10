@@ -30,9 +30,9 @@ class Camera;
 
 typedef struct BufferCollection
 {
-  GLuint VAO;
-  GLuint VBO;
-  GLuint EBO;
+  GLuint VAO = 0;
+  GLuint VBO = 0;
+  GLuint EBO = 0;
 } BufferCollection;
 
 class Renderer
@@ -82,13 +82,14 @@ private:
   Shader _shader;
   Shader _postProcessShader;
   Shader _cubeMapShader;
-  std::map<std::string, BufferCollection> _bufferCollections;
-  std::map<std::string, TextureWrapper> _textures;
-  std::map<std::string, DirectionLightUniform> _directionLights;
-  std::map<std::string, PointLightUniform> _pointLights;
+  std::map<model::t_id, BufferCollection> _bufferCollections;
+  std::map<model::t_id, TextureWrapper> _textures;
+  std::map<model::t_id, DirectionLightUniform> _directionLights;
+  std::map<model::t_id, PointLightUniform> _pointLights;
   GLuint _lightsUBO = 0;
   GLuint _materialTextureOffset = 0;
   model::Entity _postProcessGeometry;
+  BufferCollection _cubeMapBuffer;
 };
 
 } // namespace renderer
