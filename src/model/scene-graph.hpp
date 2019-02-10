@@ -15,7 +15,7 @@ class CubeMap;
 class SceneGraph
 {
 
-  using stringID = std::string;
+  using t_id = std::string;
 
   public:
     SceneGraph();
@@ -29,14 +29,14 @@ class SceneGraph
     void addLight(DirectionLight *light);
     void removeLight(PointLight *light);
     void removeLight(DirectionLight *light);
-    const std::map<stringID, PointLight *> &getPointLights() const;
-    const std::map<stringID, DirectionLight *> &getDirectionLights() const;
+    const std::map<t_id, PointLight *> &getPointLights() const;
+    const std::map<t_id, DirectionLight *> &getDirectionLights() const;
     const CubeMap *getCubeMap() const;
     void setCubeMap(CubeMap *cubeMap);
 
   private:
-    std::map<stringID, PointLight *> _pointLights;
-    std::map<stringID, DirectionLight *> _directionLights;
+    std::map<t_id, PointLight *> _pointLights;
+    std::map<t_id, DirectionLight *> _directionLights;
     CubeMap *_cubeMap = 0;
 
   private:

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 namespace leo {
   namespace model {
 
@@ -10,7 +8,7 @@ namespace leo {
     class RegisteredObject {
 
       public:
-        RegisteredObject();
+        RegisteredObject(t_id id);
 
       public:
         const t_id &getId() const;

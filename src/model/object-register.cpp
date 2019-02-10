@@ -16,12 +16,12 @@ namespace leo {
       return *r;
     }
 
-    bool ObjectRegister::registerObject(const RegisteredObject *object, stringID id) {
+    bool ObjectRegister::registerObject(const RegisteredObject *object, t_id id) {
       return this->_register.insert(
           std::pair<std::string, const RegisteredObject*>(id, object)).second;
     }
 
-    bool ObjectRegister::unregisterObject(stringID id) {
+    bool ObjectRegister::unregisterObject(t_id id) {
       auto it = this->_register.find(id);
       if (it == this->_register.end())
         return false;

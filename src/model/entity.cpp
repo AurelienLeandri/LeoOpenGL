@@ -7,8 +7,10 @@
 namespace leo {
   namespace model {
 
+    t_id Entity::_count = 0;
+
     Entity::Entity() 
-      : RegisteredObject()
+      : RegisteredObject(_count++)
     {
       this->_notify(controller::Event::BASE_CREATED);
     }
@@ -41,14 +43,14 @@ namespace leo {
       return it->second;
     }
 
-    const std::map<stringID, Entity*> &Entity::getChildren() const {
+    const std::map<t_id, Entity*> &Entity::getChildren() const {
       return this->_children;
     }
 
     bool Entity::addChild(Entity *child) {
       bool success;
       if (success = this->_children.insert(
-          std::pair<stringID, Entity*>(child->getId(), child)).second)
+          std::pair<t_id, Entity*>(child->getId(), child)).second)
       {
         child->setParent(this);
         child->_setSceneGraphRec(this->_sceneGraph);

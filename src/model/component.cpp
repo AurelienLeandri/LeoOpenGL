@@ -5,8 +5,10 @@
 namespace leo {
   namespace model {
 
+    t_id Component::_count = 0;
+
     Component::Component()
-      : RegisteredObject()
+      : RegisteredObject(_count++)
     {
       this->_notify(controller::Event::COMPONENT_CREATED);
     }

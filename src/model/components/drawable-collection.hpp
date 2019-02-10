@@ -11,12 +11,12 @@ namespace leo {
     class DrawableCollection : public Component {
       public:
         DrawableCollection();
-        const std::map<stringID, Drawable*> &getCollection();
+        const std::map<t_id, Drawable*> &getCollection();
         bool addDrawable(Drawable *drawable);
-        Drawable *getDrawable(stringID id);
+        Drawable *getDrawable(t_id id);
 
       private:
-        std::map<stringID, Drawable*> _collection;
+        std::map<t_id, Drawable*> _collection;
     };
 
   } // namespace leo

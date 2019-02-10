@@ -6,7 +6,7 @@
 namespace leo {
   namespace model {
 
-    using stringID = std::string;
+    using t_id = std::string;
 
     class RegisteredObject;
 
@@ -17,14 +17,14 @@ namespace leo {
         static std::string generateStringID();
 
       public:
-        bool registerObject(const RegisteredObject *object, stringID id);
-        bool unregisterObject(stringID id);
+        bool registerObject(const RegisteredObject *object, t_id id);
+        bool unregisterObject(t_id id);
 
       private:
         ObjectRegister();
 
       private:
-        std::map<stringID, const RegisteredObject*> _register;
+        std::map<t_id, const RegisteredObject*> _register;
         static unsigned int _nbObjects;
 
     };

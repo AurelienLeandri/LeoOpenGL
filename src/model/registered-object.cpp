@@ -5,14 +5,11 @@
 namespace leo {
   namespace model {
 
-    RegisteredObject::RegisteredObject()
-      : _register(ObjectRegister::getInstance())
-        , _id(ObjectRegister::generateStringID())
+    RegisteredObject::RegisteredObject(t_id id) : _id(id)
     {
-      this->_register.registerObject(this, this->_id);
     }
 
-    const stringID &RegisteredObject::getId() const {
+    const t_id &RegisteredObject::getId() const {
       return this->_id;
     }
 

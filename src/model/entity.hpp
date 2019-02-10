@@ -29,7 +29,7 @@ public:
   bool addComponent(std::string id, PointLight *component);
   Component *getComponent(std::string name);
   const std::map<std::string, Component *> &getComponents() const;
-  const std::map<stringID, Entity *> &getChildren() const;
+  const std::map<t_id, Entity *> &getChildren() const;
   bool addChild(Entity *child);
   const Entity *getParent() const;
   void setParent(Entity *parent);
@@ -38,10 +38,11 @@ public:
 
 private:
   void _setSceneGraphRec(SceneGraph *sceneGraph);
+  static t_id _count;
 
 private:
   std::map<std::string, Component *> _components;
-  std::map<stringID, Entity *> _children;
+  std::map<t_id, Entity *> _children;
   Entity *_parent = nullptr;
   SceneGraph *_sceneGraph = nullptr;
 

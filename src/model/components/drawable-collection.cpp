@@ -7,7 +7,7 @@ namespace leo {
     DrawableCollection::DrawableCollection() {
     }
 
-    const std::map<stringID, Drawable*> &DrawableCollection::getCollection() {
+    const std::map<t_id, Drawable*> &DrawableCollection::getCollection() {
       return this->_collection;
     }
 
@@ -15,11 +15,11 @@ namespace leo {
       this->_notify(controller::Event::COMPONENT_UPDATED);
       this->_notify(controller::Event::COMPONENT_UPDATED);
       return this->_collection.insert(
-          std::pair<std::string, Drawable*>(drawable->getId(),
+          std::pair<t_id, Drawable*>(drawable->getId(),
             drawable)).second;
     }
 
-    Drawable *DrawableCollection::getDrawable(stringID id) {
+    Drawable *DrawableCollection::getDrawable(t_id id) {
       auto it = this->_collection.find(id);
       if (it == this->_collection.end())
         return nullptr;

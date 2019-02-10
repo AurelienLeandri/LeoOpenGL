@@ -23,12 +23,15 @@ namespace leo {
         virtual ~Component() = default;
 
       public:
-        std::map<stringID, const Entity*> getParentEntities();
+        std::map<t_id, const Entity*> getParentEntities();
         const Entity *getEntity();
         void setEntity(const Entity *entity);
 
       protected:
         const Entity *_entity = nullptr;
+
+      private:
+        static t_id _count;
         
     };  // class Component
 

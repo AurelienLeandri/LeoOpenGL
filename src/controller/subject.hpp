@@ -9,8 +9,6 @@ namespace leo {
 
     class Observer;
 
-    using stringID = std::string;
-
     class Subject {
       public:
         void watch(Observer *observer);

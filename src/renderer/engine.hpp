@@ -25,7 +25,7 @@ class Renderer;
 class InputManager;
 class Camera;
 
-using stringID = std::string;
+using t_id = std::string;
 
 class Engine
 {

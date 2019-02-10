@@ -26,12 +26,12 @@ void SceneGraph::setRoot(Entity *root)
 
 void SceneGraph::addLight(PointLight *light)
 {
-    this->_pointLights.insert(std::pair<stringID, PointLight *>(light->getId(), light));
+    this->_pointLights.insert(std::pair<t_id, PointLight *>(light->getId(), light));
 }
 
 void SceneGraph::addLight(DirectionLight *light)
 {
-    this->_directionLights.insert(std::pair<stringID, DirectionLight *>(light->getId(), light));
+    this->_directionLights.insert(std::pair<t_id, DirectionLight *>(light->getId(), light));
 }
 
 void SceneGraph::removeLight(PointLight *light)
@@ -44,12 +44,12 @@ void SceneGraph::removeLight(DirectionLight *light)
     this->_directionLights.erase(light->getId());
 }
 
-const std::map<stringID, PointLight *> &SceneGraph::getPointLights() const
+const std::map<t_id, PointLight *> &SceneGraph::getPointLights() const
 {
     return this->_pointLights;
 }
 
-const std::map<stringID, DirectionLight *> &SceneGraph::getDirectionLights() const
+const std::map<t_id, DirectionLight *> &SceneGraph::getDirectionLights() const
 {
     return this->_directionLights;
 }
