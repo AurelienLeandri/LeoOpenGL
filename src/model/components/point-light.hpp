@@ -5,7 +5,7 @@
 namespace leo {
   namespace model {
 
-  class PointLight : public Light {
+  class PointLight : public Light, public Component<PointLight> {
     public:
       PointLight();
       PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);

@@ -5,7 +5,7 @@
 namespace leo {
 namespace model {
 
-  class DirectionLight : public Light {
+  class DirectionLight : public Light, public Component<DirectionLight> {
     public:
       DirectionLight();
       DirectionLight(glm::vec3 ambient, glm::vec3 diffuse,
