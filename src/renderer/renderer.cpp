@@ -13,8 +13,8 @@
 #include <model/components/point-light.hpp>
 #include <model/components/direction-light.hpp>
 #include <model/components/volume.hpp>
-#include <model/components/drawable-collection.hpp>
 #include <model/type-id.hpp>
+#include <model/component-manager.hpp>
 
 #include <sstream>
 
@@ -34,9 +34,6 @@ Renderer::Renderer(GLFWwindow *window,
   this->_init();
   model::Volume *v = new model::Volume(model::Volume::createPlane(1.f, 1.f));
   this->_postProcessGeometry.addComponent(v);
-  model::DrawableCollection *dc = new model::DrawableCollection();
-  dc->addDrawable(v);
-  this->_postProcessGeometry.addComponent(dc);
 }
 
 Renderer::~Renderer()
@@ -167,15 +164,15 @@ void Renderer::_postProcess(Framebuffer *input)
 
 void Renderer::_renderRec(const model::Entity *root)
 {
-  model::DrawableCollection *toDraw = nullptr;
+  model::Volume *volume = nullptr;
   auto &components = root->getComponents();
   for (auto &p : components)
   {
     auto id = p.first;
-    auto drawables = dynamic_cast<model::DrawableCollection *>(p.second);
-    if (drawables)
+    auto drawable = dynamic_cast<model::Volume *>(p.second);
+    if (drawable)
     {
-      toDraw = drawables;
+      volume = drawable;
       continue;
     }
     auto material = dynamic_cast<model::Material *>(p.second);
@@ -191,26 +188,13 @@ void Renderer::_renderRec(const model::Entity *root)
       continue;
     }
   }
-  if (toDraw)
+  if (volume)
   {
-    this->_drawCollection(toDraw);
+    this->_drawVolume(volume);
   }
 
   for (auto &child : root->getChildren())
     this->_renderRec(child.second);
-}
-
-void Renderer::_drawCollection(model::DrawableCollection *collection)
-{
-  for (auto &pair : collection->getCollection())
-  {
-    model::Drawable *drawable = pair.second;
-    auto volume = dynamic_cast<model::Volume *>(drawable);
-    if (volume)
-    {
-      this->_drawVolume(volume);
-    }
-  }
 }
 
 void Renderer::_drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output)

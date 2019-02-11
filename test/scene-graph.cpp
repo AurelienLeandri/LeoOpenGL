@@ -3,7 +3,6 @@
 #include <renderer/engine.hpp>
 #include <renderer/shader.hpp>
 #include <model/components/material.hpp>
-#include <model/components/drawable-collection.hpp>
 #include <model/components/volume.hpp>
 #include <model/components/point-light.hpp>
 #include <model/components/direction-light.hpp>
@@ -67,13 +66,8 @@ void cubeScene()
   model::Volume *cube = componentManager.createComponent<model::Volume>(model::Volume::createCube(1.f));
   std::cout << "Volume type is " << cube->getTypeId() << std::endl;
 
-  model::DrawableCollection *drawables = componentManager.createComponent<model::DrawableCollection>();
-  std::cout << "DrawableCollection type is " << drawables->getTypeId() << std::endl;
-
-  drawables->addDrawable(cube);
   node1.addComponent(material);
   node1.addComponent(cube);
-  node1.addComponent(drawables);
   material->diffuse_value = glm::vec3(0.89f, 0.42f, 0.11f);
   material->diffuse_texture = textureManager.createTexture("resources/textures/crate_diffuse.png");
   material->specular_texture = textureManager.createTexture("resources/textures/crate_specular.png");
@@ -94,7 +88,6 @@ void cubeScene()
   node1.addChild(&node2);
   node2.addComponent(material);
   node2.addComponent(cube);
-  node2.addComponent(drawables);
   node2.addComponent(t2);
   node2.addComponent(pl);
 
@@ -114,7 +107,6 @@ void cubeScene()
   node1.addChild(&node3);
   node3.addComponent(material);
   node3.addComponent(cube);
-  node3.addComponent(drawables);
   node3.addComponent(t3);
   node3.addComponent(dl);
 

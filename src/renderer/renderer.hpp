@@ -62,7 +62,6 @@ private:
   void _setModelMatrix();
   void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
   void _setCamera(Camera *camera);
-  void _drawCollection(model::DrawableCollection *collection);
   void _drawVolume(const model::Volume *volume);
   void _loadDataBuffers(const model::Volume *volume);
   void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);

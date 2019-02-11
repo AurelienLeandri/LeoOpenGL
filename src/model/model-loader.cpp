@@ -3,7 +3,6 @@
 #include <model/entity.hpp>
 #include <model/components/material.hpp>
 #include <model/components/volume.hpp>
-#include <model/components/drawable-collection.hpp>
 #include <model/texture-manager.hpp>
 #include <model/component-manager.hpp>
 #include <model/entity-manager.hpp>
@@ -55,8 +54,6 @@ void ModelLoader::processNode(Entity *modelNode, aiNode *node, const aiScene *sc
 Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
 {
     Entity *entity = this->_entityManager.createEntity();
-    DrawableCollection *drawables = this->_componentManager.createComponent<DrawableCollection>();
-    entity->addComponent(drawables);
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
@@ -93,7 +90,6 @@ Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
             indices.push_back(face.mIndices[j]);
     }
     Volume *volume = this->_componentManager.createComponent<Volume>(vertices, indices);
-    drawables->addDrawable(volume);
 
     aiMaterial *meshMaterial = scene->mMaterials[mesh->mMaterialIndex];
     std::vector<Texture *> diffuseMaps =

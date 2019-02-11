@@ -1,6 +1,7 @@
 #pragma once
 
-#include <model/components/types/drawable.hpp>
+#include <model/component.hpp>
+
 #include <utils/geometry.hpp>
 
 #include <vector>
@@ -8,7 +9,7 @@
 namespace leo {
   namespace model {
 
-    class Volume: public Drawable {
+    class Volume: public Component<Volume> {
       public:
         Volume(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
 
