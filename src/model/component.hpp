@@ -23,16 +23,16 @@ public:
 public:
   virtual t_id getTypeId()
   {
-    return this->_typeId;
+    return this->typeId;
   }
 
-private:
-  static const t_id _typeId;
+public:
+  static const t_id typeId;
 
 }; // class Component
 
 template <class T>
-const t_id Component<T>::_typeId = TypeId<IComponent>::get<T>();
+const t_id Component<T>::typeId = TypeId<IComponent>::get<T>();
 
 } // namespace model
 } // namespace leo

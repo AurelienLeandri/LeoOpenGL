@@ -2,6 +2,8 @@
 
 #include <model/icomponent.hpp>
 #include <model/scene-graph.hpp>
+#include <model/components/point-light.hpp>
+#include <model/components/direction-light.hpp>
 #include <controller/event.hpp>
 
 namespace leo {
@@ -15,29 +17,28 @@ namespace leo {
       this->_notify(controller::Event::BASE_CREATED);
     }
 
-    const std::map<std::string, IComponent*> &Entity::getComponents() const {
+    const std::map<t_typeId, IComponent*> &Entity::getComponents() const {
       return this->_components;
     }
 
-    bool Entity::addComponent(std::string name, IComponent *component) {
+    bool Entity::addComponent(IComponent *component) {
       component->setEntity(this);
-      this->_notify(controller::Event::BASE_UPDATED);
       return this->_components.insert(
-          std::pair<std::string, IComponent*>(name, component)).second;
+          std::pair<t_typeId, IComponent*>(component->getTypeId(), component)).second;
     }
 
-    bool Entity::addComponent(std::string name, PointLight *component) {
+    bool Entity::addComponent(PointLight *component) {
       this->_sceneGraph->addLight(component);
-      this->addComponent(name, (IComponent *) component);
+      this->addComponent(static_cast<IComponent *>(component));
     }
 
-    bool Entity::addComponent(std::string name, DirectionLight *component) {
+    bool Entity::addComponent(DirectionLight *component) {
       this->_sceneGraph->addLight(component);
-      this->addComponent(name, (IComponent *) component);
+      this->addComponent(static_cast<IComponent *>(component));
     }
 
-    IComponent *Entity::getComponent(std::string name) {
-      auto it = this->_components.find(name);
+    const IComponent *Entity::getComponent(t_typeId type) const {
+      auto it = this->_components.find(type);
       if (it == this->_components.end())
         return nullptr;
       return it->second;

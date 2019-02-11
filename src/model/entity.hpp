@@ -17,6 +17,8 @@ class IComponent;
 class PointLight;
 class DirectionLight;
 
+using t_typeId = unsigned int;
+
 class Entity : public RegisteredObject, public controller::Subject
 {
 
@@ -24,11 +26,11 @@ public:
   Entity();
 
 public:
-  bool addComponent(std::string id, IComponent *component);
-  bool addComponent(std::string id, DirectionLight *component);
-  bool addComponent(std::string id, PointLight *component);
-  IComponent *getComponent(std::string name);
-  const std::map<std::string, IComponent *> &getComponents() const;
+  bool addComponent(IComponent *component);
+  bool addComponent(DirectionLight *component);
+  bool addComponent(PointLight *component);
+  const IComponent *getComponent(t_typeId type) const;
+  const std::map<t_typeId, IComponent *> &getComponents() const;
   const std::map<t_id, Entity *> &getChildren() const;
   bool addChild(Entity *child);
   const Entity *getParent() const;
@@ -41,7 +43,7 @@ private:
   static t_id _count;
 
 private:
-  std::map<std::string, IComponent *> _components;
+  std::map<t_typeId, IComponent *> _components;
   std::map<t_id, Entity *> _children;
   Entity *_parent = nullptr;
   SceneGraph *_sceneGraph = nullptr;

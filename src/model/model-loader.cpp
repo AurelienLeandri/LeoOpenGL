@@ -56,7 +56,7 @@ Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
 {
     Entity *entity = this->_entityManager.createEntity();
     DrawableCollection *drawables = this->_componentManager.createComponent<DrawableCollection>();
-    entity->addComponent("DrawableCollection", drawables);
+    entity->addComponent(drawables);
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
@@ -116,8 +116,8 @@ Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
             material->reflection_map = ambientMaps[0];
     }
 
-    entity->addComponent("Volume", volume);
-    entity->addComponent("Material", material);
+    entity->addComponent(volume);
+    entity->addComponent(material);
     return entity;
 }
 

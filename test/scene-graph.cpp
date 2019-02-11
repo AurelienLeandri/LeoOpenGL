@@ -71,9 +71,9 @@ void cubeScene()
   std::cout << "DrawableCollection type is " << drawables->getTypeId() << std::endl;
 
   drawables->addDrawable(cube);
-  node1.addComponent("Material", material);
-  node1.addComponent("CubeVolume", cube);
-  node1.addComponent("Drawables", drawables);
+  node1.addComponent(material);
+  node1.addComponent(cube);
+  node1.addComponent(drawables);
   material->diffuse_value = glm::vec3(0.89f, 0.42f, 0.11f);
   material->diffuse_texture = textureManager.createTexture("resources/textures/crate_diffuse.png");
   material->specular_texture = textureManager.createTexture("resources/textures/crate_specular.png");
@@ -92,11 +92,11 @@ void cubeScene()
   t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
   model::Entity node2;
   node1.addChild(&node2);
-  node2.addComponent("Material", material);
-  node2.addComponent("CubeVolume", cube);
-  node2.addComponent("Drawables", drawables);
-  node2.addComponent("Transformation", t2);
-  node2.addComponent("PointLight", pl);
+  node2.addComponent(material);
+  node2.addComponent(cube);
+  node2.addComponent(drawables);
+  node2.addComponent(t2);
+  node2.addComponent(pl);
 
   model::Transformation *t3 = componentManager.createComponent<model::Transformation>();
   std::cout << "Transformation3 type is " << t3->getTypeId() << std::endl;
@@ -112,11 +112,11 @@ void cubeScene()
   t3->setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
   model::Entity node3;
   node1.addChild(&node3);
-  node3.addComponent("Material", material);
-  node3.addComponent("CubeVolume", cube);
-  node3.addComponent("Drawables", drawables);
-  node3.addComponent("Transformation", t3);
-  node3.addComponent("DirectionLight", dl);
+  node3.addComponent(material);
+  node3.addComponent(cube);
+  node3.addComponent(drawables);
+  node3.addComponent(t3);
+  node3.addComponent(dl);
 
   renderer::Shader shader(
       "resources/shaders/basic.vs.glsl",

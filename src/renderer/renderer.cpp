@@ -14,6 +14,7 @@
 #include <model/components/direction-light.hpp>
 #include <model/components/volume.hpp>
 #include <model/components/drawable-collection.hpp>
+#include <model/type-id.hpp>
 
 #include <sstream>
 
@@ -32,10 +33,10 @@ Renderer::Renderer(GLFWwindow *window,
   this->_setCamera(camera);
   this->_init();
   model::Volume *v = new model::Volume(model::Volume::createPlane(1.f, 1.f));
-  this->_postProcessGeometry.addComponent("Volume", v);
+  this->_postProcessGeometry.addComponent(v);
   model::DrawableCollection *dc = new model::DrawableCollection();
   dc->addDrawable(v);
-  this->_postProcessGeometry.addComponent("DrawableCollection", dc);
+  this->_postProcessGeometry.addComponent(dc);
 }
 
 Renderer::~Renderer()
@@ -385,10 +386,9 @@ void Renderer::_registerLightUniforms(const model::Entity *root)
   {
     this->_directionLights.insert(std::pair<model::t_id, DirectionLightUniform>(p.second->getId(), DirectionLightUniform(*p.second)));
     DirectionLightUniform &dlu = this->_directionLights[p.second->getId()];
-    auto cTransform = p.second->getEntity()->getComponents().find("Transformation");
-    if (cTransform != p.second->getEntity()->getComponents().end())
+    const model::Transformation *transform = static_cast<const model::Transformation *>(p.second->getEntity()->getComponent(model::Component<model::Transformation>::typeId));
+    if (transform)
     {
-      model::Transformation *transform = static_cast<model::Transformation *>(cTransform->second);
       const glm::mat4x4 &transformation = transform->getTransformationMatrix();
       dlu.direction = transformation * p.second->direction;
     }
@@ -397,10 +397,9 @@ void Renderer::_registerLightUniforms(const model::Entity *root)
   {
     this->_pointLights.insert(std::pair<model::t_id, PointLightUniform>(p.second->getId(), PointLightUniform(*p.second)));
     PointLightUniform &plu = this->_pointLights[p.second->getId()];
-    auto cTransform = p.second->getEntity()->getComponents().find("Transformation");
-    if (cTransform != p.second->getEntity()->getComponents().end())
+    const model::Transformation *transform = static_cast<const model::Transformation *>(p.second->getEntity()->getComponent(model::Component<model::Transformation>::typeId));
+    if (transform)
     {
-      model::Transformation *transform = static_cast<model::Transformation *>(cTransform->second);
       const glm::mat4x4 &transformation = transform->getTransformationMatrix();
       plu.position = transformation * p.second->position;
     }
