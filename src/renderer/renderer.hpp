@@ -27,6 +27,7 @@ namespace renderer
 
 class InputManager;
 class Camera;
+class SceneGraphObserver;
 
 typedef struct BufferCollection
 {
@@ -37,6 +38,8 @@ typedef struct BufferCollection
 
 class Renderer
 {
+friend class SceneGraphObserver;
+
 public:
   Renderer(GLFWwindow *window,
            InputManager *inputManager,

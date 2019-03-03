@@ -24,6 +24,7 @@ class Shader;
 class Renderer;
 class InputManager;
 class Camera;
+class SceneGraphObserver;
 
 using t_id = std::string;
 
@@ -38,6 +39,7 @@ public:
 private:
   void _init();
   void doMovement(float deltaTime);
+  void _reloadScene();
 
 public:
   void initRenderer(Shader shader);
@@ -52,6 +54,7 @@ private:
   renderer::Renderer *_renderer = nullptr;
   GLFWwindow *_window = nullptr;
   model::SceneGraph *_scene = nullptr;
+  renderer::SceneGraphObserver *_observer = nullptr;
   GLuint screenWidth = 1620;
   GLuint screenHeight = 1080;
 };

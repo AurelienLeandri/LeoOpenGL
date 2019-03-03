@@ -250,6 +250,7 @@ void Renderer::_loadDataBuffers(const model::Volume *volume)
 {
   auto it = this->_bufferCollections.find(volume->getId());
   BufferCollection *bc;
+  /*
   if (it == _bufferCollections.end())
   {
     _bufferCollections.insert(std::pair<model::t_id, BufferCollection>(volume->getId(), BufferCollection())).first;
@@ -286,9 +287,9 @@ void Renderer::_loadDataBuffers(const model::Volume *volume)
                  &indices[0], GL_STATIC_DRAW);
   }
   else
-  {
+  {*/
     bc = &it->second;
-  }
+  //}
   glBindVertexArray(bc->VAO);
 }
 

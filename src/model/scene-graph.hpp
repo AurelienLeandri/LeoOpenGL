@@ -1,9 +1,15 @@
 #pragma once
 
 #include <map>
+#include <vector>
 
 namespace leo
 {
+
+namespace controller {
+  class Observer;
+}
+
 namespace model
 {
 
@@ -33,6 +39,7 @@ class SceneGraph
     const std::map<t_id, DirectionLight *> &getDirectionLights() const;
     const CubeMap *getCubeMap() const;
     void setCubeMap(CubeMap *cubeMap);
+    void reloadScene(std::vector<controller::Observer *> observers);
 
   private:
     std::map<t_id, PointLight *> _pointLights;

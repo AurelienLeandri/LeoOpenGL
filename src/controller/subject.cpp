@@ -2,25 +2,40 @@
 
 #include <controller/observer.hpp>
 
-namespace leo {
-  namespace controller {
+namespace leo
+{
+namespace controller
+{
 
-    void Subject::watch(Observer *observer) {
-      this->_observers.push_back(observer);
-    }
+Subject::~Subject()
+{
+}
 
-    void Subject::unwatch(Observer *observer) {
-      // TODO: unwatch
-    }
+void Subject::watch(Observer *observer)
+{
+  this->_observers.push_back(observer);
+}
 
-    void Subject::_notify(Subject &subject, Event event) {
-      for (auto observer : this->_observers)
-        observer->notified(subject, event);
-    }
+void Subject::unwatch(Observer *observer)
+{
+  // TODO: unwatch
+}
 
-    void Subject::_notify(Event event) {
-      this->_notify(*this, event);
-    }
+void Subject::_notify(Subject &subject, Event event)
+{
+  for (auto observer : this->_observers)
+    observer->notified(&subject, event);
+}
 
-  }  // namespace controller
-}  // namespace leo
+void Subject::_notify(Event event)
+{
+  this->_notify(*this, event);
+}
+
+void Subject::setObservers(std::vector<Observer *> observers)
+{
+  this->_observers = observers;
+}
+
+} // namespace controller
+} // namespace leo

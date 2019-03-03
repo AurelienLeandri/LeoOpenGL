@@ -3,6 +3,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/renderer.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/renderer.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/scene-graph-observer.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/scene-graph-observer.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/light-uniforms.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/light-uniforms.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp

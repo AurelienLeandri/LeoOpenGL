@@ -37,6 +37,7 @@ public:
   void setParent(Entity *parent);
   const SceneGraph *getSceneGraph() const;
   void setSceneGraph(SceneGraph *sceneGraph);
+  void reloadScene(std::vector<controller::Observer *> observers);
 
 private:
   void _setSceneGraphRec(SceneGraph *sceneGraph);

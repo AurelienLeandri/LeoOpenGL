@@ -11,14 +11,18 @@ namespace leo {
 
     class Subject {
       public:
+      virtual ~Subject();
+
+      public:
         void watch(Observer *observer);
         void unwatch(Observer *observer);
+        void setObservers(std::vector<Observer *> observers);
 
       protected:
         void _notify(Subject &subject, Event event);
         void _notify(Event event);
 
-      private:
+      protected:
         std::vector<Observer *> _observers;
     };
 

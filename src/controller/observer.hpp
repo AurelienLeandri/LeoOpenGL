@@ -11,7 +11,7 @@ namespace leo {
       public:
         virtual ~Observer();
       public:
-        virtual void notified(Subject &c, Event event) = 0;
+        virtual void notified(Subject *c, Event event) = 0;
     };
 
   }  // namespace controller

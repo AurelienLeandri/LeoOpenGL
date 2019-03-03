@@ -3,6 +3,8 @@
 #include <renderer/renderer.hpp>
 #include <renderer/camera.hpp>
 #include <renderer/input-manager.hpp>
+#include <renderer/scene-graph-observer.hpp>
+#include <model/scene-graph.hpp>
 
 namespace leo
 {
@@ -55,12 +57,29 @@ void Engine::initRenderer(Shader shader)
       this->inputManager,
       this->_camera,
       shader);
+  this->_observer = new renderer::SceneGraphObserver(*this->_renderer);
+  if (this->_scene)
+  {
+    this->_reloadScene();
+  }
 }
 
 void Engine::setScene(model::SceneGraph *scene)
 {
   this->_scene = scene;
+  if (this->_observer)
+  {
+    this->_reloadScene();
+  }
 }
+
+void Engine::_reloadScene()
+{
+  std::vector<controller::Observer *> obs;
+  obs.push_back(this->_observer);
+  this->_scene->reloadScene(obs);
+}
+
 
 void Engine::gameLoop()
 {
