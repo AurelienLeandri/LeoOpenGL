@@ -2,6 +2,7 @@
 
 #include <model/registered-object.hpp>
 #include <controller/subject.hpp>
+#include <model/type-id.hpp>
 
 #include <map>
 #include <vector>
@@ -10,7 +11,6 @@
 namespace leo {
   namespace model {
 
-    using typeId = unsigned int;
     using t_componentId = unsigned int;
     using t_entityId = unsigned int;
     using t_textureId = unsigned int;
@@ -26,7 +26,7 @@ namespace leo {
         std::map<t_id, const Entity*> getParentEntities();
         const Entity *getEntity();
         void setEntity(const Entity *entity);
-        virtual t_id getTypeId() = 0;
+        virtual ComponentType getTypeId() const = 0;
 
       protected:
         const Entity *_entity = nullptr;

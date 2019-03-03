@@ -21,18 +21,13 @@ public:
   Component() {}
 
 public:
-  virtual t_id getTypeId()
-  {
-    return this->typeId;
-  }
-
-public:
   static const t_id typeId;
-
+  const t_id getTypeId() const override { return typeId; }
+  
 }; // class Component
 
 template <class T>
-const t_id Component<T>::typeId = TypeId<IComponent>::get<T>();
+const t_id Component<T>::typeId = TypeId<IComponent>::get<Component<T>>();
 
 } // namespace model
 } // namespace leo

@@ -1,34 +1,44 @@
 #pragma once
 
-#include <model/component.hpp>
+#include <model/icomponent.hpp>
 
 #include <utils/geometry.hpp>
 
 #include <vector>
 
-namespace leo {
-  namespace model {
+namespace leo
+{
+namespace model
+{
 
-    class Volume: public Component<Volume> {
-      public:
-        Volume(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
+class Volume : public IComponent
+{
+public:
+  Volume(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
+  Volume(const Volume &other);
 
-      private:
-        Volume();
+private:
+  Volume();
 
-      public:
-        const std::vector<Vertex> &getVertices() const;
-        const std::vector<unsigned int> &getIndices() const;
+public:
+  const std::vector<Vertex> &getVertices() const;
+  const std::vector<unsigned int> &getIndices() const;
 
-      public:
-        static Volume createCustom(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
-        static Volume createCube(float side);
-        static Volume createPlane(float width, float height);
+public:
+  static Volume createCustom(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
+  static Volume createCube(float side);
+  static Volume createPlane(float width, float height);
 
-      private:
-        std::vector<Vertex> _vertices;
-        std::vector<unsigned int> _indices;
-    };
+public:
+  virtual ComponentType getTypeId() const override
+  {
+    return ComponentType::VOLUME;
+  }
 
-  }  // namespace model
-}  // namespace leo
+private:
+  std::vector<Vertex> _vertices;
+  std::vector<unsigned int> _indices;
+};
+
+} // namespace model
+} // namespace leo

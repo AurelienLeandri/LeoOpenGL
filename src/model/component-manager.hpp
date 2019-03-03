@@ -29,7 +29,7 @@ class ComponentManager
 
   public:
     template <typename T, typename... ARGS>
-    T *createComponent(ARGS &&... args)
+    T *createComponent(ARGS&&... args)
     {
         T *c = new T(std::forward<ARGS>(args)...);
         this->_components.insert(std::pair<t_componentId, std::unique_ptr<T>>(c->getId(), c));

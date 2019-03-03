@@ -27,6 +27,7 @@ void print_matrix(const glm::mat4x4 &mat)
   }
 }
 
+
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
@@ -73,14 +74,15 @@ void cubeScene()
   material->specular_texture = textureManager.createTexture("resources/textures/crate_specular.png");
   material->reflection_map = textureManager.createTexture("resources/textures/specular.png");
 
-  model::Transformation *t2 = componentManager.createComponent<model::Transformation>();
-  std::cout << "Transformation2 type is " << t2->getTypeId() << std::endl;
-
   model::PointLight *pl = componentManager.createComponent<model::PointLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
-      glm::vec3(0.6f, 0.6f, 0.6f) );
+      glm::vec3(0.6f, 0.6f, 0.6f));
   std::cout << "PointLight type is " << pl->getTypeId() << std::endl;
+
+  model::Transformation *t2 = componentManager.createComponent<model::Transformation>();
+  std::cout << "Transformation2 type is " << t2->getTypeId() << std::endl;
+
   t2->setRelativeTranslation(glm::vec3(3.f, 0.f, 0.f));
   t2->setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
   t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
@@ -97,7 +99,7 @@ void cubeScene()
   model::DirectionLight *dl = componentManager.createComponent<model::DirectionLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
-      glm::vec3(0.6f, 0.6f, 0.6f) );
+      glm::vec3(0.6f, 0.6f, 0.6f));
   std::cout << "DirectionLight type is " << dl->getTypeId() << std::endl;
 
   t3->setRelativeTranslation(glm::vec3(4.f, 2.f, 0.f));
@@ -125,5 +127,6 @@ void cubeScene()
 int main()
 {
   cubeScene();
+  //testTemplate();
   return 0;
 }

@@ -10,6 +10,9 @@ Volume::Volume(std::vector<Vertex> vertices, std::vector<unsigned int> indices) 
 {
 }
 
+Volume::Volume(const Volume &other) : _indices(other._indices), _vertices(other._vertices) {
+}
+
 Volume::Volume()
 {
 }

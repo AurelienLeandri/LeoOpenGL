@@ -164,33 +164,22 @@ void Renderer::_postProcess(Framebuffer *input)
 
 void Renderer::_renderRec(const model::Entity *root)
 {
-  model::Volume *volume = nullptr;
-  auto &components = root->getComponents();
-  for (auto &p : components)
+  const model::IComponent *p_component;
+  p_component = root->getComponent(model::ComponentType::MATERIAL);
+  if (p_component)
   {
-    auto id = p.first;
-    auto drawable = dynamic_cast<model::Volume *>(p.second);
-    if (drawable)
-    {
-      volume = drawable;
-      continue;
-    }
-    auto material = dynamic_cast<model::Material *>(p.second);
-    if (material)
-    {
-      this->_setCurrentMaterial(material);
-      continue;
-    }
-    auto transformation = dynamic_cast<model::Transformation *>(p.second);
-    if (transformation)
-    {
-      this->_setModelMatrix(transformation);
-      continue;
-    }
+    this->_setCurrentMaterial(static_cast<const model::Material *>(p_component));
   }
-  if (volume)
+  p_component = root->getComponent(model::ComponentType::TRANSFORMATION);
+  if (p_component)
   {
-    this->_drawVolume(volume);
+    this->_setModelMatrix(static_cast<const model::Transformation *>(p_component));
+  }
+  // NOTE: Keep volume at the end as it is affected by the transform and material
+  p_component = root->getComponent(model::ComponentType::VOLUME);
+  if (p_component)
+  {
+    this->_drawVolume(static_cast<const model::Volume *>(p_component));
   }
 
   for (auto &child : root->getChildren())
@@ -237,7 +226,8 @@ void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
   this->_cubeMapShader.setTexture("skybox", tw.getId(), 0, GL_TEXTURE_CUBE_MAP);
 
   BufferCollection &bc = this->_cubeMapBuffer;
-  if (bc.VAO == 0) {
+  if (bc.VAO == 0)
+  {
 
     glGenVertexArrays(1, &bc.VAO);
     glGenBuffers(1, &bc.VBO);
@@ -248,13 +238,12 @@ void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
     const std::vector<float> &vertices = cubeMap.getVertices();
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   }
 
   glBindVertexArray(bc.VAO);
   glDrawArrays(GL_TRIANGLES, 0, 36);
   glBindVertexArray(0);
-
 }
 
 void Renderer::_loadDataBuffers(const model::Volume *volume)
@@ -312,7 +301,7 @@ void Renderer::_drawVolume(const model::Volume *volume)
                  GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::_setCurrentMaterial(model::Material *material)
+void Renderer::_setCurrentMaterial(const model::Material *material)
 {
   this->_shader.setVector3("material.diffuse_value", material->diffuse_value);
   if (material->diffuse_texture)
@@ -370,7 +359,7 @@ void Renderer::_registerLightUniforms(const model::Entity *root)
   {
     this->_directionLights.insert(std::pair<model::t_id, DirectionLightUniform>(p.second->getId(), DirectionLightUniform(*p.second)));
     DirectionLightUniform &dlu = this->_directionLights[p.second->getId()];
-    const model::Transformation *transform = static_cast<const model::Transformation *>(p.second->getEntity()->getComponent(model::Component<model::Transformation>::typeId));
+    const model::Transformation *transform = static_cast<const model::Transformation *>(p.second->getEntity()->getComponent(model::ComponentType::TRANSFORMATION));
     if (transform)
     {
       const glm::mat4x4 &transformation = transform->getTransformationMatrix();
@@ -381,7 +370,7 @@ void Renderer::_registerLightUniforms(const model::Entity *root)
   {
     this->_pointLights.insert(std::pair<model::t_id, PointLightUniform>(p.second->getId(), PointLightUniform(*p.second)));
     PointLightUniform &plu = this->_pointLights[p.second->getId()];
-    const model::Transformation *transform = static_cast<const model::Transformation *>(p.second->getEntity()->getComponent(model::Component<model::Transformation>::typeId));
+    const model::Transformation *transform = static_cast<const model::Transformation *>(p.second->getEntity()->getComponent(model::ComponentType::TRANSFORMATION));
     if (transform)
     {
       const glm::mat4x4 &transformation = transform->getTransformationMatrix();
@@ -421,7 +410,7 @@ void Renderer::_loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, 
   this->_materialTextureOffset = inputNumber;
 }
 
-void Renderer::_setModelMatrix(model::Transformation *transformation)
+void Renderer::_setModelMatrix(const model::Transformation *transformation)
 {
   this->_shader.setMat4("model", transformation->getTransformationMatrix());
 }

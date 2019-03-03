@@ -1,29 +1,39 @@
 #pragma once
 
-#include <model/component.hpp>
+#include <model/icomponent.hpp>
 
 #include <renderer/global.hpp>
 
-namespace leo {
+namespace leo
+{
 
-  class Texture;
+class Texture;
 
-  namespace model {
+namespace model
+{
 
-    class Material : public Component<Material> {
-      public:
-        Material();
-        Material(bool force);
+class Material : public IComponent
+{
+public:
+  Material();
+  Material(bool force);
 
-      public:
-        glm::vec3 diffuse_value;
-        Texture * diffuse_texture = nullptr;
-        glm::vec3 specular_value;
-        Texture * specular_texture = nullptr;
-        Texture * reflection_map = nullptr;
-        float shininess = 32.f;
-        bool force = false;
-    };
+public:
+  virtual ComponentType getTypeId() const override
+  {
+    return ComponentType::MATERIAL;
+  }
 
-  }  // namespace model
-}  // namespace leo
+public:
+  glm::vec3 diffuse_value;
+  Texture *diffuse_texture = nullptr;
+  glm::vec3 specular_value;
+  Texture *specular_texture = nullptr;
+  Texture *reflection_map = nullptr;
+  float shininess = 32.f;
+  bool force = false;
+
+};
+
+} // namespace model
+} // namespace leo

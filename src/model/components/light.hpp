@@ -1,7 +1,6 @@
 #pragma once
 
 #include <renderer/global.hpp>
-#include <model/component.hpp>
 
 namespace leo {
 namespace model {

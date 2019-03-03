@@ -19,7 +19,7 @@ endif()
 # Hide some variables
 mark_as_advanced(GLM_INCLUDE_DIR)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Wall -Wextra -pedantic -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdump-tree-original -std=c++1y -Wall -Wextra -pedantic -g")
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/src

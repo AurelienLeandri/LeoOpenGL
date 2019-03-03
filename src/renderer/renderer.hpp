@@ -57,8 +57,8 @@ private:
   void _renderRec(const model::Entity *root);
   void _drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output);
   void _postProcess(Framebuffer *input);
-  void _setCurrentMaterial(model::Material *material);
-  void _setModelMatrix(model::Transformation *transformation);
+  void _setCurrentMaterial(const model::Material *material);
+  void _setModelMatrix(const model::Transformation *transformation);
   void _setModelMatrix();
   void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
   void _setCamera(Camera *camera);
