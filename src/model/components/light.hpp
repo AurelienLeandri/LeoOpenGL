@@ -11,6 +11,7 @@ namespace model {
       Light(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
       Light(float constant, float linear, float quadratic,
           glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+      virtual ~Light();
 
     public:
       float constant = 1.f;

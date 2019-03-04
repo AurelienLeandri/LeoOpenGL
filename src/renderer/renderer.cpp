@@ -134,7 +134,6 @@ void Renderer::render(const model::SceneGraph *sceneGraph,
   {
     glUniformBlockBinding(this->_shader.getProgram(), ubiLights, 1);
   }
-  this->_registerLightUniforms(sceneGraph->getRoot());
   glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
   this->_loadLightsToShader();
 
@@ -247,53 +246,6 @@ void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
   glBindVertexArray(0);
 }
 
-void Renderer::_loadDataBuffers(const model::Volume *volume)
-{
-  auto it = this->_bufferCollections.find(volume->getId());
-  BufferCollection *bc;
-  /*
-  if (it == _bufferCollections.end())
-  {
-    _bufferCollections.insert(std::pair<model::t_id, BufferCollection>(volume->getId(), BufferCollection())).first;
-    bc = &(*this->_bufferCollections.find(volume->getId())).second;
-
-    glGenVertexArrays(1, &bc->VAO);
-    glGenBuffers(1, &bc->VBO);
-    glGenBuffers(1, &bc->EBO);
-
-    const std::vector<Vertex> &vertices = volume->getVertices();
-    const std::vector<GLuint> &indices = volume->getIndices();
-
-    glBindVertexArray(bc->VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, bc->VBO);
-
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
-                 &vertices[0], GL_STATIC_DRAW);
-
-    // Vertex Positions
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)0);
-    glEnableVertexAttribArray(0);
-    // Vertex Normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, normal));
-    glEnableVertexAttribArray(1);
-    // Vertex Texture Coords
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, texCoords));
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bc->EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
-                 &indices[0], GL_STATIC_DRAW);
-  }
-  else
-  {*/
-  bc = &it->second;
-  //}
-  glBindVertexArray(bc->VAO);
-}
-
 void Renderer::_drawVolume(const model::Volume *volume)
 {
   this->_bindVAO(volume);
@@ -355,32 +307,6 @@ void Renderer::_loadLightsToShader()
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void Renderer::_registerLightUniforms(const model::Entity *root)
-{
-  for (auto &p : root->getSceneGraph()->getDirectionLights())
-  {
-    this->_directionLights.insert(std::pair<model::t_id, DirectionLightUniform>(p.second->getId(), DirectionLightUniform(*p.second)));
-    DirectionLightUniform &dlu = this->_directionLights[p.second->getId()];
-    const model::Transformation *transform = static_cast<const model::Transformation *>(p.second->getEntity()->getComponent(model::ComponentType::TRANSFORMATION));
-    if (transform)
-    {
-      const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-      dlu.direction = transformation * p.second->direction;
-    }
-  }
-  for (auto &p : root->getSceneGraph()->getPointLights())
-  {
-    this->_pointLights.insert(std::pair<model::t_id, PointLightUniform>(p.second->getId(), PointLightUniform(*p.second)));
-    PointLightUniform &plu = this->_pointLights[p.second->getId()];
-    const model::Transformation *transform = static_cast<const model::Transformation *>(p.second->getEntity()->getComponent(model::ComponentType::TRANSFORMATION));
-    if (transform)
-    {
-      const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-      plu.position = transformation * p.second->position;
-    }
-  }
-}
-
 void Renderer::_loadOutputFramebuffer(Framebuffer *output)
 {
   if (output)
@@ -422,6 +348,10 @@ void Renderer::_setModelMatrix()
   glm::mat4 m;
   this->_shader.setMat4("model", m);
 }
+
+/////////////////////////////////////
+/*        LOADING FUNCTIONS        */
+/////////////////////////////////////
 
 void Renderer::_loadVAO(const model::Volume *volume)
 {
@@ -473,6 +403,30 @@ void Renderer::_bindVAO(const model::Volume *volume)
   else
   {
     glBindVertexArray(it->second.VAO);
+  }
+}
+
+void Renderer::_loadLight(const model::DirectionLight *light)
+{
+  this->_directionLights.insert(std::pair<model::t_id, DirectionLightUniform>(light->getId(), DirectionLightUniform(*light)));
+  DirectionLightUniform &dlu = this->_directionLights[light->getId()];
+  const model::Transformation *transform = static_cast<const model::Transformation *>(light->getEntity()->getComponent(model::ComponentType::TRANSFORMATION));
+  if (transform)
+  {
+    const glm::mat4x4 &transformation = transform->getTransformationMatrix();
+    dlu.direction = transformation * light->direction;
+  }
+}
+
+void Renderer::_loadLight(const model::PointLight *light)
+{
+  this->_pointLights.insert(std::pair<model::t_id, PointLightUniform>(light->getId(), PointLightUniform(*light)));
+  PointLightUniform &plu = this->_pointLights[light->getId()];
+  const model::Transformation *transform = static_cast<const model::Transformation *>(light->getEntity()->getComponent(model::ComponentType::TRANSFORMATION));
+  if (transform)
+  {
+    const glm::mat4x4 &transformation = transform->getTransformationMatrix();
+    plu.position = transformation * light->position;
   }
 }
 

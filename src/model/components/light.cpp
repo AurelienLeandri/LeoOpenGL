@@ -28,5 +28,8 @@ namespace model {
     specular(specular)
   {}
 
+  Light::~Light() {
+  }
+
 }  // namespace model
 }  // namespace leo

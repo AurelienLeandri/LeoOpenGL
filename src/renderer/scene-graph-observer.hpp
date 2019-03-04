@@ -21,10 +21,12 @@ class SceneGraphObserver : public controller::Observer
   public:
     virtual void notified(controller::Subject *c, controller::Event event);
     void notified(model::Volume *volume, controller::Event event);
+    void notified(model::Light *light, controller::Event event);
     void notified(model::Entity *entity, controller::Event event);
 
   private:
     void _loadComponent(model::Volume *volume);
+    void _loadComponent(model::Light *light);
 
   private:
     Renderer &_renderer;

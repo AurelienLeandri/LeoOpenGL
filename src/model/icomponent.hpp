@@ -24,7 +24,7 @@ namespace leo {
 
       public:
         std::map<t_id, const Entity*> getParentEntities();
-        const Entity *getEntity();
+        const Entity *getEntity() const;
         void setEntity(const Entity *entity);
         virtual ComponentType getTypeId() const = 0;
 

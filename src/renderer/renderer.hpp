@@ -66,16 +66,16 @@ private:
   void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
   void _setCamera(Camera *camera);
   void _drawVolume(const model::Volume *volume);
-  void _loadDataBuffers(const model::Volume *volume);
   void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
   void _loadLightsToShader();
-  void _registerLightUniforms(const model::Entity *root);
   void _loadCubeMap(const model::CubeMap &cubeMap);
   void _loadOutputFramebuffer(Framebuffer *output);
   void _loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, Shader &shader);
   void _initFramebuffers();
   void _loadVAO(const model::Volume *volume);
   void _bindVAO(const model::Volume *volume);
+  void _loadLight(const model::DirectionLight *light);
+  void _loadLight(const model::PointLight *light);
 
 private:
   void _init();

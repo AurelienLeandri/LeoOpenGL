@@ -13,7 +13,7 @@ namespace leo {
       this->_notify(controller::Event::COMPONENT_CREATED);
     }
 
-    const Entity *IComponent::getEntity() {
+    const Entity *IComponent::getEntity() const {
       return this->_entity;
     }
 

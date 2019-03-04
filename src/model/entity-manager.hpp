@@ -37,7 +37,7 @@ class EntityManager
         return e;
     }
 
-    Entity *getEntity(t_entityId id)
+    Entity *getEntity(t_entityId id) const
     {
         auto it = this->_entities.find(id);
         if (it == this->_entities.end())
