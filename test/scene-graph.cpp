@@ -62,10 +62,8 @@ void cubeScene()
   m->addChild(&node1);
 
   model::Material *material = componentManager.createComponent<model::Material>();
-  std::cout << "Material type is " << material->getTypeId() << std::endl;
 
   model::Volume *cube = componentManager.createComponent<model::Volume>(model::Volume::createCube(1.f));
-  std::cout << "Volume type is " << cube->getTypeId() << std::endl;
 
   node1.addComponent(material);
   node1.addComponent(cube);
@@ -78,10 +76,8 @@ void cubeScene()
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
-  std::cout << "PointLight type is " << pl->getTypeId() << std::endl;
 
   model::Transformation *t2 = componentManager.createComponent<model::Transformation>();
-  std::cout << "Transformation2 type is " << t2->getTypeId() << std::endl;
 
   t2->setRelativeTranslation(glm::vec3(3.f, 0.f, 0.f));
   t2->setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
@@ -94,13 +90,11 @@ void cubeScene()
   node2.addComponent(pl);
 
   model::Transformation *t3 = componentManager.createComponent<model::Transformation>();
-  std::cout << "Transformation3 type is " << t3->getTypeId() << std::endl;
 
   model::DirectionLight *dl = componentManager.createComponent<model::DirectionLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
-  std::cout << "DirectionLight type is " << dl->getTypeId() << std::endl;
 
   t3->setRelativeTranslation(glm::vec3(4.f, 2.f, 0.f));
   t3->setRelativeRotation(glm::vec3(45.f, 0.f, 0.f));
@@ -127,6 +121,5 @@ void cubeScene()
 int main()
 {
   cubeScene();
-  //testTemplate();
   return 0;
 }

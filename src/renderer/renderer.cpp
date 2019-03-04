@@ -129,12 +129,6 @@ void Renderer::render(const model::SceneGraph *sceneGraph,
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
 
-  unsigned int ubiLights = glGetUniformBlockIndex(this->_shader.getProgram(), "s1");
-  if (ubiLights != GL_INVALID_INDEX)
-  {
-    glUniformBlockBinding(this->_shader.getProgram(), ubiLights, 1);
-  }
-  glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
   this->_loadLightsToShader();
 
   this->_setModelMatrix();
@@ -198,54 +192,6 @@ void Renderer::_drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output)
   glDepthFunc(GL_LESS);
 }
 
-void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
-{
-  const Texture &texture = *cubeMap.getTextures()[0];
-  auto it = this->_textures.find(cubeMap.getTextures()[0]->getId());
-  if (it == this->_textures.end())
-  {
-    TextureWrapper &tw = this->_textures.insert(std::pair<model::t_id, TextureWrapper>(texture.getId(), TextureWrapper(texture, false))).first->second;
-    glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
-    for (int i = 0; i < 6; ++i)
-    {
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                   0, GL_RGBA, texture.width, texture.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cubeMap.getTextures()[i]->data);
-    }
-
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-  }
-
-  TextureWrapper &tw = this->_textures.find(texture.getId())->second;
-
-  this->_cubeMapShader.setTexture("skybox", tw.getId(), 0, GL_TEXTURE_CUBE_MAP);
-
-  BufferCollection &bc = this->_cubeMapBuffer;
-  if (bc.VAO == 0)
-  {
-
-    glGenVertexArrays(1, &bc.VAO);
-    glGenBuffers(1, &bc.VBO);
-
-    glBindVertexArray(bc.VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, bc.VBO);
-
-    const std::vector<float> &vertices = cubeMap.getVertices();
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  }
-
-  glBindVertexArray(bc.VAO);
-  glDrawArrays(GL_TRIANGLES, 0, 36);
-  glBindVertexArray(0);
-}
-
 void Renderer::_drawVolume(const model::Volume *volume)
 {
   this->_bindVAO(volume);
@@ -288,6 +234,13 @@ void Renderer::_loadTextureToShader(const char *uniformName, GLuint textureSlot,
 
 void Renderer::_loadLightsToShader()
 {
+  unsigned int ubiLights = glGetUniformBlockIndex(this->_shader.getProgram(), "s1");
+  if (ubiLights != GL_INVALID_INDEX)
+  {
+    glUniformBlockBinding(this->_shader.getProgram(), ubiLights, 1);
+  }
+
+  glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
   glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
   int i = 0;
   for (auto &p : this->_pointLights)
@@ -428,6 +381,54 @@ void Renderer::_loadLight(const model::PointLight *light)
     const glm::mat4x4 &transformation = transform->getTransformationMatrix();
     plu.position = transformation * light->position;
   }
+}
+
+void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
+{
+  const Texture &texture = *cubeMap.getTextures()[0];
+  auto it = this->_textures.find(cubeMap.getTextures()[0]->getId());
+  if (it == this->_textures.end())
+  {
+    TextureWrapper &tw = this->_textures.insert(std::pair<model::t_id, TextureWrapper>(texture.getId(), TextureWrapper(texture, false))).first->second;
+    glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
+    for (int i = 0; i < 6; ++i)
+    {
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                   0, GL_RGBA, texture.width, texture.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cubeMap.getTextures()[i]->data);
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+  }
+
+  TextureWrapper &tw = this->_textures.find(texture.getId())->second;
+
+  this->_cubeMapShader.setTexture("skybox", tw.getId(), 0, GL_TEXTURE_CUBE_MAP);
+
+  BufferCollection &bc = this->_cubeMapBuffer;
+  if (bc.VAO == 0)
+  {
+
+    glGenVertexArrays(1, &bc.VAO);
+    glGenBuffers(1, &bc.VBO);
+
+    glBindVertexArray(bc.VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, bc.VBO);
+
+    const std::vector<float> &vertices = cubeMap.getVertices();
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  }
+
+  glBindVertexArray(bc.VAO);
+  glDrawArrays(GL_TRIANGLES, 0, 36);
+  glBindVertexArray(0);
 }
 
 } // namespace renderer
