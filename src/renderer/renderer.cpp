@@ -33,6 +33,7 @@ Renderer::Renderer(GLFWwindow *window,
   this->_setCamera(camera);
   this->_init();
   model::Volume *v = new model::Volume(model::Volume::createPlane(1.f, 1.f));
+  this->_loadVAO(v);
   this->_postProcessGeometry.addComponent(v);
 }
 
@@ -288,14 +289,14 @@ void Renderer::_loadDataBuffers(const model::Volume *volume)
   }
   else
   {*/
-    bc = &it->second;
+  bc = &it->second;
   //}
   glBindVertexArray(bc->VAO);
 }
 
 void Renderer::_drawVolume(const model::Volume *volume)
 {
-  this->_loadDataBuffers(volume);
+  this->_bindVAO(volume);
   // Draw mesh
   const std::vector<GLuint> &indices = volume->getIndices();
   glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(),
@@ -420,6 +421,59 @@ void Renderer::_setModelMatrix()
 {
   glm::mat4 m;
   this->_shader.setMat4("model", m);
+}
+
+void Renderer::_loadVAO(const model::Volume *volume)
+{
+  auto it = this->_bufferCollections.find(volume->getId());
+  if (it == this->_bufferCollections.end())
+  {
+    this->_bufferCollections.insert(std::pair<model::t_id, BufferCollection>(volume->getId(), BufferCollection())).first;
+    BufferCollection *bc = &(*this->_bufferCollections.find(volume->getId())).second;
+
+    glGenVertexArrays(1, &bc->VAO);
+    glGenBuffers(1, &bc->VBO);
+    glGenBuffers(1, &bc->EBO);
+
+    const std::vector<Vertex> &vertices = volume->getVertices();
+    const std::vector<GLuint> &indices = volume->getIndices();
+
+    glBindVertexArray(bc->VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, bc->VBO);
+
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
+                 &vertices[0], GL_STATIC_DRAW);
+
+    // Vertex Positions
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)0);
+    glEnableVertexAttribArray(0);
+    // Vertex Normals
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, normal));
+    glEnableVertexAttribArray(1);
+    // Vertex Texture Coords
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, texCoords));
+    glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bc->EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
+                 &indices[0], GL_STATIC_DRAW);
+  }
+}
+
+void Renderer::_bindVAO(const model::Volume *volume)
+{
+  auto it = this->_bufferCollections.find(volume->getId());
+  if (it == this->_bufferCollections.end())
+  {
+    std::cerr << "Error: buffer collection of volume ID " << volume->getId() << " not found." << std::endl;
+  }
+  else
+  {
+    glBindVertexArray(it->second.VAO);
+  }
 }
 
 } // namespace renderer

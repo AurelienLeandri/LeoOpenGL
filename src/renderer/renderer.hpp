@@ -74,6 +74,8 @@ private:
   void _loadOutputFramebuffer(Framebuffer *output);
   void _loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, Shader &shader);
   void _initFramebuffers();
+  void _loadVAO(const model::Volume *volume);
+  void _bindVAO(const model::Volume *volume);
 
 private:
   void _init();
