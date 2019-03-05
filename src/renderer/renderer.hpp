@@ -20,6 +20,7 @@ class CubeMap;
 class Transformation;
 class DrawableCollection;
 class Volume;
+class Instanced;
 } // namespace model
 
 namespace renderer
@@ -74,6 +75,8 @@ private:
   void _initFramebuffers();
   void _loadVAO(const model::Volume *volume);
   void _bindVAO(const model::Volume *volume);
+  void _loadInstanced(const model::Instanced *instanced);
+  void _getChildrenMeshes(const model::Entity *root, std::vector<BufferCollection *> buffers);
   void _loadLight(const model::DirectionLight *light);
   void _loadLight(const model::PointLight *light);
 
@@ -86,6 +89,7 @@ private:
   Shader _shader;
   Shader _postProcessShader;
   Shader _cubeMapShader;
+  Shader _instancingShader;
   std::map<model::t_id, BufferCollection> _bufferCollections;
   std::map<model::t_id, TextureWrapper> _textures;
   std::map<model::t_id, DirectionLightUniform> _directionLights;

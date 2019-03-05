@@ -13,6 +13,7 @@
 #include <model/components/point-light.hpp>
 #include <model/components/direction-light.hpp>
 #include <model/components/volume.hpp>
+#include <model/components/instanced.hpp>
 #include <model/type-id.hpp>
 #include <model/component-manager.hpp>
 
@@ -27,7 +28,8 @@ Renderer::Renderer(GLFWwindow *window,
                    InputManager *inputManager,
                    Camera *camera,
                    Shader shader) : _shader(shader), _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl"),
-                                    _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl")
+                                    _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
+                                    _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/basic.frag.glsl")
 {
   this->_setWindowContext(window, inputManager);
   this->_setCamera(camera);
@@ -344,6 +346,70 @@ void Renderer::_loadVAO(const model::Volume *volume)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
                  &indices[0], GL_STATIC_DRAW);
   }
+}
+
+void Renderer::_loadInstanced(const model::Instanced *instanced)
+{
+  /*
+  auto it = this->_bufferCollections.find(volume->getId());
+  if (it == this->_bufferCollections.end())
+  {
+    std::vector<glm::mat4> &m = instanced.transformations;
+    int amount = instanced this->_bufferCollections.insert(std::pair<model::t_id, BufferCollection>(volume->getId(), BufferCollection())).first;
+    BufferCollection *bc = &(*this->_bufferCollections.find(volume->getId())).second;
+    // vertex Buffer Object
+    glGenBuffers(1, &bc->VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, bc->VBO);
+    glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &m[0], GL_STATIC_DRAW);
+
+    for (unsigned int i = 0; i < rock.meshes.size(); i++)
+    {
+      unsigned int VAO = rock.meshes[i].VAO;
+      glBindVertexArray(VAO);
+      // vertex Attributes
+      GLsizei vec4Size = sizeof(glm::vec4);
+      glEnableVertexAttribArray(3);
+      glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)0);
+      glEnableVertexAttribArray(4);
+      glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(vec4Size));
+      glEnableVertexAttribArray(5);
+      glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(2 * vec4Size));
+      glEnableVertexAttribArray(6);
+      glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(3 * vec4Size));
+
+      glVertexAttribDivisor(3, 1);
+      glVertexAttribDivisor(4, 1);
+      glVertexAttribDivisor(5, 1);
+      glVertexAttribDivisor(6, 1);
+
+      glBindVertexArray(0);
+    }
+  }
+  */
+}
+
+void Renderer::_getChildrenMeshes(const model::Entity *root, std::vector<BufferCollection *> buffers)
+{
+  /*
+  const model::Volume *v = root->getComponent(model::ComponentType::VOLUME);
+  if (v)
+  {
+    auto it = this->_bufferCollections.find(v->getId());
+    BufferCollection *bc = nullptr;
+    if (it == this->_bufferCollections.end())
+    {
+      std::vector<glm::mat4> &m = instanced.transformations;
+      int amount = instanced this->_bufferCollections.insert(std::pair<model::t_id, BufferCollection>(v->getId(), BufferCollection())).first;
+      BufferCollection *bc = &(*this->_bufferCollections.find(v->getId())).second;
+      this->_bufferCollections.
+    }
+    this->_instanced.insert(std::pair<>(v->getId(), this->_bufferCollections[]);
+  }
+  for (auto p : root->getChildren)
+  {
+    this->_getChildrenMeshes(p.second, buffers);
+  }
+  */
 }
 
 void Renderer::_bindVAO(const model::Volume *volume)
