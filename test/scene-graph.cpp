@@ -7,6 +7,7 @@
 #include <model/components/point-light.hpp>
 #include <model/components/direction-light.hpp>
 #include <model/components/transformation.hpp>
+#include <model/components/instanced.hpp>
 #include <model/entity.hpp>
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
@@ -105,6 +106,11 @@ void cubeScene()
   node3.addComponent(cube);
   node3.addComponent(t3);
   node3.addComponent(dl);
+
+  model::Entity node4;
+  model::Instanced *instanced = componentManager.createComponent<model::Instanced>(model::Volume::createCube(1.f));
+  node3.addChild(&node4);
+  node4.addComponent(instanced);
 
   renderer::Shader shader(
       "resources/shaders/basic.vs.glsl",

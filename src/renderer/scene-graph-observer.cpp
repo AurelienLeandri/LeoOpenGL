@@ -3,6 +3,7 @@
 #include <model/components/volume.hpp>
 #include <model/components/point-light.hpp>
 #include <model/components/direction-light.hpp>
+#include <model/components/instanced.hpp>
 
 namespace leo
 {
@@ -13,17 +14,24 @@ SceneGraphObserver::SceneGraphObserver(Renderer &renderer) : _renderer(renderer)
 {
 }
 
-void SceneGraphObserver::notified(controller::Subject *c, controller::Event event)
+void SceneGraphObserver::notified(controller::Subject *subject, controller::Event event)
 {
-    model::Volume *volume = dynamic_cast<model::Volume *>(c);
-    if (volume)
+    model::IComponent *c = dynamic_cast<model::IComponent *>(subject);
+    if (c)
     {
-        notified(volume, event);
-    }
-    model::Light *light = dynamic_cast<model::Light *>(c);
-    if (light)
-    {
-        notified(light, event);
+        switch (c->getTypeId())
+        {
+        case model::ComponentType::VOLUME:
+            notified(static_cast<model::Volume *>(c), event);
+            break;
+        case model::ComponentType::INSTANCED:
+            notified(static_cast<model::Instanced *>(c), event);
+            break;
+        case model::ComponentType::POINT_LIGHT:
+        case model::ComponentType::DIRECTION_LIGHT:
+            notified(dynamic_cast<model::Light *>(c), event);
+            break;
+        }
     }
 }
 
@@ -45,6 +53,18 @@ void SceneGraphObserver::notified(model::Light *light, controller::Event event)
     {
     case controller::Event::COMPONENT_ADDED:
         this->_loadComponent(light);
+        break;
+    default:
+        break;
+    }
+}
+
+void SceneGraphObserver::notified(model::Instanced *instanced, controller::Event event)
+{
+    switch (event)
+    {
+    case controller::Event::COMPONENT_ADDED:
+        this->_loadComponent(static_cast<model::Volume *>(instanced));
         break;
     default:
         break;

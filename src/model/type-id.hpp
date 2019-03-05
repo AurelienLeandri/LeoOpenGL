@@ -12,7 +12,8 @@ enum ComponentType {
   MATERIAL,
   POINT_LIGHT,
   TRANSFORMATION,
-  VOLUME
+  VOLUME,
+  INSTANCED
 };
 
 } // namespace model

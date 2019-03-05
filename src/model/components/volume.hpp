@@ -17,7 +17,7 @@ public:
   Volume(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
   Volume(const Volume &other);
 
-private:
+protected:
   Volume();
 
 public:
@@ -35,7 +35,7 @@ public:
     return ComponentType::VOLUME;
   }
 
-private:
+protected:
   std::vector<Vertex> _vertices;
   std::vector<unsigned int> _indices;
 };

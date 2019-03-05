@@ -8,6 +8,7 @@ namespace leo
 
 namespace model {
   class Component;
+  class Instanced;
 }
 
 namespace renderer
@@ -19,10 +20,11 @@ class SceneGraphObserver : public controller::Observer
     SceneGraphObserver(Renderer &renderer);
 
   public:
-    virtual void notified(controller::Subject *c, controller::Event event);
+    virtual void notified(controller::Subject *subject, controller::Event event);
     void notified(model::Volume *volume, controller::Event event);
     void notified(model::Light *light, controller::Event event);
     void notified(model::Entity *entity, controller::Event event);
+    void notified(model::Instanced *instanced, controller::Event event);
 
   private:
     void _loadComponent(model::Volume *volume);
