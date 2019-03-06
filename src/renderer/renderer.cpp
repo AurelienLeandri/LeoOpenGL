@@ -121,11 +121,23 @@ void Renderer::render(const model::SceneGraph *sceneGraph)
 void Renderer::render(const model::SceneGraph *sceneGraph,
                       std::vector<const Framebuffer *> inputs, Framebuffer *output)
 {
-  this->_shader.use();
-  this->_shader.setMat4("view", this->_camera->getViewMatrix());
-  this->_shader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
+  this->_loadShader(&this->_shader, inputs, output);
+  this->_renderRec(sceneGraph->getRoot(), &this->_shader, inputs, output);
 
-  this->_loadInputFramebuffers(inputs, this->_shader);
+  const model::CubeMap *cubeMap = sceneGraph->getCubeMap();
+  if (cubeMap)
+  {
+    this->_drawCubeMap(*cubeMap, &this->_main);
+  }
+}
+
+void Renderer::_loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output)
+{
+  shader->use();
+  shader->setMat4("view", this->_camera->getViewMatrix());
+  shader->setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
+
+  this->_loadInputFramebuffers(inputs, *shader);
   this->_loadOutputFramebuffer(output);
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -133,14 +145,7 @@ void Renderer::render(const model::SceneGraph *sceneGraph,
 
   this->_loadLightsToShader();
 
-  this->_setModelMatrix();
-  this->_renderRec(sceneGraph->getRoot());
-
-  const model::CubeMap *cubeMap = sceneGraph->getCubeMap();
-  if (cubeMap)
-  {
-    this->_drawCubeMap(*cubeMap, &this->_main);
-  }
+  this->_setModelMatrix(shader);
 }
 
 void Renderer::_postProcess(Framebuffer *input)
@@ -155,12 +160,25 @@ void Renderer::_postProcess(Framebuffer *input)
   this->_loadOutputFramebuffer(nullptr);
   glClear(GL_COLOR_BUFFER_BIT);
   glDisable(GL_DEPTH_TEST);
-  this->_renderRec(&this->_postProcessGeometry);
+  this->_renderRec(&this->_postProcessGeometry, &this->_shader, v, nullptr);
 }
 
-void Renderer::_renderRec(const model::Entity *root)
+void Renderer::_renderRec(const model::Entity *root, Shader *shader,
+std::vector<const Framebuffer *> inputs, Framebuffer *output, const model::Instanced *instanced
+)
 {
   const model::IComponent *p_component;
+  bool wasInstanced = instanced != nullptr;
+  p_component = root->getComponent(model::ComponentType::INSTANCED);
+  if (p_component)
+  {
+    instanced = static_cast<const model::Instanced *>(p_component);
+    if (!wasInstanced)
+    {
+      this->_loadShader(&this->_instancingShader, inputs, output);
+      shader = &this->_instancingShader;
+    }
+  }
   p_component = root->getComponent(model::ComponentType::MATERIAL);
   if (p_component)
   {
@@ -169,7 +187,7 @@ void Renderer::_renderRec(const model::Entity *root)
   p_component = root->getComponent(model::ComponentType::TRANSFORMATION);
   if (p_component)
   {
-    this->_setModelMatrix(static_cast<const model::Transformation *>(p_component));
+    this->_setModelMatrix(static_cast<const model::Transformation *>(p_component), shader);
   }
   // NOTE: Keep volume at the end as it is affected by the transform and material
   p_component = root->getComponent(model::ComponentType::VOLUME);
@@ -179,7 +197,7 @@ void Renderer::_renderRec(const model::Entity *root)
   }
 
   for (auto &child : root->getChildren())
-    this->_renderRec(child.second);
+    this->_renderRec(child.second, shader, inputs, output, instanced);
 }
 
 void Renderer::_drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output)
@@ -194,13 +212,21 @@ void Renderer::_drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output)
   glDepthFunc(GL_LESS);
 }
 
-void Renderer::_drawVolume(const model::Volume *volume)
+void Renderer::_drawVolume(const model::Volume *volume, const model::Instanced *instanced)
 {
   this->_bindVAO(volume);
   // Draw mesh
-  const std::vector<GLuint> &indices = volume->getIndices();
-  glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(),
-                 GL_UNSIGNED_INT, 0);
+  if (instanced)
+  {
+    int amount = instanced->transformations.size();
+    glDrawElementsInstanced(GL_TRIANGLES, volume->getIndices().size(), GL_UNSIGNED_INT, 0, amount);
+  }
+  else
+  {
+    const std::vector<GLuint> &indices = volume->getIndices();
+    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(),
+                   GL_UNSIGNED_INT, 0);
+  }
 }
 
 void Renderer::_setCurrentMaterial(const model::Material *material)
@@ -293,15 +319,15 @@ void Renderer::_loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, 
   this->_materialTextureOffset = inputNumber;
 }
 
-void Renderer::_setModelMatrix(const model::Transformation *transformation)
+void Renderer::_setModelMatrix(const model::Transformation *transformation, Shader *shader)
 {
-  this->_shader.setMat4("model", transformation->getTransformationMatrix());
+  shader->setMat4("model", transformation->getTransformationMatrix());
 }
 
-void Renderer::_setModelMatrix()
+void Renderer::_setModelMatrix(Shader *shader)
 {
   glm::mat4 m;
-  this->_shader.setMat4("model", m);
+  shader->setMat4("model", m);
 }
 
 /////////////////////////////////////

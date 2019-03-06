@@ -58,15 +58,16 @@ public:
               std::vector<const Framebuffer *> inputs, Framebuffer *output);
 
 private:
-  void _renderRec(const model::Entity *root);
+  void _renderRec(const model::Entity *root, Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output, const model::Instanced *instanced=nullptr);
+  void _loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output);
   void _drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output);
   void _postProcess(Framebuffer *input);
   void _setCurrentMaterial(const model::Material *material);
-  void _setModelMatrix(const model::Transformation *transformation);
-  void _setModelMatrix();
+  void _setModelMatrix(const model::Transformation *transformation, Shader *shader);
+  void _setModelMatrix(Shader *shader);
   void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
   void _setCamera(Camera *camera);
-  void _drawVolume(const model::Volume *volume);
+  void _drawVolume(const model::Volume *volume, const model::Instanced *instanced=nullptr);
   void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
   void _loadLightsToShader();
   void _loadCubeMap(const model::CubeMap &cubeMap);

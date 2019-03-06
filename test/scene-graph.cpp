@@ -138,7 +138,7 @@ void cubeScene()
     instanced->transformations.push_back(model);
   }
   node3.addChild(&node4);
-  node4.addComponent(instanced);
+  //node4.addComponent(instanced);
 
   renderer::Shader shader(
       "resources/shaders/basic.vs.glsl",
