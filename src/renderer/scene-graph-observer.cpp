@@ -64,7 +64,7 @@ void SceneGraphObserver::notified(model::Instanced *instanced, controller::Event
     switch (event)
     {
     case controller::Event::COMPONENT_ADDED:
-        this->_loadComponent(static_cast<model::Volume *>(instanced));
+        this->_loadComponent(instanced);
         break;
     default:
         break;
@@ -78,6 +78,11 @@ void SceneGraphObserver::notified(model::Entity *entity, controller::Event event
 void SceneGraphObserver::_loadComponent(model::Volume *volume)
 {
     this->_renderer._loadVAO(volume);
+}
+
+void SceneGraphObserver::_loadComponent(model::Instanced *instanced)
+{
+    this->_renderer._loadInstanced(instanced);
 }
 
 void SceneGraphObserver::_loadComponent(model::Light *light)

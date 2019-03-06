@@ -28,6 +28,7 @@ class SceneGraphObserver : public controller::Observer
 
   private:
     void _loadComponent(model::Volume *volume);
+    void _loadComponent(model::Instanced *instanced);
     void _loadComponent(model::Light *light);
 
   private:
