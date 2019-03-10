@@ -4,6 +4,7 @@
 #include <renderer/shader.hpp>
 #include <renderer/texture-wrapper.hpp>
 #include <renderer/light-uniforms.hpp>
+#include <renderer/buffer-collection.hpp>
 #include <model/entity.hpp>
 
 #include <renderer/global.hpp>
@@ -23,13 +24,6 @@ class Instanced;
 class InputManager;
 class Camera;
 class SceneGraphObserver;
-
-typedef struct BufferCollection
-{
-  GLuint VAO = 0;
-  GLuint VBO = 0;
-  GLuint EBO = 0;
-} BufferCollection;
 
 class Renderer
 {

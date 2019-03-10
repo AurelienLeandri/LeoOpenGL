@@ -2,15 +2,23 @@
 
 #include <renderer/shader.hpp>
 #include <renderer/framebuffer.hpp>
-#include <model/components/transformation.hpp>
 #include <renderer/camera.hpp>
+
+#include <model/components/transformation.hpp>
+#include <model/entity.hpp>
+#include <model/components/material.hpp>
+#include <model/components/volume.hpp>
+#include <model/scene-graph.hpp>
+
+#include <utils/texture.hpp>
+
 #include <sstream>
 
 namespace leo
 {
 
-MainNode::MainNode(Shader &shader, const Camera &camera)
-    : RenderNode(shader, camera)
+MainNode::MainNode(const SceneGraph &sceneGraph, Shader &shader, const Camera &camera)
+    : RenderNode(shader, camera), _sceneGraph(sceneGraph)
 {
     { // Lights
         glGenBuffers(1, &this->_lightsUBO);
@@ -26,7 +34,53 @@ MainNode::MainNode(Shader &shader, const Camera &camera)
 void MainNode::render()
 {
     this->_load();
+    this->_renderRec(this->_sceneGraph.getRoot());
     this->_unload();
+}
+
+void MainNode::_renderRec(const Entity *root)
+{
+    const IComponent *p_component;
+    p_component = root->getComponent(ComponentType::MATERIAL);
+    if (p_component)
+    {
+        this->_setCurrentMaterial(static_cast<const Material *>(p_component));
+    }
+    p_component = root->getComponent(ComponentType::TRANSFORMATION);
+    if (p_component)
+    {
+        this->_setModelMatrix(static_cast<const Transformation *>(p_component));
+    }
+    // NOTE: Keep volume at the end as it is affected by the transform and material
+    p_component = root->getComponent(ComponentType::VOLUME);
+    if (p_component)
+    {
+        this->_drawVolume(static_cast<const Volume *>(p_component));
+    }
+
+    for (auto &child : root->getChildren())
+        this->_renderRec(child.second);
+}
+
+void MainNode::_drawVolume(const Volume *volume)
+{
+    this->_bindVAO(volume);
+    const std::vector<GLuint> &indices = volume->getIndices();
+    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(),
+                   GL_UNSIGNED_INT, 0);
+}
+
+void MainNode::_bindVAO(const Volume *volume)
+{
+  auto it = this->_bufferCollections.find(volume->getId());
+  if (it == this->_bufferCollections.end())
+  {
+    std::cerr << "Error: buffer collection of volume ID " << volume->getId() << " not found." << std::endl;
+  }
+  else
+  {
+    glBindVertexArray(it->second.VAO);
+  }
 }
 
 void MainNode::_load()
@@ -94,43 +148,74 @@ void MainNode::_loadOutputFramebuffer()
     }
 }
 
+void MainNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
+{
+  auto it = this->_textures.find(texture.getId());
+  if (it == this->_textures.end())
+  {
+    it = this->_textures.insert(std::pair<t_id, TextureWrapper>(texture.getId(), texture)).first;
+  }
+  this->_shader.setTexture(uniformName, it->second.getId(), textureSlot);
+}
+
 void MainNode::_loadLightsToShader()
 {
-  unsigned int ubiLights = glGetUniformBlockIndex(this->_shader.getProgram(), "s1");
-  if (ubiLights != GL_INVALID_INDEX)
-  {
-    glUniformBlockBinding(this->_shader.getProgram(), ubiLights, 1);
-  }
+    unsigned int ubiLights = glGetUniformBlockIndex(this->_shader.getProgram(), "s1");
+    if (ubiLights != GL_INVALID_INDEX)
+    {
+        glUniformBlockBinding(this->_shader.getProgram(), ubiLights, 1);
+    }
 
-  glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
-  glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
-  int i = 0;
-  for (auto &p : this->_pointLights)
-  {
-    PointLightUniform &plu = p.second;
-    glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof(PointLightUniform), sizeof(PointLightUniform), &plu);
-    i++;
-  }
-  i = 0;
-  unsigned int offset = MAX_NUM_LIGHTS * sizeof(PointLightUniform);
-  for (auto &p : this->_directionLights)
-  {
-    DirectionLightUniform &dlu = p.second;
-    glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof(DirectionLightUniform), sizeof(DirectionLightUniform), &dlu);
-    i++;
-  }
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
+    glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
+    int i = 0;
+    for (auto &p : this->_pointLights)
+    {
+        PointLightUniform &plu = p.second;
+        glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof(PointLightUniform), sizeof(PointLightUniform), &plu);
+        i++;
+    }
+    i = 0;
+    unsigned int offset = MAX_NUM_LIGHTS * sizeof(PointLightUniform);
+    for (auto &p : this->_directionLights)
+    {
+        DirectionLightUniform &dlu = p.second;
+        glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof(DirectionLightUniform), sizeof(DirectionLightUniform), &dlu);
+        i++;
+    }
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void MainNode::_setModelMatrix(const Transformation *transformation)
 {
-  this->_shader.setMat4("model", transformation->getTransformationMatrix());
+    this->_shader.setMat4("model", transformation->getTransformationMatrix());
 }
 
 void MainNode::_setModelMatrix()
 {
-  glm::mat4 m;
-  this->_shader.setMat4("model", m);
+    glm::mat4 m;
+    this->_shader.setMat4("model", m);
+}
+
+void MainNode::_setCurrentMaterial(const Material *material)
+{
+    this->_shader.setVector3("material.diffuse_value", material->diffuse_value);
+    if (material->diffuse_texture)
+    {
+        this->_loadTextureToShader("material.diffuse_texture", this->_materialTextureOffset + 0, *material->diffuse_texture);
+    }
+
+    this->_shader.setVector3("material.specular_value", material->specular_value);
+    this->_shader.setInt("material.shininess", material->shininess);
+    if (material->specular_texture)
+    {
+        this->_loadTextureToShader("material.specular_texture", this->_materialTextureOffset + 1, *material->specular_texture);
+    }
+
+    if (material->reflection_map)
+    {
+        this->_loadTextureToShader("material.reflection_map", this->_materialTextureOffset + 2, *material->reflection_map);
+    }
 }
 
 void MainNode::_unload()
