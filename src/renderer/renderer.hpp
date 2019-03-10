@@ -63,6 +63,7 @@ private:
   void _drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output);
   void _postProcess(Framebuffer *input);
   void _setCurrentMaterial(const model::Material *material);
+  void _setCurrentMaterial(const model::Material *material, Shader *shader);
   void _setModelMatrix(const model::Transformation *transformation, Shader *shader);
   void _setModelMatrix(Shader *shader);
   void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
@@ -77,7 +78,7 @@ private:
   void _loadVAO(const model::Volume *volume);
   void _bindVAO(const model::Volume *volume);
   void _loadInstanced(const model::Instanced *instanced);
-  void _getChildrenMeshes(const model::Entity *root, std::vector<BufferCollection *> buffers);
+  void _getChildrenMeshes(const model::Entity *root, std::vector<BufferCollection *> &buffers);
   void _loadLight(const model::DirectionLight *light);
   void _loadLight(const model::PointLight *light);
 

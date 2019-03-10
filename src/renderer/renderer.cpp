@@ -164,8 +164,7 @@ void Renderer::_postProcess(Framebuffer *input)
 }
 
 void Renderer::_renderRec(const model::Entity *root, Shader *shader,
-std::vector<const Framebuffer *> inputs, Framebuffer *output, const model::Instanced *instanced
-)
+                          std::vector<const Framebuffer *> inputs, Framebuffer *output, const model::Instanced *instanced)
 {
   const model::IComponent *p_component;
   bool wasInstanced = instanced != nullptr;
@@ -182,7 +181,7 @@ std::vector<const Framebuffer *> inputs, Framebuffer *output, const model::Insta
   p_component = root->getComponent(model::ComponentType::MATERIAL);
   if (p_component)
   {
-    this->_setCurrentMaterial(static_cast<const model::Material *>(p_component));
+    this->_setCurrentMaterial(static_cast<const model::Material *>(p_component), shader);
   }
   p_component = root->getComponent(model::ComponentType::TRANSFORMATION);
   if (p_component)
@@ -193,7 +192,7 @@ std::vector<const Framebuffer *> inputs, Framebuffer *output, const model::Insta
   p_component = root->getComponent(model::ComponentType::VOLUME);
   if (p_component)
   {
-    this->_drawVolume(static_cast<const model::Volume *>(p_component));
+    this->_drawVolume(static_cast<const model::Volume *>(p_component), instanced);
   }
 
   for (auto &child : root->getChildren())
@@ -229,16 +228,16 @@ void Renderer::_drawVolume(const model::Volume *volume, const model::Instanced *
   }
 }
 
-void Renderer::_setCurrentMaterial(const model::Material *material)
+void Renderer::_setCurrentMaterial(const model::Material *material, Shader *shader)
 {
-  this->_shader.setVector3("material.diffuse_value", material->diffuse_value);
+  shader->setVector3("material.diffuse_value", material->diffuse_value);
   if (material->diffuse_texture)
   {
     this->_loadTextureToShader("material.diffuse_texture", this->_materialTextureOffset + 0, *material->diffuse_texture);
   }
 
-  this->_shader.setVector3("material.specular_value", material->specular_value);
-  this->_shader.setInt("material.shininess", material->shininess);
+  shader->setVector3("material.specular_value", material->specular_value);
+  shader->setInt("material.shininess", material->shininess);
   if (material->specular_texture)
   {
     this->_loadTextureToShader("material.specular_texture", this->_materialTextureOffset + 1, *material->specular_texture);
@@ -248,6 +247,11 @@ void Renderer::_setCurrentMaterial(const model::Material *material)
   {
     this->_loadTextureToShader("material.reflection_map", this->_materialTextureOffset + 2, *material->reflection_map);
   }
+}
+
+void Renderer::_setCurrentMaterial(const model::Material *material)
+{
+  this->_setCurrentMaterial(material, &this->_shader);
 }
 
 void Renderer::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
@@ -412,7 +416,7 @@ void Renderer::_loadInstanced(const model::Instanced *instanced)
   }
 }
 
-void Renderer::_getChildrenMeshes(const model::Entity *root, std::vector<BufferCollection *> buffers)
+void Renderer::_getChildrenMeshes(const model::Entity *root, std::vector<BufferCollection *> &buffers)
 {
   const model::Volume *v = static_cast<const model::Volume *>(root->getComponent(model::ComponentType::VOLUME));
   if (v)
@@ -421,6 +425,11 @@ void Renderer::_getChildrenMeshes(const model::Entity *root, std::vector<BufferC
     if (it != this->_bufferCollections.end())
     {
       buffers.push_back(&it->second);
+    }
+    else
+    {
+      this->_loadVAO(v);
+      buffers.push_back(&this->_bufferCollections[v->getId()]);
     }
   }
   for (auto p : root->getChildren())
