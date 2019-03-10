@@ -1,6 +1,8 @@
 set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/engine.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/opengl-context.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/opengl-context.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/renderer.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/renderer.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/render-node.cpp
