@@ -5,20 +5,14 @@
 namespace leo
 {
 
-namespace model
-{
 class Light;
 class DirectionLight;
 class PointLight;
-} // namespace model
-
-namespace renderer
-{
 
 typedef struct LightUniform
 {
     LightUniform();
-    LightUniform(const model::Light &light);
+    LightUniform(const Light &light);
     ~LightUniform();
     LightUniform(const LightUniform &other);
     LightUniform &operator=(const LightUniform &other);
@@ -33,7 +27,7 @@ typedef struct LightUniform
 typedef struct DirectionLightUniform : public LightUniform
 {
     DirectionLightUniform();
-    DirectionLightUniform(const model::DirectionLight &light);
+    DirectionLightUniform(const DirectionLight &light);
     ~DirectionLightUniform();
     DirectionLightUniform(const DirectionLightUniform &other);
     DirectionLightUniform &operator=(const DirectionLightUniform &other);
@@ -43,12 +37,11 @@ typedef struct DirectionLightUniform : public LightUniform
 typedef struct PointLightUniform : public LightUniform
 {
     PointLightUniform();
-    PointLightUniform(const model::PointLight &light);
+    PointLightUniform(const PointLight &light);
     ~PointLightUniform();
     PointLightUniform(const PointLightUniform &other);
     PointLightUniform &operator=(const PointLightUniform &other);
     glm::vec4 position;
 } PointLightUniform;
 
-} // namespace renderer
 } // namespace leo

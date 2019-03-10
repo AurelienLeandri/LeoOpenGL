@@ -10,9 +10,6 @@
 namespace leo
 {
 
-namespace renderer
-{
-
 Shader::Shader()
 {
 }
@@ -137,7 +134,5 @@ void Shader::setMat4(const char *name, glm::mat4 value)
 {
   glUniformMatrix4fv(glGetUniformLocation(this->_program, name), 1, GL_FALSE, glm::value_ptr(value));
 }
-
-} // namespace renderer
 
 } // namespace leo

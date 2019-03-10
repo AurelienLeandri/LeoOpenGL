@@ -1,7 +1,6 @@
 #include "light.hpp"
 
 namespace leo {
-namespace model {
 
   Light::Light() : Light(
       glm::vec3(0.2f, 0.2f, 0.2f),
@@ -31,5 +30,4 @@ namespace model {
   Light::~Light() {
   }
 
-}  // namespace model
 }  // namespace leo

@@ -5,8 +5,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 class PointLight : public Light, public IComponent
 {
@@ -27,5 +25,4 @@ public:
 
 };
 
-} // namespace model
 } // namespace leo

@@ -1,7 +1,6 @@
 #include "material.hpp"
 
 namespace leo {
-  namespace model {
 
     Material::Material() : Material(false) {
     }
@@ -11,5 +10,4 @@ namespace leo {
     {
     }
 
-  }  // namespace model
 }  // namespace leo

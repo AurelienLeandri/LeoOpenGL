@@ -1,7 +1,6 @@
 #include "direction-light.hpp"
 
 namespace leo {
-  namespace model {
 
   DirectionLight::DirectionLight() : Light() {
     this->direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
@@ -20,5 +19,4 @@ namespace leo {
     this->direction = glm::vec4(0.0, -1.0, 0.0, 0.0);
   }
 
-}  // namespace model
 }  // namespace leo

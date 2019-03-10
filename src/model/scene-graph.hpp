@@ -6,13 +6,7 @@
 namespace leo
 {
 
-namespace controller {
-  class Observer;
-}
-
-namespace model
-{
-
+class Observer;
 class Entity;
 class PointLight;
 class DirectionLight;
@@ -39,7 +33,7 @@ class SceneGraph
     const std::map<t_id, DirectionLight *> &getDirectionLights() const;
     const CubeMap *getCubeMap() const;
     void setCubeMap(CubeMap *cubeMap);
-    void reloadScene(std::vector<controller::Observer *> observers);
+    void reloadScene(std::vector<Observer *> observers);
 
   private:
     std::map<t_id, PointLight *> _pointLights;
@@ -49,5 +43,5 @@ class SceneGraph
   private:
     Entity *_root = 0;
 };
-} // namespace model
+
 } // namespace leo

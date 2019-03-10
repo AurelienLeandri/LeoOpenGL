@@ -6,8 +6,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 CubeMap::CubeMap(std::string name, std::string path)
 {
@@ -78,5 +76,4 @@ void CubeMap::_loadCubeMapTextures(std::string name, std::string path)
   }
 }
 
-} // namespace model
 } // namespace leo

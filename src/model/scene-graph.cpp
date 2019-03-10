@@ -6,8 +6,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 SceneGraph::SceneGraph()
 {
@@ -64,10 +62,9 @@ void SceneGraph::setCubeMap(CubeMap *cubeMap)
     this->_cubeMap = cubeMap;
 }
 
-void SceneGraph::reloadScene(std::vector<controller::Observer *> observers)
+void SceneGraph::reloadScene(std::vector<Observer *> observers)
 {
     this->_root->reloadScene(observers);
 }
 
-} // namespace model
 } // namespace leo

@@ -9,9 +9,6 @@
 namespace leo
 {
 
-namespace renderer
-{
-
 Engine::Engine()
 {
   this->_init();
@@ -52,19 +49,19 @@ void Engine::_init()
 
 void Engine::initRenderer(Shader shader)
 {
-  this->_renderer = new renderer::Renderer(
+  this->_renderer = new Renderer(
       this->_window,
       this->inputManager,
       this->_camera,
       shader);
-  this->_observer = new renderer::SceneGraphObserver(*this->_renderer);
+  this->_observer = new SceneGraphObserver(*this->_renderer);
   if (this->_scene)
   {
     this->_reloadScene();
   }
 }
 
-void Engine::setScene(model::SceneGraph *scene)
+void Engine::setScene(SceneGraph *scene)
 {
   this->_scene = scene;
   if (this->_observer)
@@ -75,7 +72,7 @@ void Engine::setScene(model::SceneGraph *scene)
 
 void Engine::_reloadScene()
 {
-  std::vector<controller::Observer *> obs;
+  std::vector<Observer *> obs;
   obs.push_back(this->_observer);
   this->_scene->reloadScene(obs);
 }
@@ -134,7 +131,5 @@ void Engine::doMovement(float deltaTime)
     this->_camera->processMouse(xo, yo);
   }
 }
-
-} // namespace renderer
 
 } // namespace leo

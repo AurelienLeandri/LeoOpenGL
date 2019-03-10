@@ -7,9 +7,6 @@
 namespace leo
 {
 
-namespace renderer
-{
-
 class InputManager
 {
 public:
@@ -44,7 +41,5 @@ public:
   bool firstMouse = true;
   bool keys[1024] = {false};
 };
-
-} // namespace renderer
 
 } // namespace leo

@@ -12,8 +12,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 class Entity;
 class Material;
@@ -45,5 +43,4 @@ class ModelLoader
     TextureManager &_textureManager;
 };
 
-} // namespace model
 } // namespace leo

@@ -4,8 +4,6 @@
 
 namespace leo
 {
-namespace renderer
-{
 
 TextureWrapper::TextureWrapper(const Texture &texture, bool bindData) : _initialized(false), _id(0), _texture(&texture)
 {
@@ -61,5 +59,4 @@ GLuint TextureWrapper::getId() const
     return this->_id;
 }
 
-} // namespace renderer
 } // namespace leo

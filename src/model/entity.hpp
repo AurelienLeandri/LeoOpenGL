@@ -9,8 +9,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 class SceneGraph;
 class IComponent;
@@ -19,7 +17,7 @@ class DirectionLight;
 
 using t_typeId = unsigned int;
 
-class Entity : public RegisteredObject, public controller::Subject
+class Entity : public RegisteredObject, public Subject
 {
 
 public:
@@ -37,7 +35,7 @@ public:
   void setParent(Entity *parent);
   const SceneGraph *getSceneGraph() const;
   void setSceneGraph(SceneGraph *sceneGraph);
-  void reloadScene(std::vector<controller::Observer *> observers);
+  void reloadScene(std::vector<Observer *> observers);
 
 private:
   void _setSceneGraphRec(SceneGraph *sceneGraph);
@@ -51,5 +49,4 @@ private:
 
 }; // class Entity
 
-} // namespace model
 } // namespace leo

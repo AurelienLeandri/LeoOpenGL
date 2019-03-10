@@ -9,9 +9,6 @@ namespace leo
 
 class Texture;
 
-namespace model
-{
-
 class Material : public IComponent
 {
 public:
@@ -35,5 +32,4 @@ public:
 
 };
 
-} // namespace model
 } // namespace leo

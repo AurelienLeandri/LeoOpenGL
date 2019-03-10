@@ -4,8 +4,6 @@
 
 namespace leo
 {
-namespace controller
-{
 
 Subject::~Subject()
 {
@@ -37,5 +35,4 @@ void Subject::setObservers(std::vector<Observer *> observers)
   this->_observers = observers;
 }
 
-} // namespace controller
 } // namespace leo

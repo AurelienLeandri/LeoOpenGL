@@ -3,8 +3,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 Instanced::Instanced(std::vector<Vertex> vertices, std::vector<unsigned int> indices) : Volume(vertices, indices)
 {
@@ -21,5 +19,4 @@ Instanced::Instanced() : Volume()
 Instanced::Instanced(Volume &&other) : Volume(std::forward<Volume>(other)) {
 }
 
-} // namespace model
 } // namespace leo

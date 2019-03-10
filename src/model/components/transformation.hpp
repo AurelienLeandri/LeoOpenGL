@@ -6,8 +6,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 class Transformation : public IComponent
 {
@@ -49,5 +47,4 @@ private:
   glm::mat4x4 _transformationMatrix;
 };
 
-} // namespace model
 } // namespace leo

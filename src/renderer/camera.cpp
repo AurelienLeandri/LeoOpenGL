@@ -3,9 +3,6 @@
 namespace leo
 {
 
-namespace renderer
-{
-
 // Constructor with scalar values
 Camera::Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX,
                GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) : Camera(glm::vec3(posX, posY, posZ), glm::vec3(upX, upY, upZ), yaw, pitch)
@@ -119,7 +116,5 @@ void Camera::_updateCameraVectors()
   this->_right = glm::normalize(glm::cross(this->_front, this->_worldUp)); // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
   this->_up = glm::normalize(glm::cross(this->_right, this->_front));
 }
-
-} // namespace renderer
 
 } // namespace leo

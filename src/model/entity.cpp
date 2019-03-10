@@ -8,15 +8,13 @@
 
 namespace leo
 {
-namespace model
-{
 
 t_id Entity::_count = 0;
 
 Entity::Entity()
     : RegisteredObject(_count++)
 {
-  this->_notify(controller::Event::BASE_CREATED);
+  this->_notify(Event::BASE_CREATED);
 }
 
 const std::map<t_typeId, IComponent *> &Entity::getComponents() const
@@ -30,7 +28,7 @@ bool Entity::addComponent(IComponent *component)
   bool result = this->_components.insert(
                                      std::pair<t_typeId, IComponent *>(component->getTypeId(), component))
                     .second;
-  this->_notify(*component, controller::Event::COMPONENT_ADDED);
+  this->_notify(*component, Event::COMPONENT_ADDED);
   return result;
 }
 
@@ -82,7 +80,7 @@ void Entity::setParent(Entity *parent)
 {
   // NOTE: Probably unsafe due to observer.
   this->_parent = parent;
-  this->_notify(controller::Event::COMPONENT_UPDATED);
+  this->_notify(Event::COMPONENT_UPDATED);
 }
 
 const SceneGraph *Entity::getSceneGraph() const
@@ -93,7 +91,7 @@ const SceneGraph *Entity::getSceneGraph() const
 void Entity::setSceneGraph(SceneGraph *sceneGraph)
 {
   this->_setSceneGraphRec(sceneGraph);
-  this->_notify(controller::Event::COMPONENT_UPDATED);
+  this->_notify(Event::COMPONENT_UPDATED);
 }
 
 void Entity::_setSceneGraphRec(SceneGraph *sceneGraph)
@@ -103,21 +101,20 @@ void Entity::_setSceneGraphRec(SceneGraph *sceneGraph)
     it.second->_setSceneGraphRec(sceneGraph);
 }
 
-void Entity::reloadScene(std::vector<controller::Observer *> observers)
+void Entity::reloadScene(std::vector<Observer *> observers)
 {
   this->_observers = observers;
   for (auto &p : this->_components)
   {
-    model::IComponent *c = p.second;
-    this->_notify(*c, controller::Event::COMPONENT_ADDED);
+    IComponent *c = p.second;
+    this->_notify(*c, Event::COMPONENT_ADDED);
   }
   for (auto &p : this->_children)
   {
-    model::Entity *e = p.second;
-    this->_notify(*e, controller::Event::BASE_ADDED);
+    Entity *e = p.second;
+    this->_notify(*e, Event::BASE_ADDED);
     e->reloadScene(this->_observers);
   }
 }
 
-} // namespace model
 } // namespace leo

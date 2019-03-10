@@ -7,9 +7,6 @@ namespace leo
 
 class Texture;
 
-namespace renderer
-{
-
 class TextureWrapper
 {
 private:
@@ -32,5 +29,4 @@ private:
   const Texture *_texture = nullptr;
 };
 
-} // namespace renderer
 } // namespace leo

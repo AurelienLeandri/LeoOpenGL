@@ -8,8 +8,7 @@
 
 namespace leo
 {
-namespace model
-{
+
 class TextureManager
 {
 
@@ -51,5 +50,4 @@ class TextureManager
     std::map<t_textureId, std::unique_ptr<Texture>> _textures;
 };
 
-} // namespace model
 } // namespace leo

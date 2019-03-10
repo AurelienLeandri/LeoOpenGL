@@ -12,21 +12,12 @@ namespace leo
 {
 
 class InputManager;
-
-namespace model {
-  class SceneGraph;
-}
-
-namespace renderer
-{
-
+class SceneGraph;
 class Shader;
 class Renderer;
 class InputManager;
 class Camera;
 class SceneGraphObserver;
-
-using t_id = std::string;
 
 class Engine
 {
@@ -43,7 +34,7 @@ private:
 
 public:
   void initRenderer(Shader shader);
-  void setScene(model::SceneGraph *scene);
+  void setScene(SceneGraph *scene);
   void gameLoop();
 
 public: // Control attributes
@@ -51,14 +42,12 @@ public: // Control attributes
 
 private:
   Camera *_camera = nullptr;
-  renderer::Renderer *_renderer = nullptr;
+  Renderer *_renderer = nullptr;
   GLFWwindow *_window = nullptr;
-  model::SceneGraph *_scene = nullptr;
-  renderer::SceneGraphObserver *_observer = nullptr;
+  SceneGraph *_scene = nullptr;
+  SceneGraphObserver *_observer = nullptr;
   GLuint screenWidth = 1620;
   GLuint screenHeight = 1080;
 };
-
-} // namespace renderer
 
 } // namespace leo

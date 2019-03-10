@@ -4,7 +4,6 @@
 #include <memory>
 
 namespace leo {
-  namespace model {
 
     unsigned int ObjectRegister::_nbObjects = 0;
 
@@ -35,5 +34,4 @@ namespace leo {
       return ss.str();
     }
 
-  } //namespace model
 } //namespace leo

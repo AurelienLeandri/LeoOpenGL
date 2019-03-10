@@ -1,7 +1,6 @@
 #include "registered-object.hpp"
 
 namespace leo {
-  namespace model {
 
     RegisteredObject::RegisteredObject(t_id id) : _id(id)
     {
@@ -12,5 +11,4 @@ namespace leo {
     }
 
 
-  }  // namespace leo
-}  // namespace model
+}  // namespace leo

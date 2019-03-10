@@ -4,7 +4,6 @@
 #include <model/icomponent.hpp>
 
 namespace leo {
-namespace model {
 
   class DirectionLight : public Light, public IComponent {
     public:
@@ -23,5 +22,4 @@ namespace model {
       glm::vec4 direction;
   };
 
-}  // namespace model
 }  // namespace leo

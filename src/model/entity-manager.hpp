@@ -8,8 +8,7 @@
 
 namespace leo
 {
-namespace model
-{
+
 class EntityManager
 {
 
@@ -51,5 +50,4 @@ class EntityManager
     std::map<t_entityId, std::unique_ptr<Entity>> _entities;
 };
 
-} // namespace model
 } // namespace leo

@@ -3,7 +3,6 @@
 #include <model/entity.hpp>
 
 namespace leo {
-  namespace model {
 
     Transformation::Transformation() :
       _relativeScaling(1.0f, 1.0f, 1.0f),
@@ -43,21 +42,21 @@ namespace leo {
       this->_absoluteTranslation += value - this->_relativeTranslation;
       this->_relativeTranslation = value;
       this->_recomputeTransformationMatrix();
-      this->_notify(controller::Event::COMPONENT_UPDATED);
+      this->_notify(Event::COMPONENT_UPDATED);
     }
 
     void Transformation::setRelativeRotation(glm::vec3 value) {
       this->_absoluteRotation += value - this->_relativeRotation;
       this->_relativeRotation = value;
       this->_recomputeTransformationMatrix();
-      this->_notify(controller::Event::COMPONENT_UPDATED);
+      this->_notify(Event::COMPONENT_UPDATED);
     }
 
     void Transformation::setRelativeScaling(glm::vec3 value) {
       this->_absoluteScaling += value - this->_relativeScaling;
       this->_relativeScaling = value;
       this->_recomputeTransformationMatrix();
-      this->_notify(controller::Event::COMPONENT_UPDATED);
+      this->_notify(Event::COMPONENT_UPDATED);
     }
 
     void Transformation::translate(glm::vec3 value) {
@@ -102,5 +101,4 @@ namespace leo {
       this->_transformationMatrix = glm::scale(this->_transformationMatrix, this->_absoluteScaling);
     }
 
-  }  // model
 }  // leo

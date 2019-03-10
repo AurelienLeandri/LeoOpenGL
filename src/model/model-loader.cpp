@@ -11,8 +11,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 ModelLoader::ModelLoader(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) : _entityManager(entityManager), _componentManager(componentManager), _textureManager(textureManager)
 {
@@ -147,5 +145,4 @@ std::vector<Texture *> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiText
     return textures;
 }
 
-} // namespace model
 } // namespace leo

@@ -3,9 +3,6 @@
 namespace leo
 {
 
-namespace renderer
-{
-
 void APIENTRY glDebugOutput(GLenum source,
                             GLenum type,
                             GLuint id,
@@ -99,7 +96,5 @@ void APIENTRY glDebugOutput(GLenum source,
   std::cout << std::endl;
   std::cout << std::endl;
 }
-
-} // namespace renderer
 
 } // namespace leo

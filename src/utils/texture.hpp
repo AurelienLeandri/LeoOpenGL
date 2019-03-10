@@ -10,7 +10,7 @@
 namespace leo
 {
 
-class Texture : public model::RegisteredObject
+class Texture : public RegisteredObject
 {
 public:
   Texture(); // DEPRECATED
@@ -34,7 +34,7 @@ public:
   int height = 0;
 
 private:
-  static model::t_id _count;
+  static t_id _count;
 
 }; // class Texture
 

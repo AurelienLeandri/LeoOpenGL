@@ -2,8 +2,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 Volume::Volume(std::vector<Vertex> vertices, std::vector<unsigned int> indices) : _vertices(vertices),
                                                                                   _indices(indices)
@@ -258,5 +256,4 @@ Volume Volume::createPlane(float width, float height)
   return volume;
 }
 
-} // namespace model
 } // namespace leo

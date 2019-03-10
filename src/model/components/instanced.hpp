@@ -4,8 +4,7 @@
 
 namespace leo
 {
-namespace model
-{
+
 class Instanced : public Volume
 {
   public:
@@ -26,5 +25,4 @@ class Instanced : public Volume
     std::vector<glm::mat4> transformations;
 };
 
-} // namespace model
 } // namespace leo

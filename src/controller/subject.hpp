@@ -5,7 +5,6 @@
 #include <string>
 
 namespace leo {
-  namespace controller {
 
     class Observer;
 
@@ -26,5 +25,4 @@ namespace leo {
         std::vector<Observer *> _observers;
     };
 
-  }  // namespace controller
 }  // namespace leo

@@ -3,14 +3,13 @@
 #include <model/entity.hpp>
 
 namespace leo {
-  namespace model {
 
     t_id IComponent::_count = 0;
 
     IComponent::IComponent()
       : RegisteredObject(_count++)
     {
-      this->_notify(controller::Event::COMPONENT_CREATED);
+      this->_notify(Event::COMPONENT_CREATED);
     }
 
     const Entity *IComponent::getEntity() const {
@@ -18,9 +17,8 @@ namespace leo {
     }
 
     void IComponent::setEntity(const Entity *entity) {
-      this->_notify(controller::Event::COMPONENT_UPDATED);
+      this->_notify(Event::COMPONENT_UPDATED);
       this->_entity = entity;
     }
 
-  }  // namespace leo
 }  // namespace leo

@@ -1,22 +1,21 @@
 #pragma once
 
-namespace leo {
-  namespace model {
+namespace leo
+{
 
-    using t_id = unsigned int;
+using t_id = unsigned int;
 
-    class RegisteredObject {
+class RegisteredObject
+{
 
-      public:
-        RegisteredObject(t_id id);
+public:
+  RegisteredObject(t_id id);
 
-      public:
-        const t_id &getId() const;
+public:
+  const t_id &getId() const;
 
-      protected:
-        t_id _id;
-    };
+protected:
+  t_id _id;
+};
 
-
-  }  // namespace leo
-}  // namespace model
+} // namespace leo

@@ -4,7 +4,6 @@
 #include <string>
 
 namespace leo {
-  namespace model {
 
     class RegisteredObject;
 
@@ -27,5 +26,4 @@ namespace leo {
 
     };
 
-  } //namespace model
 } //namespace leo

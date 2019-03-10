@@ -3,17 +3,17 @@
 
 namespace leo {
 
-  model::t_id Texture::_count = 0;
+  t_id Texture::_count = 0;
 
   Texture::Texture() : Texture(true)
   {
   }
 
-  Texture::Texture(int width, int height) : model::RegisteredObject(_count++), width(width), height(height)
+  Texture::Texture(int width, int height) : RegisteredObject(_count++), width(width), height(height)
   {
   }
 
-  Texture::Texture(bool generate_empty) : model::RegisteredObject(_count++) {
+  Texture::Texture(bool generate_empty) : RegisteredObject(_count++) {
     // [DEPRECATED]
   }
 

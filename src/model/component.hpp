@@ -11,8 +11,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 template <class T>
 class Component : public IComponent
@@ -29,5 +27,4 @@ public:
 template <class T>
 const t_id Component<T>::typeId = TypeId<IComponent>::get<Component<T>>();
 
-} // namespace model
 } // namespace leo

@@ -7,9 +7,6 @@
 namespace leo
 {
 
-namespace renderer
-{
-
 void APIENTRY glDebugOutput(GLenum source,
                             GLenum type,
                             GLuint id,
@@ -17,6 +14,5 @@ void APIENTRY glDebugOutput(GLenum source,
                             GLsizei length,
                             const GLchar *message,
                             const void *userParam);
-}
 
 } // namespace leo

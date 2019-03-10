@@ -7,8 +7,7 @@
 
 namespace leo
 {
-namespace model
-{
+
 class ComponentManager
 {
 
@@ -47,5 +46,5 @@ class ComponentManager
   private:
     std::map<t_componentId, std::unique_ptr<IComponent>> _components;
 };
-} // namespace model
+
 } // namespace leo

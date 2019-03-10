@@ -13,9 +13,6 @@ namespace leo
 
 class Texture;
 
-namespace model
-{
-
 class CubeMap
 {
 public:
@@ -34,5 +31,4 @@ private:
   GLuint _id = 0;
 };
 
-} // namespace model
 } // namespace leo

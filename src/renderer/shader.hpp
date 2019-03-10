@@ -9,9 +9,6 @@ namespace leo
 
 class Texture;
 
-namespace renderer
-{
-
 class Shader
 {
 public:
@@ -51,7 +48,5 @@ protected:
   GLuint _textureOffset = 0;
   bool _initialized = false;
 };
-
-} // namespace renderer
 
 } // namespace leo

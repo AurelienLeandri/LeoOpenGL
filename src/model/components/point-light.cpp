@@ -1,7 +1,6 @@
 #include "point-light.hpp"
 
 namespace leo {
-namespace model {
 
   PointLight::PointLight() :
     Light()
@@ -22,5 +21,4 @@ namespace model {
     this->position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
   }
 
-}  // namespace model
 }  // namespace leo

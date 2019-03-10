@@ -4,8 +4,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 enum ComponentType {
   DIRECTION_LIGHT,
@@ -16,5 +14,4 @@ enum ComponentType {
   INSTANCED
 };
 
-} // namespace model
 } // namespace leo

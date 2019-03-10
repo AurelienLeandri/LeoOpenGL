@@ -3,9 +3,6 @@
 namespace leo
 {
 
-namespace renderer
-{
-
 std::shared_ptr<InputManager> InputManager::_instance = std::shared_ptr<InputManager>(nullptr);
 
 InputManager::InputManager()
@@ -99,7 +96,5 @@ void InputManager::mouseCallback(GLFWwindow *window, double xpos, double ypos)
   _instance->setXOffset(xoffset);
   _instance->setYOffset(yoffset);
 }
-
-} // namespace renderer
 
 } // namespace leo

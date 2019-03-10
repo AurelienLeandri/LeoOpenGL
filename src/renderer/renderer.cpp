@@ -21,8 +21,6 @@
 
 namespace leo
 {
-namespace renderer
-{
 
 Renderer::Renderer(GLFWwindow *window,
                    InputManager *inputManager,
@@ -34,7 +32,7 @@ Renderer::Renderer(GLFWwindow *window,
   this->_setWindowContext(window, inputManager);
   this->_setCamera(camera);
   this->_init();
-  model::Volume *v = new model::Volume(model::Volume::createPlane(1.f, 1.f));
+  Volume *v = new Volume(Volume::createPlane(1.f, 1.f));
   this->_loadVAO(v);
   this->_postProcessGeometry.addComponent(v);
 }
@@ -111,20 +109,20 @@ void Renderer::_setCamera(Camera *camera)
   this->_camera = camera;
 }
 
-void Renderer::render(const model::SceneGraph *sceneGraph)
+void Renderer::render(const SceneGraph *sceneGraph)
 {
   this->render(sceneGraph, std::vector<const Framebuffer *>(), &this->_main);
   this->_postProcess(&this->_main);
   glfwSwapBuffers(this->_window);
 }
 
-void Renderer::render(const model::SceneGraph *sceneGraph,
+void Renderer::render(const SceneGraph *sceneGraph,
                       std::vector<const Framebuffer *> inputs, Framebuffer *output)
 {
   this->_loadShader(&this->_shader, inputs, output);
   this->_renderRec(sceneGraph->getRoot(), &this->_shader, inputs, output);
 
-  const model::CubeMap *cubeMap = sceneGraph->getCubeMap();
+  const CubeMap *cubeMap = sceneGraph->getCubeMap();
   if (cubeMap)
   {
     this->_drawCubeMap(*cubeMap, &this->_main);
@@ -163,43 +161,43 @@ void Renderer::_postProcess(Framebuffer *input)
   this->_renderRec(&this->_postProcessGeometry, &this->_shader, v, nullptr);
 }
 
-void Renderer::_renderRec(const model::Entity *root, Shader *shader,
-                          std::vector<const Framebuffer *> inputs, Framebuffer *output, const model::Instanced *instanced)
+void Renderer::_renderRec(const Entity *root, Shader *shader,
+                          std::vector<const Framebuffer *> inputs, Framebuffer *output, const Instanced *instanced)
 {
-  const model::IComponent *p_component;
+  const IComponent *p_component;
   bool wasInstanced = instanced != nullptr;
-  p_component = root->getComponent(model::ComponentType::INSTANCED);
+  p_component = root->getComponent(ComponentType::INSTANCED);
   if (p_component)
   {
-    instanced = static_cast<const model::Instanced *>(p_component);
+    instanced = static_cast<const Instanced *>(p_component);
     if (!wasInstanced)
     {
       this->_loadShader(&this->_instancingShader, inputs, output);
       shader = &this->_instancingShader;
     }
   }
-  p_component = root->getComponent(model::ComponentType::MATERIAL);
+  p_component = root->getComponent(ComponentType::MATERIAL);
   if (p_component)
   {
-    this->_setCurrentMaterial(static_cast<const model::Material *>(p_component), shader);
+    this->_setCurrentMaterial(static_cast<const Material *>(p_component), shader);
   }
-  p_component = root->getComponent(model::ComponentType::TRANSFORMATION);
+  p_component = root->getComponent(ComponentType::TRANSFORMATION);
   if (p_component)
   {
-    this->_setModelMatrix(static_cast<const model::Transformation *>(p_component), shader);
+    this->_setModelMatrix(static_cast<const Transformation *>(p_component), shader);
   }
   // NOTE: Keep volume at the end as it is affected by the transform and material
-  p_component = root->getComponent(model::ComponentType::VOLUME);
+  p_component = root->getComponent(ComponentType::VOLUME);
   if (p_component)
   {
-    this->_drawVolume(static_cast<const model::Volume *>(p_component), instanced);
+    this->_drawVolume(static_cast<const Volume *>(p_component), instanced);
   }
 
   for (auto &child : root->getChildren())
     this->_renderRec(child.second, shader, inputs, output, instanced);
 }
 
-void Renderer::_drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output)
+void Renderer::_drawCubeMap(const CubeMap &cubeMap, Framebuffer *output)
 {
   this->_cubeMapShader.use();
   glm::mat4 untranslatedMatrix = glm::mat4(glm::mat3(this->_camera->getViewMatrix()));
@@ -211,7 +209,7 @@ void Renderer::_drawCubeMap(const model::CubeMap &cubeMap, Framebuffer *output)
   glDepthFunc(GL_LESS);
 }
 
-void Renderer::_drawVolume(const model::Volume *volume, const model::Instanced *instanced)
+void Renderer::_drawVolume(const Volume *volume, const Instanced *instanced)
 {
   this->_bindVAO(volume);
   // Draw mesh
@@ -228,7 +226,7 @@ void Renderer::_drawVolume(const model::Volume *volume, const model::Instanced *
   }
 }
 
-void Renderer::_setCurrentMaterial(const model::Material *material, Shader *shader)
+void Renderer::_setCurrentMaterial(const Material *material, Shader *shader)
 {
   shader->setVector3("material.diffuse_value", material->diffuse_value);
   if (material->diffuse_texture)
@@ -249,7 +247,7 @@ void Renderer::_setCurrentMaterial(const model::Material *material, Shader *shad
   }
 }
 
-void Renderer::_setCurrentMaterial(const model::Material *material)
+void Renderer::_setCurrentMaterial(const Material *material)
 {
   this->_setCurrentMaterial(material, &this->_shader);
 }
@@ -259,7 +257,7 @@ void Renderer::_loadTextureToShader(const char *uniformName, GLuint textureSlot,
   auto it = this->_textures.find(texture.getId());
   if (it == this->_textures.end())
   {
-    it = this->_textures.insert(std::pair<model::t_id, TextureWrapper>(texture.getId(), texture)).first;
+    it = this->_textures.insert(std::pair<t_id, TextureWrapper>(texture.getId(), texture)).first;
   }
   this->_shader.setTexture(uniformName, it->second.getId(), textureSlot);
 }
@@ -323,7 +321,7 @@ void Renderer::_loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, 
   this->_materialTextureOffset = inputNumber;
 }
 
-void Renderer::_setModelMatrix(const model::Transformation *transformation, Shader *shader)
+void Renderer::_setModelMatrix(const Transformation *transformation, Shader *shader)
 {
   shader->setMat4("model", transformation->getTransformationMatrix());
 }
@@ -338,12 +336,12 @@ void Renderer::_setModelMatrix(Shader *shader)
 /*        LOADING FUNCTIONS        */
 /////////////////////////////////////
 
-void Renderer::_loadVAO(const model::Volume *volume)
+void Renderer::_loadVAO(const Volume *volume)
 {
   auto it = this->_bufferCollections.find(volume->getId());
   if (it == this->_bufferCollections.end())
   {
-    this->_bufferCollections.insert(std::pair<model::t_id, BufferCollection>(volume->getId(), BufferCollection())).first;
+    this->_bufferCollections.insert(std::pair<t_id, BufferCollection>(volume->getId(), BufferCollection())).first;
     BufferCollection *bc = &(*this->_bufferCollections.find(volume->getId())).second;
 
     glGenVertexArrays(1, &bc->VAO);
@@ -378,7 +376,7 @@ void Renderer::_loadVAO(const model::Volume *volume)
   }
 }
 
-void Renderer::_loadInstanced(const model::Instanced *instanced)
+void Renderer::_loadInstanced(const Instanced *instanced)
 {
   const std::vector<glm::mat4> &m = instanced->transformations;
   int amount = m.size();
@@ -416,9 +414,9 @@ void Renderer::_loadInstanced(const model::Instanced *instanced)
   }
 }
 
-void Renderer::_getChildrenMeshes(const model::Entity *root, std::vector<BufferCollection *> &buffers)
+void Renderer::_getChildrenMeshes(const Entity *root, std::vector<BufferCollection *> &buffers)
 {
-  const model::Volume *v = static_cast<const model::Volume *>(root->getComponent(model::ComponentType::VOLUME));
+  const Volume *v = static_cast<const Volume *>(root->getComponent(ComponentType::VOLUME));
   if (v)
   {
     auto it = this->_bufferCollections.find(v->getId());
@@ -438,7 +436,7 @@ void Renderer::_getChildrenMeshes(const model::Entity *root, std::vector<BufferC
   }
 }
 
-void Renderer::_bindVAO(const model::Volume *volume)
+void Renderer::_bindVAO(const Volume *volume)
 {
   auto it = this->_bufferCollections.find(volume->getId());
   if (it == this->_bufferCollections.end())
@@ -451,11 +449,11 @@ void Renderer::_bindVAO(const model::Volume *volume)
   }
 }
 
-void Renderer::_loadLight(const model::DirectionLight *light)
+void Renderer::_loadLight(const DirectionLight *light)
 {
-  this->_directionLights.insert(std::pair<model::t_id, DirectionLightUniform>(light->getId(), DirectionLightUniform(*light)));
+  this->_directionLights.insert(std::pair<t_id, DirectionLightUniform>(light->getId(), DirectionLightUniform(*light)));
   DirectionLightUniform &dlu = this->_directionLights[light->getId()];
-  const model::Transformation *transform = static_cast<const model::Transformation *>(light->getEntity()->getComponent(model::ComponentType::TRANSFORMATION));
+  const Transformation *transform = static_cast<const Transformation *>(light->getEntity()->getComponent(ComponentType::TRANSFORMATION));
   if (transform)
   {
     const glm::mat4x4 &transformation = transform->getTransformationMatrix();
@@ -463,11 +461,11 @@ void Renderer::_loadLight(const model::DirectionLight *light)
   }
 }
 
-void Renderer::_loadLight(const model::PointLight *light)
+void Renderer::_loadLight(const PointLight *light)
 {
-  this->_pointLights.insert(std::pair<model::t_id, PointLightUniform>(light->getId(), PointLightUniform(*light)));
+  this->_pointLights.insert(std::pair<t_id, PointLightUniform>(light->getId(), PointLightUniform(*light)));
   PointLightUniform &plu = this->_pointLights[light->getId()];
-  const model::Transformation *transform = static_cast<const model::Transformation *>(light->getEntity()->getComponent(model::ComponentType::TRANSFORMATION));
+  const Transformation *transform = static_cast<const Transformation *>(light->getEntity()->getComponent(ComponentType::TRANSFORMATION));
   if (transform)
   {
     const glm::mat4x4 &transformation = transform->getTransformationMatrix();
@@ -475,13 +473,13 @@ void Renderer::_loadLight(const model::PointLight *light)
   }
 }
 
-void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
+void Renderer::_loadCubeMap(const CubeMap &cubeMap)
 {
   const Texture &texture = *cubeMap.getTextures()[0];
   auto it = this->_textures.find(cubeMap.getTextures()[0]->getId());
   if (it == this->_textures.end())
   {
-    TextureWrapper &tw = this->_textures.insert(std::pair<model::t_id, TextureWrapper>(texture.getId(), TextureWrapper(texture, false))).first->second;
+    TextureWrapper &tw = this->_textures.insert(std::pair<t_id, TextureWrapper>(texture.getId(), TextureWrapper(texture, false))).first->second;
     glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
     for (int i = 0; i < 6; ++i)
     {
@@ -523,5 +521,4 @@ void Renderer::_loadCubeMap(const model::CubeMap &cubeMap)
   glBindVertexArray(0);
 }
 
-} // namespace renderer
 } // namespace leo

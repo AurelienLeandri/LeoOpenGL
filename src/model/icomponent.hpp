@@ -9,7 +9,6 @@
 #include <memory>
 
 namespace leo {
-  namespace model {
 
     using t_componentId = unsigned int;
     using t_entityId = unsigned int;
@@ -17,7 +16,7 @@ namespace leo {
 
     class Entity;
 
-    class IComponent : public RegisteredObject, public controller::Subject {
+    class IComponent : public RegisteredObject, public Subject {
       public:
         IComponent();
         virtual ~IComponent() = default;
@@ -36,5 +35,4 @@ namespace leo {
         
     };  // class Component
 
-  }  // namespace model
 }  // namespace leo

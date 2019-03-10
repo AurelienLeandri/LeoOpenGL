@@ -3,7 +3,6 @@
 #include <renderer/global.hpp>
 
 namespace leo {
-namespace model {
 
   class Light {
     public:
@@ -23,5 +22,4 @@ namespace model {
 
   };
 
-}  // namespace model
 }  // namespace leo

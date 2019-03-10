@@ -46,27 +46,27 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 }
 
 void testInstanced() {
-  model::ComponentManager componentManager;
-  model::TextureManager textureManager;
-  model::EntityManager entityManager;
-  model::ModelLoader modelLoader(entityManager, componentManager, textureManager);
+  ComponentManager componentManager;
+  TextureManager textureManager;
+  EntityManager entityManager;
+  ModelLoader modelLoader(entityManager, componentManager, textureManager);
 
-  model::Entity *planet = modelLoader.loadModel("resources/models/nanosuit/nanosuit.obj");
-  model::Entity *m = modelLoader.loadModel("resources/models/rock/rock.obj");
+  Entity *planet = modelLoader.loadModel("resources/models/nanosuit/nanosuit.obj");
+  Entity *m = modelLoader.loadModel("resources/models/rock/rock.obj");
   planet->addChild(m);
 
-  model::SceneGraph scene;
-  model::CubeMap cubeMap("skybox", "resources/textures");
+  SceneGraph scene;
+  CubeMap cubeMap("skybox", "resources/textures");
   scene.setCubeMap(&cubeMap);
   scene.setRoot(planet);
 
-  model::DirectionLight *dl = componentManager.createComponent<model::DirectionLight>(
+  DirectionLight *dl = componentManager.createComponent<DirectionLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
   planet->addComponent(dl);
 
-  model::Instanced *instanced = componentManager.createComponent<model::Instanced>(model::Volume::createCube(1.f));
+  Instanced *instanced = componentManager.createComponent<Instanced>(Volume::createCube(1.f));
   unsigned int amount = 1000;
   srand(glfwGetTime()); // initialize random seed
   float radius = 50.0;
@@ -96,12 +96,12 @@ void testInstanced() {
     instanced->transformations.push_back(model);
   }
 
-  renderer::Shader shader(
+  Shader shader(
       "resources/shaders/basic.vs.glsl",
       "resources/shaders/basic.frag.glsl");
 
   // Render
-  renderer::Engine engine;
+  Engine engine;
   engine.initRenderer(shader);
 
   engine.setScene(&scene);
@@ -111,23 +111,23 @@ void testInstanced() {
 
 void cubeScene()
 {
-  model::ComponentManager componentManager;
-  model::TextureManager textureManager;
-  model::EntityManager entityManager;
-  model::ModelLoader modelLoader(entityManager, componentManager, textureManager);
+  ComponentManager componentManager;
+  TextureManager textureManager;
+  EntityManager entityManager;
+  ModelLoader modelLoader(entityManager, componentManager, textureManager);
 
-  model::Entity *m = modelLoader.loadModel("resources/models/nanosuit/nanosuit.obj");
-  model::SceneGraph scene;
-  model::CubeMap cubeMap("skybox", "resources/textures");
+  Entity *m = modelLoader.loadModel("resources/models/nanosuit/nanosuit.obj");
+  SceneGraph scene;
+  CubeMap cubeMap("skybox", "resources/textures");
   scene.setCubeMap(&cubeMap);
   scene.setRoot(m);
 
-  model::Entity node1;
+  Entity node1;
   m->addChild(&node1);
 
-  model::Material *material = componentManager.createComponent<model::Material>();
+  Material *material = componentManager.createComponent<Material>();
 
-  model::Volume *cube = componentManager.createComponent<model::Volume>(model::Volume::createCube(1.f));
+  Volume *cube = componentManager.createComponent<Volume>(Volume::createCube(1.f));
 
   node1.addComponent(material);
   node1.addComponent(cube);
@@ -136,26 +136,26 @@ void cubeScene()
   material->specular_texture = textureManager.createTexture("resources/textures/crate_specular.png");
   material->reflection_map = textureManager.createTexture("resources/textures/specular.png");
 
-  model::PointLight *pl = componentManager.createComponent<model::PointLight>(
+  PointLight *pl = componentManager.createComponent<PointLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
 
-  model::Transformation *t2 = componentManager.createComponent<model::Transformation>();
+  Transformation *t2 = componentManager.createComponent<Transformation>();
 
   t2->setRelativeTranslation(glm::vec3(3.f, 0.f, 0.f));
   t2->setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
   t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
-  model::Entity node2;
+  Entity node2;
   node1.addChild(&node2);
   node2.addComponent(material);
   node2.addComponent(cube);
   node2.addComponent(t2);
   node2.addComponent(pl);
 
-  model::Transformation *t3 = componentManager.createComponent<model::Transformation>();
+  Transformation *t3 = componentManager.createComponent<Transformation>();
 
-  model::DirectionLight *dl = componentManager.createComponent<model::DirectionLight>(
+  DirectionLight *dl = componentManager.createComponent<DirectionLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
@@ -163,19 +163,19 @@ void cubeScene()
   t3->setRelativeTranslation(glm::vec3(4.f, 2.f, 0.f));
   t3->setRelativeRotation(glm::vec3(45.f, 0.f, 0.f));
   t3->setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
-  model::Entity node3;
+  Entity node3;
   node1.addChild(&node3);
   node3.addComponent(material);
   node3.addComponent(cube);
   node3.addComponent(t3);
   node3.addComponent(dl);
 
-  renderer::Shader shader(
+  Shader shader(
       "resources/shaders/basic.vs.glsl",
       "resources/shaders/basic.frag.glsl");
 
   // Render
-  renderer::Engine engine;
+  Engine engine;
   engine.initRenderer(shader);
 
   engine.setScene(&scene);

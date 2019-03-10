@@ -1,11 +1,11 @@
 #include "observer.hpp"
 
-namespace leo {
-  namespace controller {
+namespace leo
+{
 
-    Observer::~Observer() {
-      // TODO: How to unwatch to avoid dangling pointer
-    }
+Observer::~Observer()
+{
+  // TODO: How to unwatch to avoid dangling pointer
+}
 
-  }  // namespace controller
-}  // namespace leo
+} // namespace leo

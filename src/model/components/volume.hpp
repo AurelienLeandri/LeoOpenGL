@@ -8,8 +8,6 @@
 
 namespace leo
 {
-namespace model
-{
 
 class Volume : public IComponent
 {
@@ -40,5 +38,4 @@ protected:
   std::vector<unsigned int> _indices;
 };
 
-} // namespace model
 } // namespace leo
