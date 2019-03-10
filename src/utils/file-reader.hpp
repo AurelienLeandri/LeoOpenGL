@@ -2,11 +2,13 @@
 
 #include <string>
 
-namespace leo {
+namespace leo
+{
 
-class FileReader {
-  public:
-    static std::string readFile(std::string fileName);
+class FileReader
+{
+public:
+  static std::string readFile(std::string fileName);
 };
 
-}
+} // namespace leo

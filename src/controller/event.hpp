@@ -17,5 +17,4 @@ enum Event
   BASE_ADDED = 1 << 8,
   BASE_REMOVED = 1 << 9
 };
-
 }

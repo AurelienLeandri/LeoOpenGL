@@ -1,14 +1,15 @@
 #include "registered-object.hpp"
 
-namespace leo {
+namespace leo
+{
 
-    RegisteredObject::RegisteredObject(t_id id) : _id(id)
-    {
-    }
+RegisteredObject::RegisteredObject(t_id id) : _id(id)
+{
+}
 
-    const t_id &RegisteredObject::getId() const {
-      return this->_id;
-    }
+const t_id &RegisteredObject::getId() const
+{
+  return this->_id;
+}
 
-
-}  // namespace leo
+} // namespace leo

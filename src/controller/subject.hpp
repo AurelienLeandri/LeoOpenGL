@@ -4,25 +4,27 @@
 #include <vector>
 #include <string>
 
-namespace leo {
+namespace leo
+{
 
-    class Observer;
+class Observer;
 
-    class Subject {
-      public:
-      virtual ~Subject();
+class Subject
+{
+public:
+  virtual ~Subject();
 
-      public:
-        void watch(Observer *observer);
-        void unwatch(Observer *observer);
-        void setObservers(std::vector<Observer *> observers);
+public:
+  void watch(Observer *observer);
+  void unwatch(Observer *observer);
+  void setObservers(std::vector<Observer *> observers);
 
-      protected:
-        void _notify(Subject &subject, Event event);
-        void _notify(Event event);
+protected:
+  void _notify(Subject &subject, Event event);
+  void _notify(Event event);
 
-      protected:
-        std::vector<Observer *> _observers;
-    };
+protected:
+  std::vector<Observer *> _observers;
+};
 
-}  // namespace leo
+} // namespace leo

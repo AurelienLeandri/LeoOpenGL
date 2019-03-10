@@ -29,7 +29,6 @@ public:
   Texture *reflection_map = nullptr;
   float shininess = 32.f;
   bool force = false;
-
 };
 
 } // namespace leo

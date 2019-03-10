@@ -77,7 +77,6 @@ void Engine::_reloadScene()
   this->_scene->reloadScene(obs);
 }
 
-
 void Engine::gameLoop()
 {
   // Render to our framebuffer

@@ -7,22 +7,22 @@ namespace leo
 
 class Instanced : public Volume
 {
-  public:
-    Instanced(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
-    Instanced(const Instanced &other);
-    Instanced(Volume &&other);
+public:
+  Instanced(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
+  Instanced(const Instanced &other);
+  Instanced(Volume &&other);
 
-  protected:
-    Instanced();
+protected:
+  Instanced();
 
-  public:
-    virtual ComponentType getTypeId() const override
-    {
-        return ComponentType::INSTANCED;
-    }
+public:
+  virtual ComponentType getTypeId() const override
+  {
+    return ComponentType::INSTANCED;
+  }
 
-  public:
-    std::vector<glm::mat4> transformations;
+public:
+  std::vector<glm::mat4> transformations;
 };
 
 } // namespace leo

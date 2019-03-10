@@ -7,27 +7,27 @@ namespace leo
 {
 
 class Component;
- class Instanced;
+class Instanced;
 
 class SceneGraphObserver : public Observer
 {
-  public:
-    SceneGraphObserver(Renderer &renderer);
+public:
+  SceneGraphObserver(Renderer &renderer);
 
-  public:
-    virtual void notified(Subject *subject, Event event);
-    void notified(Volume *volume, Event event);
-    void notified(Light *light, Event event);
-    void notified(Entity *entity, Event event);
-    void notified(Instanced *instanced, Event event);
+public:
+  virtual void notified(Subject *subject, Event event);
+  void notified(Volume *volume, Event event);
+  void notified(Light *light, Event event);
+  void notified(Entity *entity, Event event);
+  void notified(Instanced *instanced, Event event);
 
-  private:
-    void _loadComponent(Volume *volume);
-    void _loadComponent(Instanced *instanced);
-    void _loadComponent(Light *light);
+private:
+  void _loadComponent(Volume *volume);
+  void _loadComponent(Instanced *instanced);
+  void _loadComponent(Light *light);
 
-  private:
-    Renderer &_renderer;
+private:
+  Renderer &_renderer;
 };
 
 } // namespace leo

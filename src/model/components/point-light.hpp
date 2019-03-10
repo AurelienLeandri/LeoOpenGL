@@ -22,7 +22,6 @@ public:
 
 public:
   glm::vec4 position;
-
 };
 
 } // namespace leo

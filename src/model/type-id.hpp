@@ -5,7 +5,8 @@
 namespace leo
 {
 
-enum ComponentType {
+enum ComponentType
+{
   DIRECTION_LIGHT,
   MATERIAL,
   POINT_LIGHT,

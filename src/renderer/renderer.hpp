@@ -33,7 +33,7 @@ typedef struct BufferCollection
 
 class Renderer
 {
-friend class SceneGraphObserver;
+  friend class SceneGraphObserver;
 
 public:
   Renderer(GLFWwindow *window,
@@ -52,7 +52,7 @@ public:
               std::vector<const Framebuffer *> inputs, Framebuffer *output);
 
 private:
-  void _renderRec(const Entity *root, Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output, const Instanced *instanced=nullptr);
+  void _renderRec(const Entity *root, Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output, const Instanced *instanced = nullptr);
   void _loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output);
   void _drawCubeMap(const CubeMap &cubeMap, Framebuffer *output);
   void _postProcess(Framebuffer *input);
@@ -62,7 +62,7 @@ private:
   void _setModelMatrix(Shader *shader);
   void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
   void _setCamera(Camera *camera);
-  void _drawVolume(const Volume *volume, const Instanced *instanced=nullptr);
+  void _drawVolume(const Volume *volume, const Instanced *instanced = nullptr);
   void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
   void _loadLightsToShader();
   void _loadCubeMap(const CubeMap &cubeMap);

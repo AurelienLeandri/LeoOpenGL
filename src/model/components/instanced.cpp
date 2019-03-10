@@ -16,7 +16,8 @@ Instanced::Instanced() : Volume()
 {
 }
 
-Instanced::Instanced(Volume &&other) : Volume(std::forward<Volume>(other)) {
+Instanced::Instanced(Volume &&other) : Volume(std::forward<Volume>(other))
+{
 }
 
 } // namespace leo

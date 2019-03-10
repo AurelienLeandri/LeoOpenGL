@@ -21,7 +21,7 @@ public:
 public:
   static const t_id typeId;
   const t_id getTypeId() const override { return typeId; }
-  
+
 }; // class Component
 
 template <class T>
