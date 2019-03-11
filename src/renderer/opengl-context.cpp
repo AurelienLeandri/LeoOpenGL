@@ -4,6 +4,9 @@
 #include <renderer/input-manager.hpp>
 
 #include <model/components/volume.hpp>
+#include <model/cube-map.hpp>
+
+#include <utils/texture.hpp>
 
 #include <iostream>
 
@@ -64,18 +67,18 @@ void OpenGLContext::setWindowContext(GLFWwindow &window, InputManager &inputMana
     glfwSetInputMode(&window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void OpenGLContext::loadVAO(const Volume *volume)
+void OpenGLContext::loadVAO(const Volume &volume)
 {
-    this->_bufferCollectionsInstanced.erase(volume->getId());
+    this->_bufferCollectionsInstanced.erase(volume.getId());
 
-    auto it = this->_bufferCollections.find(volume->getId());
+    auto it = this->_bufferCollections.find(volume.getId());
 
     if (it == this->_bufferCollections.end())
     {
-        this->_bufferCollections.insert(std::pair<t_id, BufferCollection>(volume->getId(), BufferCollection())).first;
-        BufferCollection &bc = this->_bufferCollections[volume->getId()];
+        this->_bufferCollections.insert(std::pair<t_id, BufferCollection>(volume.getId(), BufferCollection())).first;
+        BufferCollection &bc = this->_bufferCollections[volume.getId()];
 
-        this->_generateBufferCollection(bc, *volume);
+        this->_generateBufferCollection(bc, volume);
     }
 }
 
@@ -112,30 +115,30 @@ void OpenGLContext::_generateBufferCollection(BufferCollection &bc, const Volume
                  &indices[0], GL_STATIC_DRAW);
 }
 
-void OpenGLContext::loadVAOInstanced(const Volume *volume)
+void OpenGLContext::loadVAOInstanced(const Volume &volume)
 {
-    auto it = this->_bufferCollectionsInstanced.find(volume->getId());
+    auto it = this->_bufferCollectionsInstanced.find(volume.getId());
 
     if (it == this->_bufferCollectionsInstanced.end())
     {
         unsigned int VAO = 0;
 
-        auto it2 = this->_bufferCollections.find(volume->getId());
+        auto it2 = this->_bufferCollections.find(volume.getId());
         if (it2 != this->_bufferCollections.end())
         {
             this->_bufferCollectionsInstanced.insert(
                 std::pair<t_id, BufferCollection>(
-                    volume->getId(), it2->second));
-            this->_bufferCollections.erase(volume->getId());
+                    volume.getId(), it2->second));
+            this->_bufferCollections.erase(volume.getId());
         }
         else
         {
             this->_bufferCollectionsInstanced.insert(
                 std::pair<t_id, BufferCollection>(
-                    volume->getId(), BufferCollection()));
-            this->_generateBufferCollection(this->_bufferCollectionsInstanced[volume->getId()], *volume);
+                    volume.getId(), BufferCollection()));
+            this->_generateBufferCollection(this->_bufferCollectionsInstanced[volume.getId()], volume);
         }
-        BufferCollection &bc = this->_bufferCollectionsInstanced[volume->getId()];
+        BufferCollection &bc = this->_bufferCollectionsInstanced[volume.getId()];
 
         VAO = bc.VAO;
 
@@ -160,21 +163,74 @@ void OpenGLContext::loadVAOInstanced(const Volume *volume)
     }
 }
 
-void OpenGLContext::bindVAO(const Volume *volume)
+void OpenGLContext::bindVAO(const Volume &volume)
 {
-    auto it = this->_bufferCollections.find(volume->getId());
+    auto it = this->_bufferCollections.find(volume.getId());
     if (it != this->_bufferCollections.end())
     {
         glBindVertexArray(it->second.VAO);
         return;
     }
-    auto it2 = this->_bufferCollectionsInstanced.find(volume->getId());
+    auto it2 = this->_bufferCollectionsInstanced.find(volume.getId());
     if (it2 != this->_bufferCollectionsInstanced.end())
     {
         glBindVertexArray(it2->second.VAO);
         return;
     }
-    std::cerr << "Error: buffer collection of volume ID " << volume->getId() << " not found." << std::endl;
+    std::cerr << "Error: buffer collection of volume ID " << volume.getId() << " not found." << std::endl;
+}
+
+t_id OpenGLContext::getTextureWrapperId(const Texture &texture)
+{
+    auto it = this->_textures.find(texture.getId());
+    if (it == this->_textures.end())
+    {
+        it = this->_textures.insert(std::pair<t_id, TextureWrapper>(texture.getId(), texture)).first;
+    }
+    return it->second.getId();
+}
+
+GLuint OpenGLContext::loadCubeMap(const CubeMap &cubeMap)
+{
+    const Texture &texture = *cubeMap.getTextures()[0];
+    auto it = this->_textures.find(cubeMap.getTextures()[0]->getId());
+    if (it == this->_textures.end())
+    {
+        TextureWrapper &tw = this->_textures.insert(
+            std::pair<t_id, TextureWrapper>(texture.getId(), TextureWrapper(texture, false))).first->second;
+        glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
+        for (int i = 0; i < 6; ++i)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0, GL_RGBA, texture.width, texture.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cubeMap.getTextures()[i]->data);
+        }
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    }
+
+    BufferCollection &bc = this->_cubeMapBuffer;
+    if (bc.VAO == 0)
+    {
+
+        glGenVertexArrays(1, &bc.VAO);
+        glGenBuffers(1, &bc.VBO);
+
+        glBindVertexArray(bc.VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, bc.VBO);
+
+        const std::vector<float> &vertices = cubeMap.getVertices();
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    }
+
+    return bc.VAO;
 }
 
 } // namespace leo

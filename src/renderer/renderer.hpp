@@ -60,7 +60,6 @@ private:
   void _drawVolume(const Volume *volume, const Instanced *instanced = nullptr);
   void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
   void _loadLightsToShader();
-  void _loadCubeMap(const CubeMap &cubeMap);
   void _loadOutputFramebuffer(Framebuffer *output);
   void _loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, Shader &shader);
   void _initFramebuffers();
@@ -79,13 +78,11 @@ private:
   Shader _postProcessShader;
   Shader _cubeMapShader;
   Shader _instancingShader;
-  std::map<t_id, TextureWrapper> _textures;
   std::map<t_id, DirectionLightUniform> _directionLights;
   std::map<t_id, PointLightUniform> _pointLights;
   GLuint _lightsUBO = 0;
   GLuint _materialTextureOffset = 0;
   Entity _postProcessGeometry;
-  BufferCollection _cubeMapBuffer;
   OpenGLContext _context;
 };
 

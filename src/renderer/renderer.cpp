@@ -33,7 +33,7 @@ Renderer::Renderer(GLFWwindow *window,
   this->_setCamera(camera);
   this->_init();
   Volume *v = new Volume(Volume::createPlane(1.f, 1.f));
-  this->_context.loadVAO(v);
+  this->_context.loadVAO(*v);
   this->_postProcessGeometry.addComponent(v);
 }
 
@@ -169,14 +169,22 @@ void Renderer::_drawCubeMap(const CubeMap &cubeMap, Framebuffer *output)
   this->_cubeMapShader.setMat4("view", untranslatedMatrix);
   this->_cubeMapShader.setMat4("projection", glm::perspective(this->_camera->getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
   this->_loadOutputFramebuffer(output);
+
   glDepthFunc(GL_LEQUAL);
-  this->_loadCubeMap(cubeMap);
+
+  GLuint VAO = this->_context.loadCubeMap(cubeMap);
+  this->_cubeMapShader.setTexture(
+      "skybox", this->_context.getTextureWrapperId(*cubeMap.getTextures()[0]), 0, GL_TEXTURE_CUBE_MAP);
+  glBindVertexArray(VAO);
+  glDrawArrays(GL_TRIANGLES, 0, 36);
+  glBindVertexArray(0);
+
   glDepthFunc(GL_LESS);
 }
 
 void Renderer::_drawVolume(const Volume *volume, const Instanced *instanced)
 {
-  this->_context.bindVAO(volume);
+  this->_context.bindVAO(*volume);
   // Draw mesh
   if (instanced)
   {
@@ -219,12 +227,7 @@ void Renderer::_setCurrentMaterial(const Material *material)
 
 void Renderer::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
 {
-  auto it = this->_textures.find(texture.getId());
-  if (it == this->_textures.end())
-  {
-    it = this->_textures.insert(std::pair<t_id, TextureWrapper>(texture.getId(), texture)).first;
-  }
-  this->_shader.setTexture(uniformName, it->second.getId(), textureSlot);
+  this->_shader.setTexture(uniformName, this->_context.getTextureWrapperId(texture.getId()), textureSlot);
 }
 
 void Renderer::_loadLightsToShader()
@@ -317,7 +320,7 @@ void Renderer::_loadInstanced(const Instanced *instanced)
 
   for (unsigned int i = 0; i < meshes.size(); i++)
   {
-    this->_context.loadVAOInstanced(meshes[i]);
+    this->_context.loadVAOInstanced(*meshes[i]);
   }
 }
 
@@ -326,7 +329,7 @@ void Renderer::_getChildrenMeshes(const Entity *root, std::vector<const Volume *
   const Volume *v = static_cast<const Volume *>(root->getComponent(ComponentType::VOLUME));
   if (v)
   {
-    this->_context.loadVAO(v);
+    this->_context.loadVAO(*v);
     meshes.push_back(v);
   }
   for (auto p : root->getChildren())
@@ -357,54 +360,6 @@ void Renderer::_loadLight(const PointLight *light)
     const glm::mat4x4 &transformation = transform->getTransformationMatrix();
     plu.position = transformation * light->position;
   }
-}
-
-void Renderer::_loadCubeMap(const CubeMap &cubeMap)
-{
-  const Texture &texture = *cubeMap.getTextures()[0];
-  auto it = this->_textures.find(cubeMap.getTextures()[0]->getId());
-  if (it == this->_textures.end())
-  {
-    TextureWrapper &tw = this->_textures.insert(std::pair<t_id, TextureWrapper>(texture.getId(), TextureWrapper(texture, false))).first->second;
-    glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
-    for (int i = 0; i < 6; ++i)
-    {
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                   0, GL_RGBA, texture.width, texture.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cubeMap.getTextures()[i]->data);
-    }
-
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-  }
-
-  TextureWrapper &tw = this->_textures.find(texture.getId())->second;
-
-  this->_cubeMapShader.setTexture("skybox", tw.getId(), 0, GL_TEXTURE_CUBE_MAP);
-
-  BufferCollection &bc = this->_cubeMapBuffer;
-  if (bc.VAO == 0)
-  {
-
-    glGenVertexArrays(1, &bc.VAO);
-    glGenBuffers(1, &bc.VBO);
-
-    glBindVertexArray(bc.VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, bc.VBO);
-
-    const std::vector<float> &vertices = cubeMap.getVertices();
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  }
-
-  glBindVertexArray(bc.VAO);
-  glDrawArrays(GL_TRIANGLES, 0, 36);
-  glBindVertexArray(0);
 }
 
 } // namespace leo

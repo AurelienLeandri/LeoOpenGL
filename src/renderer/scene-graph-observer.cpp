@@ -75,7 +75,7 @@ void SceneGraphObserver::notified(Entity *entity, Event event)
 
 void SceneGraphObserver::_loadComponent(Volume *volume)
 {
-    this->_renderer._context.loadVAO(volume);
+    this->_renderer._context.loadVAO(*volume);
 }
 
 void SceneGraphObserver::_loadComponent(Instanced *instanced)
