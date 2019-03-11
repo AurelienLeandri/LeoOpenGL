@@ -33,7 +33,7 @@ Renderer::Renderer(GLFWwindow *window,
   this->_setCamera(camera);
   this->_init();
   Volume *v = new Volume(Volume::createPlane(1.f, 1.f));
-  this->_loadVAO(v);
+  this->_context.loadVAO(v);
   this->_postProcessGeometry.addComponent(v);
 }
 
@@ -43,7 +43,7 @@ Renderer::~Renderer()
 
 void Renderer::_init()
 {
-  context.init();
+  this->_context.init();
 
   glGenBuffers(1, &this->_lightsUBO);
 
@@ -66,11 +66,7 @@ void Renderer::_setWindowContext(GLFWwindow *window, InputManager *inputManager)
 {
   this->_inputManager = inputManager;
   this->_window = window;
-  glfwSetWindowUserPointer(this->_window, this->_inputManager);
-  glfwMakeContextCurrent(this->_window);
-  glfwSetKeyCallback(this->_window, this->_inputManager->keyCallback);
-  glfwSetCursorPosCallback(this->_window, this->_inputManager->mouseCallback);
-  glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  this->_context.setWindowContext(*window, *inputManager);
 }
 
 void Renderer::_setCamera(Camera *camera)
@@ -180,7 +176,7 @@ void Renderer::_drawCubeMap(const CubeMap &cubeMap, Framebuffer *output)
 
 void Renderer::_drawVolume(const Volume *volume, const Instanced *instanced)
 {
-  this->_bindVAO(volume);
+  this->_context.bindVAO(volume);
   // Draw mesh
   if (instanced)
   {
@@ -305,46 +301,6 @@ void Renderer::_setModelMatrix(Shader *shader)
 /*        LOADING FUNCTIONS        */
 /////////////////////////////////////
 
-void Renderer::_loadVAO(const Volume *volume)
-{
-  auto it = this->_bufferCollections.find(volume->getId());
-  if (it == this->_bufferCollections.end())
-  {
-    this->_bufferCollections.insert(std::pair<t_id, BufferCollection>(volume->getId(), BufferCollection())).first;
-    BufferCollection *bc = &(*this->_bufferCollections.find(volume->getId())).second;
-
-    glGenVertexArrays(1, &bc->VAO);
-    glGenBuffers(1, &bc->VBO);
-    glGenBuffers(1, &bc->EBO);
-
-    const std::vector<Vertex> &vertices = volume->getVertices();
-    const std::vector<GLuint> &indices = volume->getIndices();
-
-    glBindVertexArray(bc->VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, bc->VBO);
-
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
-                 &vertices[0], GL_STATIC_DRAW);
-
-    // Vertex Positions
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)0);
-    glEnableVertexAttribArray(0);
-    // Vertex Normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, normal));
-    glEnableVertexAttribArray(1);
-    // Vertex Texture Coords
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, texCoords));
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bc->EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
-                 &indices[0], GL_STATIC_DRAW);
-  }
-}
-
 void Renderer::_loadInstanced(const Instanced *instanced)
 {
   const std::vector<glm::mat4> &m = instanced->transformations;
@@ -356,65 +312,26 @@ void Renderer::_loadInstanced(const Instanced *instanced)
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &m[0], GL_STATIC_DRAW);
 
-  std::vector<BufferCollection *> meshes;
+  std::vector<const Volume *> meshes;
   this->_getChildrenMeshes(instanced->getEntity(), meshes);
 
   for (unsigned int i = 0; i < meshes.size(); i++)
   {
-    unsigned int VAO = meshes[i]->VAO;
-    glBindVertexArray(VAO);
-    // vertex Attributes
-    GLsizei vec4Size = sizeof(glm::vec4);
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)0);
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(vec4Size));
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(2 * vec4Size));
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(3 * vec4Size));
-
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
-
-    glBindVertexArray(0);
+    this->_context.loadVAOInstanced(meshes[i]);
   }
 }
 
-void Renderer::_getChildrenMeshes(const Entity *root, std::vector<BufferCollection *> &buffers)
+void Renderer::_getChildrenMeshes(const Entity *root, std::vector<const Volume *> &meshes)
 {
   const Volume *v = static_cast<const Volume *>(root->getComponent(ComponentType::VOLUME));
   if (v)
   {
-    auto it = this->_bufferCollections.find(v->getId());
-    if (it != this->_bufferCollections.end())
-    {
-      buffers.push_back(&it->second);
-    }
-    else
-    {
-      this->_loadVAO(v);
-      buffers.push_back(&this->_bufferCollections[v->getId()]);
-    }
+    this->_context.loadVAO(v);
+    meshes.push_back(v);
   }
   for (auto p : root->getChildren())
   {
-    this->_getChildrenMeshes(p.second, buffers);
-  }
-}
-
-void Renderer::_bindVAO(const Volume *volume)
-{
-  auto it = this->_bufferCollections.find(volume->getId());
-  if (it == this->_bufferCollections.end())
-  {
-    std::cerr << "Error: buffer collection of volume ID " << volume->getId() << " not found." << std::endl;
-  }
-  else
-  {
-    glBindVertexArray(it->second.VAO);
+    this->_getChildrenMeshes(p.second, meshes);
   }
 }
 

@@ -64,10 +64,8 @@ private:
   void _loadOutputFramebuffer(Framebuffer *output);
   void _loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, Shader &shader);
   void _initFramebuffers();
-  void _loadVAO(const Volume *volume);
-  void _bindVAO(const Volume *volume);
   void _loadInstanced(const Instanced *instanced);
-  void _getChildrenMeshes(const Entity *root, std::vector<BufferCollection *> &buffers);
+  void _getChildrenMeshes(const Entity *root, std::vector<const Volume *> &meshes);
   void _loadLight(const DirectionLight *light);
   void _loadLight(const PointLight *light);
 
@@ -81,7 +79,6 @@ private:
   Shader _postProcessShader;
   Shader _cubeMapShader;
   Shader _instancingShader;
-  std::map<t_id, BufferCollection> _bufferCollections;
   std::map<t_id, TextureWrapper> _textures;
   std::map<t_id, DirectionLightUniform> _directionLights;
   std::map<t_id, PointLightUniform> _pointLights;
@@ -89,7 +86,7 @@ private:
   GLuint _materialTextureOffset = 0;
   Entity _postProcessGeometry;
   BufferCollection _cubeMapBuffer;
-  OpenGLContext context;
+  OpenGLContext _context;
 };
 
 } // namespace leo
