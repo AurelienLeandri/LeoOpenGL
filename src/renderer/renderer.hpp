@@ -26,12 +26,9 @@ class Instanced;
 
 class InputManager;
 class Camera;
-class SceneGraphObserver;
 
 class Renderer
 {
-  friend class SceneGraphObserver;
-
 public:
   Renderer(GLFWwindow *window,
            InputManager *inputManager,

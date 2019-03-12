@@ -3,7 +3,6 @@
 #include <renderer/renderer.hpp>
 #include <renderer/camera.hpp>
 #include <renderer/input-manager.hpp>
-#include <renderer/scene-graph-observer.hpp>
 #include <model/scene-graph.hpp>
 
 namespace leo
@@ -54,7 +53,6 @@ void Engine::initRenderer(Shader shader)
       this->inputManager,
       this->_camera,
       shader);
-  this->_observer = new SceneGraphObserver(*this->_renderer);
   if (this->_scene)
   {
     this->_renderer->createMainNode(this->_scene);
@@ -64,10 +62,7 @@ void Engine::initRenderer(Shader shader)
 void Engine::setScene(SceneGraph *scene)
 {
   this->_scene = scene;
-  if (this->_observer)
-  {
-    this->_renderer->createMainNode(this->_scene);
-  }
+  this->_renderer->createMainNode(this->_scene);
 }
 
 void Engine::gameLoop()

@@ -17,7 +17,6 @@ class Shader;
 class Renderer;
 class InputManager;
 class Camera;
-class SceneGraphObserver;
 
 class Engine
 {
@@ -44,7 +43,6 @@ private:
   Renderer *_renderer = nullptr;
   GLFWwindow *_window = nullptr;
   SceneGraph *_scene = nullptr;
-  SceneGraphObserver *_observer = nullptr;
   GLuint screenWidth = 1620;
   GLuint screenHeight = 1080;
 };

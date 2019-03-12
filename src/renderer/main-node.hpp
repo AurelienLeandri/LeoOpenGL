@@ -21,8 +21,6 @@ class PointLight;
 class MainNode : public RenderNode
 {
 
-  friend class SceneGraphObserver;
-
   using t_id = unsigned int;
 
 public:
