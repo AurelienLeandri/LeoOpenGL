@@ -82,6 +82,8 @@ void Renderer::render(const SceneGraph *sceneGraph)
   {
     this->_mainNode = new MainNode(this->_context, *sceneGraph, this->_shader, *this->_camera);
     this->_mainNode->setOutput(&this->_main);
+    this->_mainNode->_pointLights = this->_pointLights;
+    this->_mainNode->_directionLights = this->_directionLights;
   }
 
   this->_mainNode->render();
@@ -370,5 +372,7 @@ void Renderer::_loadLight(const PointLight *light)
     plu.position = transformation * light->position;
   }
 }
+
+
 
 } // namespace leo

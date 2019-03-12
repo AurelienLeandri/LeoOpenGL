@@ -10,6 +10,8 @@
 #include <model/components/material.hpp>
 #include <model/components/volume.hpp>
 #include <model/scene-graph.hpp>
+#include <model/components/direction-light.hpp>
+#include <model/components/point-light.hpp>
 
 #include <utils/texture.hpp>
 
@@ -199,6 +201,31 @@ void MainNode::_setCurrentMaterial(const Material *material)
     {
         this->_loadTextureToShader("material.reflection_map", this->_materialTextureOffset + 2, *material->reflection_map);
     }
+}
+
+
+void MainNode::_loadLight(const DirectionLight *light)
+{
+  this->_directionLights.insert(std::pair<t_id, DirectionLightUniform>(light->getId(), DirectionLightUniform(*light)));
+  DirectionLightUniform &dlu = this->_directionLights[light->getId()];
+  const Transformation *transform = static_cast<const Transformation *>(light->getEntity()->getComponent(ComponentType::TRANSFORMATION));
+  if (transform)
+  {
+    const glm::mat4x4 &transformation = transform->getTransformationMatrix();
+    dlu.direction = transformation * light->direction;
+  }
+}
+
+void MainNode::_loadLight(const PointLight *light)
+{
+  this->_pointLights.insert(std::pair<t_id, PointLightUniform>(light->getId(), PointLightUniform(*light)));
+  PointLightUniform &plu = this->_pointLights[light->getId()];
+  const Transformation *transform = static_cast<const Transformation *>(light->getEntity()->getComponent(ComponentType::TRANSFORMATION));
+  if (transform)
+  {
+    const glm::mat4x4 &transformation = transform->getTransformationMatrix();
+    plu.position = transformation * light->position;
+  }
 }
 
 void MainNode::_unload()
