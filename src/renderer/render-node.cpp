@@ -3,7 +3,7 @@
 namespace leo
 {
 
-RenderNode::RenderNode(Shader &shader, const Camera &camera) : _shader(shader), _camera(camera)
+RenderNode::RenderNode(OpenGLContext &context, Shader &shader, const Camera &camera) : _context(context), _shader(shader), _camera(camera)
 {
 }
 

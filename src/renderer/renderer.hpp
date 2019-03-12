@@ -6,6 +6,8 @@
 #include <renderer/light-uniforms.hpp>
 #include <renderer/buffer-collection.hpp>
 #include <renderer/opengl-context.hpp>
+#include <renderer/main-node.hpp>
+
 #include <model/entity.hpp>
 
 #include <renderer/global.hpp>
@@ -84,6 +86,7 @@ private:
   GLuint _materialTextureOffset = 0;
   Entity _postProcessGeometry;
   OpenGLContext _context;
+  MainNode *_mainNode = nullptr;
 };
 
 } // namespace leo

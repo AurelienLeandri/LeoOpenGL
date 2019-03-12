@@ -20,7 +20,7 @@ class MainNode : public RenderNode
     using t_id = unsigned int;
 
   public:
-    MainNode(const SceneGraph &sceneGraph, Shader &shader, const Camera &camera);
+    MainNode(OpenGLContext &context, const SceneGraph &sceneGraph, Shader &shader, const Camera &camera);
 
   public:
     virtual void render();
@@ -39,7 +39,6 @@ class MainNode : public RenderNode
     void _setModelMatrix();
     void _setCurrentMaterial(const Material *material);
     void _renderRec(const Entity *root);
-    void _bindVAO(const Volume *volume);
     void _drawVolume(const Volume *volume);
 
   private:

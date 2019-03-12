@@ -12,11 +12,12 @@ namespace leo
 class Framebuffer;
 class Camera;
 class Shader;
+class OpenGLContext;
 
 class RenderNode
 {
   public:
-    RenderNode(Shader &shader, const Camera &camera);
+    RenderNode(OpenGLContext &context, Shader &shader, const Camera &camera);
 
   public:
     virtual void render() = 0;
@@ -36,6 +37,7 @@ class RenderNode
     const Camera &_camera;
     std::map<std::string, Framebuffer *> _inputs;
     Framebuffer *_output = nullptr;
+    OpenGLContext &_context;
 };
 
 } // namespace leo

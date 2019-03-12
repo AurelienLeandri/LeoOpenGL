@@ -3,6 +3,7 @@
 #include <renderer/shader.hpp>
 #include <renderer/framebuffer.hpp>
 #include <renderer/camera.hpp>
+#include <renderer/opengl-context.hpp>
 
 #include <model/components/transformation.hpp>
 #include <model/entity.hpp>
@@ -17,8 +18,8 @@
 namespace leo
 {
 
-MainNode::MainNode(const SceneGraph &sceneGraph, Shader &shader, const Camera &camera)
-    : RenderNode(shader, camera), _sceneGraph(sceneGraph)
+MainNode::MainNode(OpenGLContext &context, const SceneGraph &sceneGraph, Shader &shader, const Camera &camera)
+    : RenderNode(context, shader, camera), _sceneGraph(sceneGraph)
 {
     { // Lights
         glGenBuffers(1, &this->_lightsUBO);
@@ -64,23 +65,10 @@ void MainNode::_renderRec(const Entity *root)
 
 void MainNode::_drawVolume(const Volume *volume)
 {
-    this->_bindVAO(volume);
+    this->_context.bindVAO(*volume);
     const std::vector<GLuint> &indices = volume->getIndices();
     glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(),
                    GL_UNSIGNED_INT, 0);
-}
-
-void MainNode::_bindVAO(const Volume *volume)
-{
-  auto it = this->_bufferCollections.find(volume->getId());
-  if (it == this->_bufferCollections.end())
-  {
-    std::cerr << "Error: buffer collection of volume ID " << volume->getId() << " not found." << std::endl;
-  }
-  else
-  {
-    glBindVertexArray(it->second.VAO);
-  }
 }
 
 void MainNode::_load()
@@ -150,12 +138,7 @@ void MainNode::_loadOutputFramebuffer()
 
 void MainNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
 {
-  auto it = this->_textures.find(texture.getId());
-  if (it == this->_textures.end())
-  {
-    it = this->_textures.insert(std::pair<t_id, TextureWrapper>(texture.getId(), texture)).first;
-  }
-  this->_shader.setTexture(uniformName, it->second.getId(), textureSlot);
+    this->_shader.setTexture(uniformName, this->_context.getTextureWrapperId(texture), textureSlot);
 }
 
 void MainNode::_loadLightsToShader()

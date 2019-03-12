@@ -39,6 +39,8 @@ Renderer::Renderer(GLFWwindow *window,
 
 Renderer::~Renderer()
 {
+  if (_mainNode != nullptr)
+    delete _mainNode;
 }
 
 void Renderer::_init()
@@ -76,7 +78,14 @@ void Renderer::_setCamera(Camera *camera)
 
 void Renderer::render(const SceneGraph *sceneGraph)
 {
-  this->render(sceneGraph, std::vector<const Framebuffer *>(), &this->_main);
+  if (this->_mainNode == nullptr)
+  {
+    this->_mainNode = new MainNode(this->_context, *sceneGraph, this->_shader, *this->_camera);
+    this->_mainNode->setOutput(&this->_main);
+  }
+
+  this->_mainNode->render();
+
   this->_postProcess(&this->_main);
   glfwSwapBuffers(this->_window);
 }
@@ -227,7 +236,7 @@ void Renderer::_setCurrentMaterial(const Material *material)
 
 void Renderer::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
 {
-  this->_shader.setTexture(uniformName, this->_context.getTextureWrapperId(texture.getId()), textureSlot);
+  this->_shader.setTexture(uniformName, this->_context.getTextureWrapperId(texture), textureSlot);
 }
 
 void Renderer::_loadLightsToShader()
