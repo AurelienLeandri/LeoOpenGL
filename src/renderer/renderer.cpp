@@ -78,14 +78,6 @@ void Renderer::_setCamera(Camera *camera)
 
 void Renderer::render(const SceneGraph *sceneGraph)
 {
-  if (this->_mainNode == nullptr)
-  {
-    this->_mainNode = new MainNode(this->_context, *sceneGraph, this->_shader, *this->_camera);
-    this->_mainNode->setOutput(&this->_main);
-    this->_mainNode->_pointLights = this->_pointLights;
-    this->_mainNode->_directionLights = this->_directionLights;
-  }
-
   this->_mainNode->render();
 
   this->_postProcess(&this->_main);
@@ -103,6 +95,20 @@ void Renderer::render(const SceneGraph *sceneGraph,
   {
     this->_drawCubeMap(*cubeMap, &this->_main);
   }
+}
+
+void Renderer::createMainNode(SceneGraph *sceneGraph)
+{
+  if (this->_mainNode == nullptr)
+  {
+    this->_mainNode = new MainNode(this->_context, *sceneGraph, this->_shader, *this->_camera);
+    this->_mainNode->setOutput(&this->_main);
+    this->_mainNode->_pointLights = this->_pointLights;
+    this->_mainNode->_directionLights = this->_directionLights;
+  }
+  std::vector<Observer *> obs;
+  obs.push_back(this->_mainNode);
+  sceneGraph->reloadScene(obs);
 }
 
 void Renderer::_loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output)
@@ -372,7 +378,5 @@ void Renderer::_loadLight(const PointLight *light)
     plu.position = transformation * light->position;
   }
 }
-
-
 
 } // namespace leo

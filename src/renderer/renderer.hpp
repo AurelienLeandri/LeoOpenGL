@@ -48,6 +48,9 @@ public:
   void render(const SceneGraph *sceneGraph,
               std::vector<const Framebuffer *> inputs, Framebuffer *output);
 
+public:
+  void createMainNode(SceneGraph *sceneGraph);
+
 private:
   void _renderRec(const Entity *root, Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output, const Instanced *instanced = nullptr);
   void _loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output);

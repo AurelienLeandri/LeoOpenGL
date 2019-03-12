@@ -203,33 +203,76 @@ void MainNode::_setCurrentMaterial(const Material *material)
     }
 }
 
-
 void MainNode::_loadLight(const DirectionLight *light)
 {
-  this->_directionLights.insert(std::pair<t_id, DirectionLightUniform>(light->getId(), DirectionLightUniform(*light)));
-  DirectionLightUniform &dlu = this->_directionLights[light->getId()];
-  const Transformation *transform = static_cast<const Transformation *>(light->getEntity()->getComponent(ComponentType::TRANSFORMATION));
-  if (transform)
-  {
-    const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-    dlu.direction = transformation * light->direction;
-  }
+    this->_directionLights.insert(std::pair<t_id, DirectionLightUniform>(light->getId(), DirectionLightUniform(*light)));
+    DirectionLightUniform &dlu = this->_directionLights[light->getId()];
+    const Transformation *transform = static_cast<const Transformation *>(light->getEntity()->getComponent(ComponentType::TRANSFORMATION));
+    if (transform)
+    {
+        const glm::mat4x4 &transformation = transform->getTransformationMatrix();
+        dlu.direction = transformation * light->direction;
+    }
 }
 
 void MainNode::_loadLight(const PointLight *light)
 {
-  this->_pointLights.insert(std::pair<t_id, PointLightUniform>(light->getId(), PointLightUniform(*light)));
-  PointLightUniform &plu = this->_pointLights[light->getId()];
-  const Transformation *transform = static_cast<const Transformation *>(light->getEntity()->getComponent(ComponentType::TRANSFORMATION));
-  if (transform)
-  {
-    const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-    plu.position = transformation * light->position;
-  }
+    this->_pointLights.insert(std::pair<t_id, PointLightUniform>(light->getId(), PointLightUniform(*light)));
+    PointLightUniform &plu = this->_pointLights[light->getId()];
+    const Transformation *transform = static_cast<const Transformation *>(light->getEntity()->getComponent(ComponentType::TRANSFORMATION));
+    if (transform)
+    {
+        const glm::mat4x4 &transformation = transform->getTransformationMatrix();
+        plu.position = transformation * light->position;
+    }
 }
 
 void MainNode::_unload()
 {
 }
+
+void MainNode::notified(Subject *subject, Event event)
+{
+    IComponent *c = dynamic_cast<IComponent *>(subject);
+    if (c)
+    {
+        switch (c->getTypeId())
+        {
+        case ComponentType::VOLUME:
+            switch (event)
+            {
+            case Event::COMPONENT_ADDED:
+                this->_context.loadVAO(*(static_cast<Volume *>(c)));
+                break;
+            default:
+                break;
+            }
+            break;
+        case ComponentType::INSTANCED:
+            break;
+        case ComponentType::POINT_LIGHT:
+            switch (event)
+            {
+            case Event::COMPONENT_ADDED:
+                this->_loadLight(static_cast<PointLight *>(c));
+                break;
+            default:
+                break;
+            }
+            break;
+        case ComponentType::DIRECTION_LIGHT:
+            switch (event)
+            {
+            case Event::COMPONENT_ADDED:
+                this->_loadLight(static_cast<DirectionLight *>(c));
+                break;
+            default:
+                break;
+            }
+            break;
+        }
+    }
+}
+
 
 } // namespace leo

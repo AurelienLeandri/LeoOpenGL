@@ -30,7 +30,6 @@ public:
 private:
   void _init();
   void doMovement(float deltaTime);
-  void _reloadScene();
 
 public:
   void initRenderer(Shader shader);

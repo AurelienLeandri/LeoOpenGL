@@ -57,7 +57,7 @@ void Engine::initRenderer(Shader shader)
   this->_observer = new SceneGraphObserver(*this->_renderer);
   if (this->_scene)
   {
-    this->_reloadScene();
+    this->_renderer->createMainNode(this->_scene);
   }
 }
 
@@ -66,15 +66,8 @@ void Engine::setScene(SceneGraph *scene)
   this->_scene = scene;
   if (this->_observer)
   {
-    this->_reloadScene();
+    this->_renderer->createMainNode(this->_scene);
   }
-}
-
-void Engine::_reloadScene()
-{
-  std::vector<Observer *> obs;
-  obs.push_back(this->_observer);
-  this->_scene->reloadScene(obs);
 }
 
 void Engine::gameLoop()
