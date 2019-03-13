@@ -22,4 +22,53 @@ void RenderNode::setOutput(Framebuffer *output)
     this->_output = output;
 }
 
+void MainNode::_loadShader()
+{
+    this->_shader.use();
+    this->_shader.setMat4("view", this->_camera.getViewMatrix());
+    this->_shader.setMat4("projection", glm::perspective(this->_camera.getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
+
+    this->_loadInputFramebuffers();
+    this->_loadOutputFramebuffer();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+
+    this->_loadLightsToShader();
+
+    this->_setModelMatrix();
+}
+
+void MainNode::_loadInputFramebuffers()
+{
+    int inputNumber = 0;
+    for (auto &p : this->_inputs)
+    {
+        Framebuffer *input = p.second;
+        const std::vector<TextureWrapper> &cb = input->getColorBuffers();
+        for (GLuint i = 0; i < cb.size(); i++)
+        {
+            std::stringstream number;
+            number << inputNumber;
+            glUniform1i(glGetUniformLocation(this->_shader.getProgram(), (p.first + number.str()).c_str()), inputNumber);
+            glActiveTexture(GL_TEXTURE0 + inputNumber);
+            glBindTexture(GL_TEXTURE_2D, cb[i].getId());
+            inputNumber++;
+        }
+    }
+    this->_materialTextureOffset = inputNumber;
+}
+
+void MainNode::_loadOutputFramebuffer()
+{
+    if (this->_output)
+    {
+        this->_output->loadFrameBuffer();
+    }
+    else
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+}
+
 } // namespace leo

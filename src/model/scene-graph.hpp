@@ -1,5 +1,7 @@
 #pragma once
 
+#include <controller/subject.hpp>
+
 #include <map>
 #include <vector>
 
@@ -12,7 +14,7 @@ class PointLight;
 class DirectionLight;
 class CubeMap;
 
-class SceneGraph
+class SceneGraph : public Subject
 {
 
   using t_id = unsigned int;

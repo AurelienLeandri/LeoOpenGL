@@ -24,7 +24,7 @@ class MainNode : public RenderNode
   using t_id = unsigned int;
 
 public:
-  MainNode(OpenGLContext &context, const SceneGraph &sceneGraph, Shader &shader, const Camera &camera);
+  MainNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const Camera &camera);
 
 public:
   virtual void render();
@@ -37,9 +37,6 @@ protected:
   virtual void _unload();
 
 private:
-  void _loadShader();
-  void _loadOutputFramebuffer();
-  void _loadInputFramebuffers();
   void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
   void _loadLightsToShader();
   void _setModelMatrix(const Transformation *transformation);

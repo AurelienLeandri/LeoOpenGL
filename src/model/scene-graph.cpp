@@ -60,6 +60,7 @@ const CubeMap *SceneGraph::getCubeMap() const
 void SceneGraph::setCubeMap(CubeMap *cubeMap)
 {
     this->_cubeMap = cubeMap;
+    this->_notify(*this, Event::CUBE_MAP_UPDATED);
 }
 
 void SceneGraph::reloadScene(std::vector<Observer *> observers)

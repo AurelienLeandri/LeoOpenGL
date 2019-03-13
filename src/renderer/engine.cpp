@@ -55,7 +55,7 @@ void Engine::initRenderer(Shader shader)
       shader);
   if (this->_scene)
   {
-    this->_renderer->createMainNode(this->_scene);
+    this->setScene(this->_scene);
   }
 }
 
@@ -63,6 +63,7 @@ void Engine::setScene(SceneGraph *scene)
 {
   this->_scene = scene;
   this->_renderer->createMainNode(this->_scene);
+  this->_renderer->createCubeMapNode(this->_scene);
 }
 
 void Engine::gameLoop()

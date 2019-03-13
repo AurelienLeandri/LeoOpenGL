@@ -16,6 +16,8 @@
 #include <model/components/instanced.hpp>
 #include <model/type-id.hpp>
 #include <model/component-manager.hpp>
+#include <renderer/main-node.hpp>
+#include <renderer/cube-map-renderer.hpp>
 
 #include <sstream>
 
@@ -79,6 +81,15 @@ void Renderer::_setCamera(Camera *camera)
 void Renderer::render(const SceneGraph *sceneGraph)
 {
   this->_mainNode->render();
+  this->_cubeMapNode->render();
+
+/*
+  const CubeMap *cubeMap = sceneGraph->getCubeMap();
+  if (cubeMap)
+  {
+    this->_drawCubeMap(*cubeMap, &this->_main);
+  }
+*/
 
   this->_postProcess(&this->_main);
   glfwSwapBuffers(this->_window);
@@ -109,6 +120,15 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
   std::vector<Observer *> obs;
   obs.push_back(this->_mainNode);
   sceneGraph->reloadScene(obs);
+}
+
+void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
+{
+  if (this->_cubeMapNode == nullptr)
+  {
+    this->_cubeMapNode = new CubeMapRenderer(this->_context, *sceneGraph, this->_cubeMapShader, *this->_camera);
+    this->_cubeMapNode->setOutput(&this->_main);
+  }
 }
 
 void Renderer::_loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output)

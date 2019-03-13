@@ -6,7 +6,6 @@
 #include <renderer/light-uniforms.hpp>
 #include <renderer/buffer-collection.hpp>
 #include <renderer/opengl-context.hpp>
-#include <renderer/main-node.hpp>
 
 #include <model/entity.hpp>
 
@@ -23,9 +22,10 @@ class Transformation;
 class DrawableCollection;
 class Volume;
 class Instanced;
-
 class InputManager;
 class Camera;
+class MainNode;
+class CubeMapRenderer;
 
 class Renderer
 {
@@ -47,6 +47,7 @@ public:
 
 public:
   void createMainNode(SceneGraph *sceneGraph);
+  void createCubeMapNode(SceneGraph *sceneGraph);
 
 private:
   void _renderRec(const Entity *root, Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output, const Instanced *instanced = nullptr);
@@ -87,6 +88,7 @@ private:
   Entity _postProcessGeometry;
   OpenGLContext _context;
   MainNode *_mainNode = nullptr;
+  CubeMapRenderer *_cubeMapNode = nullptr;
 };
 
 } // namespace leo
