@@ -24,6 +24,7 @@ MainNode::MainNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shade
     : RenderNode(context, shader, camera), _sceneGraph(sceneGraph)
 {
     sceneGraph.watch(this);
+    this->_loadAllLightsFromSceneGraph();
     { // Lights
         glGenBuffers(1, &this->_lightsUBO);
         glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
@@ -147,6 +148,16 @@ void MainNode::_setCurrentMaterial(const Material *material)
     if (material->reflection_map)
     {
         this->_loadTextureToShader("material.reflection_map", this->_materialTextureOffset + 2, *material->reflection_map);
+    }
+}
+
+void MainNode::_loadAllLightsFromSceneGraph()
+{
+    for (auto &pair : this->_sceneGraph.getDirectionLights()) {
+        this->_loadLight(pair.second);
+    }
+    for (auto &pair : this->_sceneGraph.getPointLights()) {
+        this->_loadLight(pair.second);
     }
 }
 

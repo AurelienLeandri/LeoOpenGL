@@ -46,6 +46,7 @@ private:
   void _setCurrentMaterial(const Material *material);
   void _renderRec(const Entity *root);
   void _drawVolume(const Volume *volume);
+  void _loadAllLightsFromSceneGraph();
   void _loadLight(const DirectionLight *light);
   void _loadLight(const PointLight *light);
 

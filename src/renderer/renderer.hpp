@@ -43,8 +43,6 @@ public:
 
 public:
   void render(const SceneGraph *sceneGraph);
-  void render(const SceneGraph *sceneGraph,
-              std::vector<const Framebuffer *> inputs, Framebuffer *output);
 
 public:
   void createMainNode(SceneGraph *sceneGraph);
@@ -52,43 +50,29 @@ public:
   void createPostProcessNode(SceneGraph *sceneGraph);
 
 private:
-  void _renderRec(const Entity *root, Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output, const Instanced *instanced = nullptr);
   void _loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output);
-  void _drawCubeMap(const CubeMap &cubeMap, Framebuffer *output);
-  void _postProcess(Framebuffer *input);
-  void _setCurrentMaterial(const Material *material);
-  void _setCurrentMaterial(const Material *material, Shader *shader);
-  void _setModelMatrix(const Transformation *transformation, Shader *shader);
-  void _setModelMatrix(Shader *shader);
   void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
   void _setCamera(Camera *camera);
-  void _drawVolume(const Volume *volume, const Instanced *instanced = nullptr);
-  void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
-  void _loadLightsToShader();
-  void _loadOutputFramebuffer(Framebuffer *output);
-  void _loadInputFramebuffers(std::vector<const Framebuffer *> &inputs, Shader &shader);
   void _initFramebuffers();
   void _loadInstanced(const Instanced *instanced);
   void _getChildrenMeshes(const Entity *root, std::vector<const Volume *> &meshes);
-  void _loadLight(const DirectionLight *light);
-  void _loadLight(const PointLight *light);
 
 private:
   void _init();
+
+private:
   Framebuffer _main;
   Camera *_camera = nullptr;
   GLFWwindow *_window = nullptr;
   InputManager *_inputManager = nullptr;
+
   Shader _shader;
   Shader _postProcessShader;
   Shader _cubeMapShader;
   Shader _instancingShader;
-  std::map<t_id, DirectionLightUniform> _directionLights;
-  std::map<t_id, PointLightUniform> _pointLights;
-  GLuint _lightsUBO = 0;
-  GLuint _materialTextureOffset = 0;
-  Entity _postProcessGeometry;
+
   OpenGLContext _context;
+
   MainNode *_mainNode = nullptr;
   CubeMapNode *_cubeMapNode = nullptr;
   PostProcessNode *_postProcessNode = nullptr;
