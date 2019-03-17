@@ -1,5 +1,12 @@
 #include <renderer/render-node.hpp>
 
+#include <renderer/shader.hpp>
+#include <renderer/framebuffer.hpp>
+#include <renderer/camera.hpp>
+#include <renderer/opengl-context.hpp>
+
+#include <sstream>
+
 namespace leo
 {
 
@@ -22,7 +29,7 @@ void RenderNode::setOutput(Framebuffer *output)
     this->_output = output;
 }
 
-void MainNode::_loadShader()
+void RenderNode::_loadShader()
 {
     this->_shader.use();
     this->_shader.setMat4("view", this->_camera.getViewMatrix());
@@ -33,13 +40,14 @@ void MainNode::_loadShader()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
-
-    this->_loadLightsToShader();
-
-    this->_setModelMatrix();
 }
 
-void MainNode::_loadInputFramebuffers()
+void RenderNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
+{
+    this->_shader.setTexture(uniformName, this->_context.getTextureWrapperId(texture), textureSlot);
+}
+
+void RenderNode::_loadInputFramebuffers()
 {
     int inputNumber = 0;
     for (auto &p : this->_inputs)
@@ -59,7 +67,7 @@ void MainNode::_loadInputFramebuffers()
     this->_materialTextureOffset = inputNumber;
 }
 
-void MainNode::_loadOutputFramebuffer()
+void RenderNode::_loadOutputFramebuffer()
 {
     if (this->_output)
     {

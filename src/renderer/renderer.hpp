@@ -25,7 +25,7 @@ class Instanced;
 class InputManager;
 class Camera;
 class MainNode;
-class CubeMapRenderer;
+class CubeMapNode;
 
 class Renderer
 {
@@ -88,7 +88,7 @@ private:
   Entity _postProcessGeometry;
   OpenGLContext _context;
   MainNode *_mainNode = nullptr;
-  CubeMapRenderer *_cubeMapNode = nullptr;
+  CubeMapNode *_cubeMapNode = nullptr;
 };
 
 } // namespace leo

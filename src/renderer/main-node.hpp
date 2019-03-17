@@ -37,7 +37,9 @@ protected:
   virtual void _unload();
 
 private:
-  void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
+  virtual void _loadShader() override;
+
+private:
   void _loadLightsToShader();
   void _setModelMatrix(const Transformation *transformation);
   void _setModelMatrix();
@@ -53,10 +55,7 @@ public: // TODO: make private
 
 private:
   GLuint _lightsUBO = 0;
-  GLuint _materialTextureOffset = 0;
   const SceneGraph &_sceneGraph;
-  std::map<t_id, TextureWrapper> _textures;
-  std::map<t_id, BufferCollection> _bufferCollections;
 };
 
 } // namespace leo

@@ -17,7 +17,7 @@
 #include <model/type-id.hpp>
 #include <model/component-manager.hpp>
 #include <renderer/main-node.hpp>
-#include <renderer/cube-map-renderer.hpp>
+#include <renderer/cube-map-node.hpp>
 
 #include <sstream>
 
@@ -126,7 +126,7 @@ void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
 {
   if (this->_cubeMapNode == nullptr)
   {
-    this->_cubeMapNode = new CubeMapRenderer(this->_context, *sceneGraph, this->_cubeMapShader, *this->_camera);
+    this->_cubeMapNode = new CubeMapNode(this->_context, *sceneGraph, this->_cubeMapShader, *this->_camera);
     this->_cubeMapNode->setOutput(&this->_main);
   }
 }

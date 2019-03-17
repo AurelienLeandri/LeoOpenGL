@@ -90,11 +90,6 @@ void MainNode::_load()
     this->_loadShader();
 }
 
-void MainNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
-{
-    this->_shader.setTexture(uniformName, this->_context.getTextureWrapperId(texture), textureSlot);
-}
-
 void MainNode::_loadLightsToShader()
 {
     unsigned int ubiLights = glGetUniformBlockIndex(this->_shader.getProgram(), "s1");
@@ -179,6 +174,14 @@ void MainNode::_loadLight(const PointLight *light)
     }
 }
 
+void MainNode::_loadShader()
+{
+    RenderNode::_loadShader();
+
+    this->_loadLightsToShader();
+    this->_setModelMatrix();
+}
+
 void MainNode::_unload()
 {
 }
@@ -225,6 +228,5 @@ void MainNode::notified(Subject *subject, Event event)
         }
     }
 }
-
 
 } // namespace leo

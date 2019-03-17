@@ -15,6 +15,7 @@ class Framebuffer;
 class Camera;
 class Shader;
 class OpenGLContext;
+class Texture;
 
 class RenderNode : public Observer
 {
@@ -26,12 +27,12 @@ public:
   virtual void notified(Subject *subject, Event event) = 0;
 
 protected:
-  void _loadShader();
-  void _loadOutputFramebuffer();
-  void _loadInputFramebuffers();
+  virtual void _loadShader();
+  void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
+  virtual void _loadOutputFramebuffer();
+  virtual void _loadInputFramebuffers();
   virtual void _load() = 0;
   virtual void _unload() = 0;
-  void _initFramebuffers();
 
 public:
   std::map<std::string, Framebuffer *> &getInputs();
@@ -44,6 +45,8 @@ protected:
   std::map<std::string, Framebuffer *> _inputs;
   Framebuffer *_output = nullptr;
   OpenGLContext &_context;
+  GLuint _materialTextureOffset = 0;
+
 };
 
 } // namespace leo
