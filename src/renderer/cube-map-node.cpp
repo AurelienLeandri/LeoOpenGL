@@ -15,11 +15,13 @@ CubeMapNode::CubeMapNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader 
     : RenderNode(context, shader, camera), _sceneGraph(sceneGraph)
 {
     sceneGraph.watch(this);
-    this->_loadCubeMap(sceneGraph.getCubeMap());
+    this->_cubeMap = sceneGraph.getCubeMap();
 }
 
 void CubeMapNode::render()
 {
+    this->_load();
+
     this->_shader.use();
     glm::mat4 untranslatedMatrix = glm::mat4(glm::mat3(this->_camera.getViewMatrix()));
     this->_shader.setMat4("view", untranslatedMatrix);
@@ -39,6 +41,8 @@ void CubeMapNode::render()
 
         glDepthFunc(GL_LESS);
     }
+
+    this->_unload();
 }
 
 void CubeMapNode::_load()

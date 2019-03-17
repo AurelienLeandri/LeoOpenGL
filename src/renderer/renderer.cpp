@@ -18,6 +18,7 @@
 #include <model/component-manager.hpp>
 #include <renderer/main-node.hpp>
 #include <renderer/cube-map-node.hpp>
+#include <renderer/post-process-node.hpp>
 
 #include <sstream>
 
@@ -34,9 +35,11 @@ Renderer::Renderer(GLFWwindow *window,
   this->_setWindowContext(window, inputManager);
   this->_setCamera(camera);
   this->_init();
+  /*
   Volume *v = new Volume(Volume::createPlane(1.f, 1.f));
   this->_context.loadVAO(*v);
   this->_postProcessGeometry.addComponent(v);
+  */
 }
 
 Renderer::~Renderer()
@@ -82,6 +85,7 @@ void Renderer::render(const SceneGraph *sceneGraph)
 {
   this->_mainNode->render();
   this->_cubeMapNode->render();
+  this->_postProcessNode->render();
 
 /*
   const CubeMap *cubeMap = sceneGraph->getCubeMap();
@@ -91,7 +95,7 @@ void Renderer::render(const SceneGraph *sceneGraph)
   }
 */
 
-  this->_postProcess(&this->_main);
+  //this->_postProcess(&this->_main);
   glfwSwapBuffers(this->_window);
 }
 
@@ -128,6 +132,17 @@ void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
   {
     this->_cubeMapNode = new CubeMapNode(this->_context, *sceneGraph, this->_cubeMapShader, *this->_camera);
     this->_cubeMapNode->setOutput(&this->_main);
+  }
+}
+
+void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
+{
+  if (this->_postProcessNode == nullptr)
+  {
+    this->_postProcessNode = new PostProcessNode(this->_context, *sceneGraph, this->_postProcessShader, *this->_camera);
+    auto &inputs = this->_postProcessNode->getInputs();
+    inputs.insert(std::pair<std::string, Framebuffer *>("fb", &this->_main));
+    this->_postProcessNode->setOutput(nullptr);
   }
 }
 

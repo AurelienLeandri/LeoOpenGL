@@ -64,6 +64,7 @@ void Engine::setScene(SceneGraph *scene)
   this->_scene = scene;
   this->_renderer->createMainNode(this->_scene);
   this->_renderer->createCubeMapNode(this->_scene);
+  this->_renderer->createPostProcessNode(this->_scene);
 }
 
 void Engine::gameLoop()
