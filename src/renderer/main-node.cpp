@@ -153,10 +153,12 @@ void MainNode::_setCurrentMaterial(const Material *material)
 
 void MainNode::_loadAllLightsFromSceneGraph()
 {
-    for (auto &pair : this->_sceneGraph.getDirectionLights()) {
+    for (auto &pair : this->_sceneGraph.getDirectionLights())
+    {
         this->_loadLight(pair.second);
     }
-    for (auto &pair : this->_sceneGraph.getPointLights()) {
+    for (auto &pair : this->_sceneGraph.getPointLights())
+    {
         this->_loadLight(pair.second);
     }
 }
@@ -185,6 +187,11 @@ void MainNode::_loadLight(const PointLight *light)
     }
 }
 
+void MainNode::_loadVolume(const Volume *volume)
+{
+    this->_context.loadVAO(*volume);
+}
+
 void MainNode::_loadShader()
 {
     RenderNode::_loadShader();
@@ -208,13 +215,11 @@ void MainNode::notified(Subject *subject, Event event)
             switch (event)
             {
             case Event::COMPONENT_ADDED:
-                this->_context.loadVAO(*(static_cast<Volume *>(c)));
+                this->_loadVolume(static_cast<Volume *>(c));
                 break;
             default:
                 break;
             }
-            break;
-        case ComponentType::INSTANCED:
             break;
         case ComponentType::POINT_LIGHT:
             switch (event)

@@ -115,7 +115,7 @@ void OpenGLContext::_generateBufferCollection(BufferCollection &bc, const Volume
                  &indices[0], GL_STATIC_DRAW);
 }
 
-void OpenGLContext::loadVAOInstanced(const Volume &volume)
+void OpenGLContext::loadVAOInstanced(const Volume &volume, const GLuint &transformationsVBO)
 {
     auto it = this->_bufferCollectionsInstanced.find(volume.getId());
 
@@ -143,6 +143,7 @@ void OpenGLContext::loadVAOInstanced(const Volume &volume)
         VAO = bc.VAO;
 
         glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, transformationsVBO);
         // vertex Attributes
         GLsizei vec4Size = sizeof(glm::vec4);
         glEnableVertexAttribArray(3);
@@ -159,6 +160,7 @@ void OpenGLContext::loadVAOInstanced(const Volume &volume)
         glVertexAttribDivisor(5, 1);
         glVertexAttribDivisor(6, 1);
 
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
 }

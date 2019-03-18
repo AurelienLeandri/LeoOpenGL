@@ -128,7 +128,7 @@ void Renderer::_loadInstanced(const Instanced *instanced)
 
   for (unsigned int i = 0; i < meshes.size(); i++)
   {
-    this->_context.loadVAOInstanced(*meshes[i]);
+    //this->_context.loadVAOInstanced(*meshes[i]);
   }
 }
 

@@ -45,12 +45,15 @@ private:
   void _setModelMatrix();
   void _setCurrentMaterial(const Material *material);
   void _renderRec(const Entity *root);
-  void _drawVolume(const Volume *volume);
   void _loadAllLightsFromSceneGraph();
   void _loadLight(const DirectionLight *light);
   void _loadLight(const PointLight *light);
 
-public: // TODO: make private
+protected:
+  virtual void _drawVolume(const Volume *volume);
+  virtual void _loadVolume(const Volume *volume);
+
+private: // TODO: make private
   std::map<t_id, DirectionLightUniform> _directionLights;
   std::map<t_id, PointLightUniform> _pointLights;
 

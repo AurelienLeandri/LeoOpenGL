@@ -33,7 +33,7 @@ public:
   void init(const OpenGLContextOptions &options);
   void setWindowContext(GLFWwindow &window, InputManager &inputManager);
   void loadVAO(const Volume &v);
-  void loadVAOInstanced(const Volume &v);
+  void loadVAOInstanced(const Volume &v, const GLuint &transformationsVBO);
   void bindVAO(const Volume &volume);
   t_id getTextureWrapperId(const Texture &texture);
   GLuint loadCubeMap(const CubeMap &cubeMap);
