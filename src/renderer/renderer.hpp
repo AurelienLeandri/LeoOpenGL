@@ -27,6 +27,7 @@ class Camera;
 class MainNode;
 class CubeMapNode;
 class PostProcessNode;
+class InstancedNode;
 
 class Renderer
 {
@@ -48,6 +49,7 @@ public:
   void createMainNode(SceneGraph *sceneGraph);
   void createCubeMapNode(SceneGraph *sceneGraph);
   void createPostProcessNode(SceneGraph *sceneGraph);
+  void createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm::mat4> &transformations);
 
 private:
   void _loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output);
@@ -76,6 +78,7 @@ private:
   MainNode *_mainNode = nullptr;
   CubeMapNode *_cubeMapNode = nullptr;
   PostProcessNode *_postProcessNode = nullptr;
+  InstancedNode *_instancedNode = nullptr;
 };
 
 } // namespace leo

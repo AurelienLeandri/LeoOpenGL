@@ -33,6 +33,7 @@ private:
 public:
   void initRenderer(Shader shader);
   void setScene(SceneGraph *scene);
+  void setInstancedScene(SceneGraph *instancedScene, const std::vector<glm::mat4> &transformations);
   void gameLoop();
 
 public: // Control attributes

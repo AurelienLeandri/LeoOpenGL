@@ -67,6 +67,11 @@ void Engine::setScene(SceneGraph *scene)
   this->_renderer->createPostProcessNode(this->_scene);
 }
 
+void Engine::setInstancedScene(SceneGraph *scene, const std::vector<glm::mat4> &transformations)
+{
+  this->_renderer->createInstancedNode(scene, transformations);
+}
+
 void Engine::gameLoop()
 {
   // Render to our framebuffer

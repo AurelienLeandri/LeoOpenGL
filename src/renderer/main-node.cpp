@@ -77,7 +77,6 @@ void MainNode::_drawVolume(const Volume *volume)
 
 void MainNode::_load()
 {
-    // Define the viewport dimensions
     glClearColor(0.07, 0.07, 0.07, 1);
 
     // Setup some OpenGL options

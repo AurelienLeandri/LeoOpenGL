@@ -5,6 +5,10 @@
 #include <renderer/input-manager.hpp>
 #include <renderer/camera.hpp>
 #include <renderer/debug.hpp>
+#include <renderer/main-node.hpp>
+#include <renderer/cube-map-node.hpp>
+#include <renderer/post-process-node.hpp>
+#include <renderer/instanced-node.hpp>
 
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
@@ -16,9 +20,6 @@
 #include <model/components/instanced.hpp>
 #include <model/type-id.hpp>
 #include <model/component-manager.hpp>
-#include <renderer/main-node.hpp>
-#include <renderer/cube-map-node.hpp>
-#include <renderer/post-process-node.hpp>
 
 #include <sstream>
 
@@ -68,7 +69,16 @@ void Renderer::_setCamera(Camera *camera)
 
 void Renderer::render(const SceneGraph *sceneGraph)
 {
+
+  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   this->_mainNode->render();
+
+  //glClear(0);
+  if (this->_instancedNode)
+  {
+    this->_instancedNode->render();
+  }
+
   this->_cubeMapNode->render();
   this->_postProcessNode->render();
 
@@ -84,6 +94,18 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
   }
   std::vector<Observer *> obs;
   obs.push_back(this->_mainNode);
+  sceneGraph->reloadScene(obs);
+}
+
+void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm::mat4> &transformations)
+{
+  if (this->_instancedNode == nullptr)
+  {
+    this->_instancedNode = new InstancedNode(this->_context, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
+    this->_instancedNode->setOutput(&this->_main);
+  }
+  std::vector<Observer *> obs;
+  obs.push_back(this->_instancedNode);
   sceneGraph->reloadScene(obs);
 }
 
@@ -106,7 +128,6 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
     this->_postProcessNode->setOutput(nullptr);
   }
 }
-
 
 /////////////////////////////////////
 /*        LOADING FUNCTIONS        */

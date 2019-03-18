@@ -52,26 +52,29 @@ void testInstanced()
   EntityManager entityManager;
   ModelLoader modelLoader(entityManager, componentManager, textureManager);
 
-  Entity *planet = modelLoader.loadModel("resources/models/nanosuit/nanosuit.obj");
-  Entity *m = modelLoader.loadModel("resources/models/rock/rock.obj");
-  planet->addChild(m);
+  Entity *planet = modelLoader.loadModel("resources/models/planet/planet.obj");
+  Entity *rock = modelLoader.loadModel("resources/models/rock/rock.obj");
 
   SceneGraph scene;
   CubeMap cubeMap("skybox", "resources/textures");
   scene.setCubeMap(&cubeMap);
   scene.setRoot(planet);
 
+  SceneGraph instancedScene;
+  instancedScene.setRoot(rock);
+
   DirectionLight *dl = componentManager.createComponent<DirectionLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
   planet->addComponent(dl);
+  rock->addComponent(dl);
 
-  Instanced *instanced = componentManager.createComponent<Instanced>(Volume::createCube(1.f));
   unsigned int amount = 1000;
   srand(glfwGetTime()); // initialize random seed
   float radius = 50.0;
   float offset = 2.5f;
+  std::vector<glm::mat4> transformations;
   for (unsigned int i = 0; i < amount; i++)
   {
     glm::mat4 model = glm::mat4(1.0f);
@@ -94,7 +97,7 @@ void testInstanced()
     model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
 
     // 4. now add to list of matrices
-    instanced->transformations.push_back(model);
+    transformations.push_back(model);
   }
 
   Shader shader(
@@ -106,7 +109,7 @@ void testInstanced()
   engine.initRenderer(shader);
 
   engine.setScene(&scene);
-  m->addComponent(instanced);
+  engine.setInstancedScene(&instancedScene, transformations);
   engine.gameLoop();
 }
 
@@ -185,7 +188,7 @@ void cubeScene()
 
 int main()
 {
-  cubeScene();
-  //testInstanced();
+  //cubeScene();
+  testInstanced();
   return 0;
 }
