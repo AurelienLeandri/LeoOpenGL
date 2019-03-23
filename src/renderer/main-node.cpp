@@ -20,8 +20,8 @@
 namespace leo
 {
 
-MainNode::MainNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const Camera &camera)
-    : RenderNode(context, shader, camera), _sceneGraph(sceneGraph)
+MainNode::MainNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const Camera &camera, RenderNodeOptions options)
+    : RenderNode(context, shader, camera, options), _sceneGraph(sceneGraph)
 {
     sceneGraph.watch(this);
     this->_loadAllLightsFromSceneGraph();
@@ -88,6 +88,12 @@ void MainNode::_load()
     glCullFace(GL_BACK);
 
     this->_loadShader();
+
+    this->_loadInputFramebuffers();
+    this->_loadOutputFramebuffer();
+
+    glClear(this->_options.clearBufferFlags);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void MainNode::_loadLightsToShader()
@@ -194,6 +200,10 @@ void MainNode::_loadVolume(const Volume *volume)
 void MainNode::_loadShader()
 {
     RenderNode::_loadShader();
+
+    this->_shader.use();
+    this->_shader.setMat4("view", this->_camera.getViewMatrix());
+    this->_shader.setMat4("projection", glm::perspective(this->_camera.getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
 
     this->_loadLightsToShader();
     this->_setModelMatrix();

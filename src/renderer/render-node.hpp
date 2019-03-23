@@ -1,6 +1,7 @@
 #pragma once
 
 #include <controller/observer.hpp>
+#include <renderer/render-node-options.hpp>
 
 #include <map>
 
@@ -20,7 +21,7 @@ class Texture;
 class RenderNode : public Observer
 {
 public:
-  RenderNode(OpenGLContext &context, Shader &shader, const Camera &camera);
+  RenderNode(OpenGLContext &context, Shader &shader, const Camera &camera, RenderNodeOptions options = {});
 
 public:
   virtual void render() = 0;
@@ -38,6 +39,8 @@ public:
   std::map<std::string, Framebuffer *> &getInputs();
   const Framebuffer *getOutput() const;
   void setOutput(Framebuffer *output);
+  void setOptions(RenderNodeOptions options);
+  const RenderNodeOptions &getOptions() const;
 
 protected:
   Shader &_shader;
@@ -46,6 +49,7 @@ protected:
   Framebuffer *_output = nullptr;
   OpenGLContext &_context;
   GLuint _materialTextureOffset = 0;
+  RenderNodeOptions _options;
 
 };
 

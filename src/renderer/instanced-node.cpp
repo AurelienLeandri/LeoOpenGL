@@ -7,8 +7,8 @@
 namespace leo
 {
 InstancedNode::InstancedNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader,
-                             const Camera &camera, std::vector<glm::mat4> transformations)
-    : MainNode(context, sceneGraph, shader, camera), _transformations(transformations)
+                             const Camera &camera, std::vector<glm::mat4> transformations, RenderNodeOptions options)
+    : MainNode(context, sceneGraph, shader, camera, options), _transformations(transformations)
 {
     glGenBuffers(1, &this->_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, this->_VBO);

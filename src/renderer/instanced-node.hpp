@@ -10,7 +10,9 @@ namespace leo
 class InstancedNode : public MainNode
 {
   public:
-    InstancedNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const Camera &camera, std::vector<glm::mat4> transformations);
+    InstancedNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader,
+    const Camera &camera, std::vector<glm::mat4> transformations,
+    RenderNodeOptions options = {});
 
   private:
     virtual void _drawVolume(const Volume *volume) override;

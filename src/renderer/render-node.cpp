@@ -10,7 +10,8 @@
 namespace leo
 {
 
-RenderNode::RenderNode(OpenGLContext &context, Shader &shader, const Camera &camera) : _context(context), _shader(shader), _camera(camera)
+RenderNode::RenderNode(OpenGLContext &context, Shader &shader, const Camera &camera, RenderNodeOptions options)
+    : _context(context), _shader(shader), _camera(camera), _options(options)
 {
 }
 
@@ -31,15 +32,6 @@ void RenderNode::setOutput(Framebuffer *output)
 
 void RenderNode::_loadShader()
 {
-    this->_shader.use();
-    this->_shader.setMat4("view", this->_camera.getViewMatrix());
-    this->_shader.setMat4("projection", glm::perspective(this->_camera.getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
-
-    this->_loadInputFramebuffers();
-    this->_loadOutputFramebuffer();
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
 }
 
 void RenderNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
@@ -77,6 +69,16 @@ void RenderNode::_loadOutputFramebuffer()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+}
+
+void RenderNode::setOptions(RenderNodeOptions options)
+{
+    this->_options = options;
+}
+
+const RenderNodeOptions &RenderNode::getOptions() const
+{
+    return this->_options;
 }
 
 } // namespace leo
