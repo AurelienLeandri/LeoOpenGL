@@ -13,7 +13,7 @@ typedef struct TextureOptions
 {
   GLuint textureType = GL_TEXTURE_2D;
   GLuint wrapping = GL_REPEAT;
-  unsigned int nbSamples = 0;
+  unsigned int nbSamples = 4;
 } TextureOptions;
 
 class TextureWrapper

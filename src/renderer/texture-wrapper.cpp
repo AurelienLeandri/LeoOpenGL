@@ -47,27 +47,27 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
     glBindTexture(textureType, this->_id);
 
     GLuint channels = this->_texture->mode == TextureMode::RGB ? GL_RGB : GL_RGBA;
-    
+    unsigned char *data = this->_texture->data;
+    int height = this->_texture->height;
+    int width = this->_texture->width;
+
     if (textureType == GL_TEXTURE_CUBE_MAP)
     {
         for (int i = 0; i < 6; ++i)
         {
-            if (textures)
-            {
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                             0, channels, this->_texture->width, this->_texture->height, 0, channels, GL_UNSIGNED_BYTE, (*textures)[i]->data);
-            }
-            else
-            {
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                             0, channels, this->_texture->width, this->_texture->height, 0, channels, GL_UNSIGNED_BYTE, this->_texture->data);
-            }
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0, channels, width, height, 0, channels, GL_UNSIGNED_BYTE,
+                         textures ? (*textures)[i]->data : data);
         }
+    }
+    else if (textureType == GL_TEXTURE_2D_MULTISAMPLE)
+    {
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, channels, width, height, GL_TRUE);
     }
     else
     {
-        glTexImage2D(textureType, 0, channels, this->_texture->width, this->_texture->height, 0, channels,
-                     GL_UNSIGNED_BYTE, this->_texture->data ? this->_texture->data : 0);
+        glTexImage2D(textureType, 0, channels, width, height, 0, channels,
+                     GL_UNSIGNED_BYTE, data ? data : 0);
     }
 
     glGenerateMipmap(textureType);
@@ -76,7 +76,7 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
     glTexParameteri(textureType, GL_TEXTURE_WRAP_S, wrapping);
     glTexParameteri(textureType, GL_TEXTURE_WRAP_T, wrapping);
     glTexParameteri(textureType, GL_TEXTURE_WRAP_R, wrapping);
-    
+
     glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
