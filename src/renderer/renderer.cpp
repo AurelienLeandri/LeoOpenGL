@@ -70,10 +70,8 @@ void Renderer::_setCamera(Camera *camera)
 void Renderer::render(const SceneGraph *sceneGraph)
 {
 
-  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   this->_mainNode->render();
 
-  //glClear(0);
   if (this->_instancedNode)
   {
     this->_instancedNode->render();
@@ -91,6 +89,7 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
   {
     this->_mainNode = new MainNode(this->_context, *sceneGraph, this->_shader, *this->_camera);
     this->_mainNode->setOutput(&this->_main);
+    //this->_mainNode->setOutput(nullptr);
   }
   std::vector<Observer *> obs;
   obs.push_back(this->_mainNode);
@@ -115,6 +114,7 @@ void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
   {
     this->_cubeMapNode = new CubeMapNode(this->_context, *sceneGraph, this->_cubeMapShader, *this->_camera);
     this->_cubeMapNode->setOutput(&this->_main);
+    //this->_cubeMapNode->setOutput(nullptr);
   }
 }
 

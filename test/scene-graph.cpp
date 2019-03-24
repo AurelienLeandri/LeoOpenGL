@@ -188,7 +188,7 @@ void cubeScene()
 
 int main()
 {
-  //cubeScene();
-  testInstanced();
+  cubeScene();
+  //testInstanced();
   return 0;
 }

@@ -5,12 +5,14 @@
 namespace leo
 {
 
-TextureWrapper::TextureWrapper(const Texture &texture, bool bindData) : _initialized(false), _id(0), _texture(&texture)
+TextureWrapper::TextureWrapper(const Texture &texture, TextureOptions textureOptions)
+    : _initialized(false), _id(0), _texture(&texture), _options(textureOptions)
 {
-    init(bindData);
+    init();
 }
 
-TextureWrapper::TextureWrapper(const TextureWrapper &other) : _initialized(other._initialized), _id(other._id), _texture(other._texture)
+TextureWrapper::TextureWrapper(const TextureWrapper &other)
+    : _initialized(other._initialized), _id(other._id), _texture(other._texture), _options(other._options)
 {
 }
 
@@ -23,19 +25,17 @@ TextureWrapper &TextureWrapper::operator=(const TextureWrapper &other)
     this->_initialized = other._initialized;
     this->_id = other._id;
     this->_texture = other._texture;
+    this->_options = other._options;
     return *this;
 }
 
-void TextureWrapper::init(bool bindData)
+void TextureWrapper::init()
 {
     glGenTextures(1, &this->_id);
 
-    if (!bindData)
-        return;
-
     glBindTexture(GL_TEXTURE_2D, this->_id);
 
-    GLuint channels = GL_RGBA;
+    GLuint channels = GL_RGB;
     glTexImage2D(GL_TEXTURE_2D, 0, channels, this->_texture->width, this->_texture->height, 0, channels,
                  GL_UNSIGNED_BYTE, this->_texture->data ? this->_texture->data : 0);
     glGenerateMipmap(GL_TEXTURE_2D);

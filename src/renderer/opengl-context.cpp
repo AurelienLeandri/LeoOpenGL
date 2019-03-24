@@ -199,7 +199,7 @@ GLuint OpenGLContext::loadCubeMap(const CubeMap &cubeMap)
     if (it == this->_textures.end())
     {
         TextureWrapper &tw = this->_textures.insert(
-            std::pair<t_id, TextureWrapper>(texture.getId(), TextureWrapper(texture, false))).first->second;
+            std::pair<t_id, TextureWrapper>(texture.getId(), TextureWrapper(texture))).first->second;
         glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
         for (int i = 0; i < 6; ++i)
         {

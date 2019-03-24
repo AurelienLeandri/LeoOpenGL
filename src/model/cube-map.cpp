@@ -67,7 +67,7 @@ void CubeMap::_loadCubeMapTextures(std::string name, std::string path)
   for (unsigned int i = 0; i < faces.size(); i++)
   {
     std::string full = path + "/" + name + "/" + faces[i];
-    this->_textures.push_back(std::make_shared<Texture>(full.c_str()));
+    this->_textures.push_back(std::make_shared<Texture>(full.c_str(), TextureMode::RGBA));
     if (!this->_textures[i]->data)
     {
       std::cerr << "Cubemap texture failed to load at path: " << full << std::endl;

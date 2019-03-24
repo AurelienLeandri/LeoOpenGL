@@ -1,6 +1,5 @@
 #pragma once
 
-#include <renderer/global.hpp>
 #include <model/registered-object.hpp>
 #include <SOIL.h>
 
@@ -10,14 +9,17 @@
 namespace leo
 {
 
+enum TextureMode {
+RGB,
+RGBA,
+ERROR,
+};
+
 class Texture : public RegisteredObject
 {
 public:
-  Texture(); // DEPRECATED
-  Texture(int witdh, int height);
-  Texture(bool generate_empty); // DEPRECATED
-  Texture(const char *path);
-  Texture(std::string name, std::string file_name, std::string directory); // TODO: DEPRECATED
+  Texture(int witdh, int height, TextureMode mode=TextureMode::RGBA);
+  Texture(const char *path, TextureMode mode=TextureMode::ERROR);
   Texture(const Texture &other) = delete;
   virtual ~Texture();
 
@@ -25,13 +27,14 @@ public:
   Texture &operator=(const Texture &other) = delete;
 
 public:
-  static Texture createCubeMapTexture(std::string name, std::string directory);
-
-public:
   unsigned char *data = nullptr;
   std::string path;
   int width = 0;
   int height = 0;
+  const TextureMode mode = TextureMode::ERROR;
+
+private:
+  TextureMode _getTextureModeFromPath(std::string path);
 
 private:
   static t_id _count;
