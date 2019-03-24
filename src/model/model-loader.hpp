@@ -29,12 +29,12 @@ public:
   ModelLoader(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager);
 
 public:
-  Entity *loadModel(std::string path);
+  Entity *loadModel(std::string path, std::string objFileName);
 
 private:
-  void processNode(Entity *modelNode, aiNode *node, const aiScene *scene);
-  Entity *processMesh(aiMesh *mesh, const aiScene *scene);
-  std::vector<Texture *> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+  void _processNode(Entity *modelNode, aiNode *node, const aiScene *scene, const std::string &path);
+  Entity *_processMesh(aiMesh *mesh, const aiScene *scene, const std::string &path);
+  std::vector<Texture *> _loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, const std::string &path);
 
 private:
   std::vector<Texture *> textureCache;

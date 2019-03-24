@@ -90,7 +90,7 @@ void main()
   */
 
   //vec3 result = diffuse + specular + vec3(reflectionColor * reflectionFactor);
-  vec3 result = diffuse + specular;
+  vec3 result = (diffuse) + specular;
   color = vec4(result, 1.0);
   //color = vec4(udl[0].diffuse, 1.0);
 

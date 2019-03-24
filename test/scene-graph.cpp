@@ -52,8 +52,8 @@ void testInstanced()
   EntityManager entityManager;
   ModelLoader modelLoader(entityManager, componentManager, textureManager);
 
-  Entity *planet = modelLoader.loadModel("resources/models/planet/planet.obj");
-  Entity *rock = modelLoader.loadModel("resources/models/rock/rock.obj");
+  Entity *planet = modelLoader.loadModel("resources/models/planet", "planet.obj");
+  Entity *rock = modelLoader.loadModel("resources/models/rock", "rock.obj");
 
   SceneGraph scene;
   CubeMap cubeMap("skybox", "resources/textures");
@@ -120,7 +120,7 @@ void cubeScene()
   EntityManager entityManager;
   ModelLoader modelLoader(entityManager, componentManager, textureManager);
 
-  Entity *m = modelLoader.loadModel("resources/models/nanosuit/nanosuit.obj");
+  Entity *m = modelLoader.loadModel("resources/models/nanosuit/", "nanosuit.obj");
   SceneGraph scene;
   CubeMap cubeMap("skybox", "resources/textures");
   scene.setCubeMap(&cubeMap);

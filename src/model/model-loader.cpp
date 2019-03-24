@@ -16,11 +16,16 @@ ModelLoader::ModelLoader(EntityManager &entityManager, ComponentManager &compone
 {
 }
 
-Entity *ModelLoader::loadModel(std::string path)
+Entity *ModelLoader::loadModel(std::string path, std::string objFileName)
 {
+    if (path[path.length() - 1] != '/')
+    {
+        path = path + "/";
+    }
+
     Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate |
-                                                     aiProcess_FlipUVs);
+    const aiScene *scene = import.ReadFile(path + objFileName, aiProcess_Triangulate |
+                                                                   aiProcess_FlipUVs);
     if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE ||
         !scene->mRootNode)
     {
@@ -28,28 +33,28 @@ Entity *ModelLoader::loadModel(std::string path)
     }
     Entity *entity = this->_entityManager.createEntity();
     textureCache.clear();
-    processNode(entity, scene->mRootNode, scene);
+    this->_processNode(entity, scene->mRootNode, scene, path);
     return entity;
 }
 
-void ModelLoader::processNode(Entity *modelNode, aiNode *node, const aiScene *scene)
+void ModelLoader::_processNode(Entity *modelNode, aiNode *node, const aiScene *scene, const std::string &path)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
         Entity *child = this->_entityManager.createEntity();
         modelNode->addChild(child);
-        child->addChild(processMesh(mesh, scene));
+        child->addChild(this->_processMesh(mesh, scene, path));
     }
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
         Entity *newNode = this->_entityManager.createEntity();
         modelNode->addChild(newNode);
-        processNode(newNode, node->mChildren[i], scene);
+        this->_processNode(newNode, node->mChildren[i], scene, path);
     }
 }
 
-Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
+Entity *ModelLoader::_processMesh(aiMesh *mesh, const aiScene *scene, const std::string &path)
 {
     Entity *entity = this->_entityManager.createEntity();
     std::vector<Vertex> vertices;
@@ -91,14 +96,14 @@ Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
 
     aiMaterial *meshMaterial = scene->mMaterials[mesh->mMaterialIndex];
     std::vector<Texture *> diffuseMaps =
-        loadMaterialTextures(meshMaterial, aiTextureType_DIFFUSE,
-                             "texture_diffuse");
+        this->_loadMaterialTextures(meshMaterial, aiTextureType_DIFFUSE,
+                                    "texture_diffuse", path);
     std::vector<Texture *> specularMaps =
-        loadMaterialTextures(meshMaterial, aiTextureType_SPECULAR,
-                             "texture_specular");
+        this->_loadMaterialTextures(meshMaterial, aiTextureType_SPECULAR,
+                                    "texture_specular", path);
     std::vector<Texture *> ambientMaps =
-        loadMaterialTextures(meshMaterial, aiTextureType_AMBIENT,
-                             "texture_ambient");
+        this->_loadMaterialTextures(meshMaterial, aiTextureType_AMBIENT,
+                                    "texture_ambient", path);
     Material *material = this->_componentManager.createComponent<Material>();
     if (material)
     {
@@ -115,20 +120,20 @@ Entity *ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene)
     return entity;
 }
 
-std::vector<Texture *> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
+std::vector<Texture *> ModelLoader::_loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, const std::string &path)
 {
     std::vector<Texture *> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
     {
         aiString str;
         mat->GetTexture(type, i, &str);
-        std::string path = std::string("resources/models/nanosuit/") + str.C_Str();
+        std::string texturePath = path + str.C_Str();
         bool skip = (GLboolean) false;
         for (unsigned int j = 0; j < textureCache.size(); j++)
         {
             // Check if texture is not already loaded
             Texture *t = this->_textureManager.getTexture(textureCache[j]->getId());
-            if (t && t->path == path)
+            if (t && t->path == texturePath)
             {
                 textures.push_back(textureCache[j]);
                 skip = true;
@@ -137,7 +142,7 @@ std::vector<Texture *> ModelLoader::loadMaterialTextures(aiMaterial *mat, aiText
         }
         if (!skip)
         { // If texture hasn't been loaded already, load it
-            Texture *t = this->_textureManager.createTexture(path.c_str());
+            Texture *t = this->_textureManager.createTexture(texturePath.c_str());
             textures.push_back(t);
             textureCache.push_back(t); // Add to loaded _textures
         }
