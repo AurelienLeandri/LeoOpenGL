@@ -198,22 +198,11 @@ GLuint OpenGLContext::loadCubeMap(const CubeMap &cubeMap)
     auto it = this->_textures.find(cubeMap.getTextures()[0]->getId());
     if (it == this->_textures.end())
     {
+        TextureOptions options;
+        options.textureType = GL_TEXTURE_CUBE_MAP;
+        options.wrapping = GL_CLAMP_TO_EDGE;
         TextureWrapper &tw = this->_textures.insert(
-            std::pair<t_id, TextureWrapper>(texture.getId(), TextureWrapper(texture))).first->second;
-        glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
-        for (int i = 0; i < 6; ++i)
-        {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                         0, GL_RGBA, texture.width, texture.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cubeMap.getTextures()[i]->data);
-        }
-
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+            std::pair<t_id, TextureWrapper>(texture.getId(), TextureWrapper(cubeMap.getTextures(), options))).first->second;
     }
 
     BufferCollection &bc = this->_cubeMapBuffer;
