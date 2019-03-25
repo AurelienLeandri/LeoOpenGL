@@ -46,18 +46,53 @@ MainNode::~MainNode()
 
 void MainNode::render()
 {
-    this->_load();
+    glClearColor(0.07, 0.07, 0.07, 1);
+
+    // Setup some OpenGL options
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glEnable(GL_MULTISAMPLE);
+
+    this->_loadShader();
+
+    this->_loadInputFramebuffers();
+
+    if (this->_multiSampledFramebuffer)
+    {
+        this->_multiSampledFramebuffer->loadFrameBuffer(GL_FRAMEBUFFER);
+    }
+    else
+    {
+        this->_loadOutputFramebuffer();
+    }
+
+    glClear(this->_options.clearBufferFlags);
+    glEnable(GL_DEPTH_TEST);
+
     this->_renderRec(this->_sceneGraph.getRoot());
-    this->_unload();
+
+    if (this->_multiSampledFramebuffer)
+    {
+        this->_context.loadFramebuffer(this->_multiSampledFramebuffer, GL_READ_FRAMEBUFFER);
+        this->_context.loadFramebuffer(this->_output, GL_DRAW_FRAMEBUFFER);
+        glBlitFramebuffer(0, 0, 1620, 1080, 0, 0, 1620, 1080, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    }
+
 }
 
-void MainNode::enableMultiSampling(unsigned int nbSamples)
+void MainNode::enableMultiSampling(unsigned int nbSamples, bool custom)
 {
     this->disableMultiSampling();
     FramebufferOptions options;
     options.multiSampled = true;
     options.nbSamples = nbSamples;
     this->_multiSampledFramebuffer = new Framebuffer(options);
+    this->_multiSampledFramebuffer->generate();
+    this->_customMultiSampling = custom;
 }
 
 void MainNode::disableMultiSampling()
@@ -99,28 +134,6 @@ void MainNode::_drawVolume(const Volume *volume)
     const std::vector<GLuint> &indices = volume->getIndices();
     glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(),
                    GL_UNSIGNED_INT, 0);
-}
-
-void MainNode::_load()
-{
-    glClearColor(0.07, 0.07, 0.07, 1);
-
-    // Setup some OpenGL options
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glEnable(GL_MULTISAMPLE);
-
-    this->_loadShader();
-
-    this->_loadInputFramebuffers();
-    this->_loadOutputFramebuffer();
-
-    glClear(this->_options.clearBufferFlags);
-    glEnable(GL_DEPTH_TEST);
 }
 
 void MainNode::_loadLightsToShader()
@@ -234,10 +247,6 @@ void MainNode::_loadShader()
 
     this->_loadLightsToShader();
     this->_setModelMatrix();
-}
-
-void MainNode::_unload()
-{
 }
 
 void MainNode::notified(Subject *subject, Event event)

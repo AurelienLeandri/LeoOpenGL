@@ -70,15 +70,19 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
                      GL_UNSIGNED_BYTE, data ? data : 0);
     }
 
-    glGenerateMipmap(textureType);
+    if (textureType != GL_TEXTURE_2D_MULTISAMPLE)
+    { // The following is not applicable to multisampled textures
+        glGenerateMipmap(textureType);
 
-    GLuint wrapping = this->_options.wrapping;
-    glTexParameteri(textureType, GL_TEXTURE_WRAP_S, wrapping);
-    glTexParameteri(textureType, GL_TEXTURE_WRAP_T, wrapping);
-    glTexParameteri(textureType, GL_TEXTURE_WRAP_R, wrapping);
+        GLuint wrapping = this->_options.wrapping;
 
-    glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_S, wrapping);
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_T, wrapping);
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_R, wrapping);
+
+        glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
 
     glBindTexture(textureType, 0);
 }

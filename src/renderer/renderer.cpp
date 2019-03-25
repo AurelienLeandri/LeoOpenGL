@@ -78,7 +78,7 @@ void Renderer::render(const SceneGraph *sceneGraph)
   }
 
   this->_cubeMapNode->render();
-  this->_postProcessNode->render();
+  //this->_postProcessNode->render();
 
   glfwSwapBuffers(this->_window);
 }
@@ -88,8 +88,9 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
   if (this->_mainNode == nullptr)
   {
     this->_mainNode = new MainNode(this->_context, *sceneGraph, this->_shader, *this->_camera);
-    this->_mainNode->setOutput(&this->_main);
-    //this->_mainNode->setOutput(nullptr);
+    //this->_mainNode->setOutput(&this->_main);
+    this->_mainNode->setOutput(nullptr);
+    this->_mainNode->enableMultiSampling();
   }
   std::vector<Observer *> obs;
   obs.push_back(this->_mainNode);

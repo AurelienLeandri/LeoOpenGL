@@ -11,6 +11,7 @@ namespace leo
 {
 
 class InputManager;
+class Framebuffer;
 class Volume;
 class CubeMap;
 class Texture;
@@ -36,6 +37,7 @@ public:
   void loadVAOInstanced(const Volume &v, const GLuint &transformationsVBO);
   void bindVAO(const Volume &volume);
   t_id getTextureWrapperId(const Texture &texture);
+  void loadFramebuffer(const Framebuffer *fb=nullptr, GLuint bindingType=GL_FRAMEBUFFER);
   GLuint loadCubeMap(const CubeMap &cubeMap);
 
 public:

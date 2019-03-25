@@ -31,7 +31,7 @@ public:
   void generate();
   GLuint getId() const { return this->_id; }
   const std::vector<TextureWrapper> &getColorBuffers() const { return this->_colorBuffers; }
-  void loadFrameBuffer();
+  void loadFrameBuffer(GLuint bindingType=GL_FRAMEBUFFER) const;
 
 private:
   GLuint _id = 0;

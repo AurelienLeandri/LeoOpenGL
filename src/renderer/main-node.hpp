@@ -33,12 +33,8 @@ public:
   virtual void notified(Subject *subject, Event event);
 
   public:
-  void enableMultiSampling(unsigned int nbSamples=4);
+  void enableMultiSampling(unsigned int nbSamples=4, bool custom=false);
   void disableMultiSampling();
-
-protected:
-  virtual void _load();
-  virtual void _unload();
 
 protected:
   virtual void _loadShader() override;
@@ -65,6 +61,7 @@ private:
   GLuint _lightsUBO = 0;
   const SceneGraph &_sceneGraph;
   Framebuffer *_multiSampledFramebuffer = nullptr;
+  bool _customMultiSampling = false;
 };
 
 } // namespace leo

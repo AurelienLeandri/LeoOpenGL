@@ -26,8 +26,8 @@ class CubeMapNode : public RenderNode
     virtual void notified(Subject *subject, Event event);
 
   protected:
-    virtual void _load();
-    virtual void _unload();
+    void _load();
+    void _unload();
 
   private:
     void _loadCubeMap(const CubeMap *cubeMap);

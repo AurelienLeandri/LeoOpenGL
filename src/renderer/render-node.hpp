@@ -32,8 +32,6 @@ protected:
   void _loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture);
   virtual void _loadOutputFramebuffer();
   virtual void _loadInputFramebuffers();
-  virtual void _load() = 0;
-  virtual void _unload() = 0;
 
 public:
   std::map<std::string, Framebuffer *> &getInputs();

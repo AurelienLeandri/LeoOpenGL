@@ -25,13 +25,22 @@ void Framebuffer::generate()
   glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
 
   // Set "renderedTexture" as our colour attachement #0
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tw.getId(), 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, options.textureType, tw.getId(), 0);
 
   // The depth buffer
   GLuint depthrenderbuffer;
   glGenRenderbuffers(1, &depthrenderbuffer);
   glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1620, 1080);
+
+  if (this->_options.multiSampled)
+  {
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, options.nbSamples, GL_DEPTH24_STENCIL8, 1620, 1080);  
+  }
+  else
+  {
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1620, 1080);
+  }
+
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
 
   glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tw.getId(), 0);
@@ -71,9 +80,9 @@ Framebuffer &Framebuffer::operator=(const Framebuffer &other)
   return *this;
 }
 
-void Framebuffer::loadFrameBuffer()
+void Framebuffer::loadFrameBuffer(GLuint bindingType) const
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
+  glBindFramebuffer(bindingType, this->_id);
 }
 
 } // namespace leo

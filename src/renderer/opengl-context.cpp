@@ -2,6 +2,7 @@
 
 #include <renderer/debug.hpp>
 #include <renderer/input-manager.hpp>
+#include <renderer/framebuffer.hpp>
 
 #include <model/components/volume.hpp>
 #include <model/cube-map.hpp>
@@ -190,6 +191,18 @@ t_id OpenGLContext::getTextureWrapperId(const Texture &texture)
         it = this->_textures.insert(std::pair<t_id, TextureWrapper>(texture.getId(), texture)).first;
     }
     return it->second.getId();
+}
+
+void OpenGLContext::loadFramebuffer(const Framebuffer *fb, GLuint bindingType)
+{
+    if (fb)
+    {
+        fb->loadFrameBuffer(bindingType);
+    }
+    else
+    {
+        glBindFramebuffer(bindingType, 0);
+    }
 }
 
 GLuint OpenGLContext::loadCubeMap(const CubeMap &cubeMap)

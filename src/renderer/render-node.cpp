@@ -61,14 +61,7 @@ void RenderNode::_loadInputFramebuffers()
 
 void RenderNode::_loadOutputFramebuffer()
 {
-    if (this->_output)
-    {
-        this->_output->loadFrameBuffer();
-    }
-    else
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
+    this->_context.loadFramebuffer(this->_output);
 }
 
 void RenderNode::setOptions(RenderNodeOptions options)

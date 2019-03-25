@@ -18,7 +18,7 @@ void APIENTRY glDebugOutput(GLenum source,
   std::cout << "---------------" << std::endl;
   std::cout << "Debug message (" << id << "): " << message << std::endl;
 
-  if (id == 1282)
+  if (id == 1280)
   {
     std::cout << "coucou" << std::endl;
   }
