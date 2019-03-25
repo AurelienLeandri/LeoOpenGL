@@ -10,10 +10,17 @@ namespace leo
 
 class Texture;
 
+typedef struct FramebufferOptions
+{
+  bool multiSampled = false;
+  unsigned int nbSamples = 4;
+}
+FramebufferOptions;
+
 class Framebuffer
 {
 public:
-  Framebuffer();
+  Framebuffer(FramebufferOptions options = {});
   Framebuffer(const Framebuffer &other);
   virtual ~Framebuffer();
 
@@ -31,6 +38,7 @@ private:
   std::vector<TextureWrapper> _colorBuffers;
   GLenum _drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
   Texture *_renderedTexture = nullptr;
+  const FramebufferOptions _options;
 
 }; // class Framebuffer
 

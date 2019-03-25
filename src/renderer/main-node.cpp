@@ -36,11 +36,37 @@ MainNode::MainNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shade
     }
 }
 
+MainNode::~MainNode()
+{
+    if (this->_multiSampledFramebuffer)
+    {
+        delete this->_multiSampledFramebuffer;
+    }
+}
+
 void MainNode::render()
 {
     this->_load();
     this->_renderRec(this->_sceneGraph.getRoot());
     this->_unload();
+}
+
+void MainNode::enableMultiSampling(unsigned int nbSamples)
+{
+    this->disableMultiSampling();
+    FramebufferOptions options;
+    options.multiSampled = true;
+    options.nbSamples = nbSamples;
+    this->_multiSampledFramebuffer = new Framebuffer(options);
+}
+
+void MainNode::disableMultiSampling()
+{
+    if (this->_multiSampledFramebuffer)
+    {
+        delete this->_multiSampledFramebuffer;
+        this->_multiSampledFramebuffer = nullptr;
+    }
 }
 
 void MainNode::_renderRec(const Entity *root)

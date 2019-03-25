@@ -5,14 +5,21 @@
 namespace leo
 {
 
-Framebuffer::Framebuffer() : _id(0)
+Framebuffer::Framebuffer(FramebufferOptions options) : _id(0), _options(options)
 {
 }
 
 void Framebuffer::generate()
 {
   this->_renderedTexture = new Texture(1620, 1080);
-  this->_colorBuffers.push_back(TextureWrapper(*this->_renderedTexture));
+
+  TextureOptions options;
+  if (this->_options.multiSampled)
+  {
+    options.textureType = GL_TEXTURE_2D_MULTISAMPLE;
+    options.nbSamples = this->_options.nbSamples;
+  }
+  this->_colorBuffers.push_back(TextureWrapper(*this->_renderedTexture, options));
   TextureWrapper &tw = this->_colorBuffers[this->_colorBuffers.size() - 1];
   glGenFramebuffers(1, &this->_id);
   glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
@@ -50,6 +57,10 @@ Framebuffer::Framebuffer(const Framebuffer &other) : _id(other._id),
 
 Framebuffer::~Framebuffer()
 {
+  if (this->_renderedTexture)
+  {
+    delete this->_renderedTexture;
+  }
   glDeleteFramebuffers(1, &this->_id);
 }
 
