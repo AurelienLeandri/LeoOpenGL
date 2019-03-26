@@ -31,7 +31,9 @@ Renderer::Renderer(GLFWwindow *window,
                    Camera *camera,
                    Shader shader) : _shader(shader), _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl"),
                                     _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
-                                    _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/basic.frag.glsl")
+                                    _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/basic.frag.glsl"),
+                                    _multisampled({ true, 4 }),
+                                    _blitNode(this->_context)
 {
   this->_setWindowContext(window, inputManager);
   this->_setCamera(camera);
@@ -53,6 +55,9 @@ void Renderer::_init()
 void Renderer::_initFramebuffers()
 {
   this->_main.generate();
+  this->_multisampled.generate();
+  this->_blitNode.setOutput(&this->_main);
+  this->_blitNode.getInputs().insert(std::pair<std::string, Framebuffer *>("in", &this->_multisampled));
 }
 
 void Renderer::_setWindowContext(GLFWwindow *window, InputManager *inputManager)
@@ -78,7 +83,10 @@ void Renderer::render(const SceneGraph *sceneGraph)
   }
 
   this->_cubeMapNode->render();
-  //this->_postProcessNode->render();
+
+  this->_blitNode.render();
+
+  this->_postProcessNode->render();
 
   glfwSwapBuffers(this->_window);
 }
@@ -88,9 +96,8 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
   if (this->_mainNode == nullptr)
   {
     this->_mainNode = new MainNode(this->_context, *sceneGraph, this->_shader, *this->_camera);
-    //this->_mainNode->setOutput(&this->_main);
-    this->_mainNode->setOutput(nullptr);
-    this->_mainNode->enableMultiSampling();
+    this->_mainNode->setOutput(&this->_multisampled);
+    //this->_mainNode->enableMultiSampling(8, false);
   }
   std::vector<Observer *> obs;
   obs.push_back(this->_mainNode);
@@ -102,7 +109,8 @@ void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm
   if (this->_instancedNode == nullptr)
   {
     this->_instancedNode = new InstancedNode(this->_context, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
-    this->_instancedNode->setOutput(&this->_main);
+    this->_instancedNode->setOutput(&this->_multisampled);
+    //this->_instancedNode->enableMultiSampling(8, false);
   }
   std::vector<Observer *> obs;
   obs.push_back(this->_instancedNode);
@@ -114,8 +122,7 @@ void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
   if (this->_cubeMapNode == nullptr)
   {
     this->_cubeMapNode = new CubeMapNode(this->_context, *sceneGraph, this->_cubeMapShader, *this->_camera);
-    this->_cubeMapNode->setOutput(&this->_main);
-    //this->_cubeMapNode->setOutput(nullptr);
+    this->_cubeMapNode->setOutput(&this->_multisampled);
   }
 }
 
@@ -124,47 +131,8 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
   if (this->_postProcessNode == nullptr)
   {
     this->_postProcessNode = new PostProcessNode(this->_context, *sceneGraph, this->_postProcessShader, *this->_camera);
-    auto &inputs = this->_postProcessNode->getInputs();
-    inputs.insert(std::pair<std::string, Framebuffer *>("fb", &this->_main));
+    this->_postProcessNode->getInputs().insert(std::pair<std::string, Framebuffer *>("fb", &this->_main));
     this->_postProcessNode->setOutput(nullptr);
-  }
-}
-
-/////////////////////////////////////
-/*        LOADING FUNCTIONS        */
-/////////////////////////////////////
-
-void Renderer::_loadInstanced(const Instanced *instanced)
-{
-  const std::vector<glm::mat4> &m = instanced->transformations;
-  int amount = m.size();
-
-  // vertex Buffer Object
-  GLuint VBO;
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &m[0], GL_STATIC_DRAW);
-
-  std::vector<const Volume *> meshes;
-  this->_getChildrenMeshes(instanced->getEntity(), meshes);
-
-  for (unsigned int i = 0; i < meshes.size(); i++)
-  {
-    //this->_context.loadVAOInstanced(*meshes[i]);
-  }
-}
-
-void Renderer::_getChildrenMeshes(const Entity *root, std::vector<const Volume *> &meshes)
-{
-  const Volume *v = static_cast<const Volume *>(root->getComponent(ComponentType::VOLUME));
-  if (v)
-  {
-    this->_context.loadVAO(*v);
-    meshes.push_back(v);
-  }
-  for (auto p : root->getChildren())
-  {
-    this->_getChildrenMeshes(p.second, meshes);
   }
 }
 

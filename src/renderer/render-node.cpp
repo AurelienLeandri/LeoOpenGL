@@ -11,32 +11,12 @@ namespace leo
 {
 
 RenderNode::RenderNode(OpenGLContext &context, Shader &shader, const Camera &camera, RenderNodeOptions options)
-    : _context(context), _shader(shader), _camera(camera), _options(options)
+    : RenderGraphNode(context), _shader(shader), _camera(camera), _options(options)
 {
-}
-
-std::map<std::string, Framebuffer *> &RenderNode::getInputs()
-{
-    return this->_inputs;
-}
-
-const Framebuffer *RenderNode::getOutput() const
-{
-    return this->_output;
-}
-
-void RenderNode::setOutput(Framebuffer *output)
-{
-    this->_output = output;
 }
 
 void RenderNode::_loadShader()
 {
-}
-
-void RenderNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
-{
-    this->_shader.setTexture(uniformName, this->_context.getTextureWrapperId(texture), textureSlot);
 }
 
 void RenderNode::_loadInputFramebuffers()
@@ -62,6 +42,11 @@ void RenderNode::_loadInputFramebuffers()
 void RenderNode::_loadOutputFramebuffer()
 {
     this->_context.loadFramebuffer(this->_output);
+}
+
+void RenderNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
+{
+    this->_shader.setTexture(uniformName, this->_context.getTextureWrapperId(texture), textureSlot);
 }
 
 void RenderNode::setOptions(RenderNodeOptions options)

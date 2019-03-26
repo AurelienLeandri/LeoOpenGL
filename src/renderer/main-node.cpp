@@ -36,14 +36,6 @@ MainNode::MainNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shade
     }
 }
 
-MainNode::~MainNode()
-{
-    if (this->_multiSampledFramebuffer)
-    {
-        delete this->_multiSampledFramebuffer;
-    }
-}
-
 void MainNode::render()
 {
     glClearColor(0.07, 0.07, 0.07, 1);
@@ -61,47 +53,12 @@ void MainNode::render()
 
     this->_loadInputFramebuffers();
 
-    if (this->_multiSampledFramebuffer)
-    {
-        this->_multiSampledFramebuffer->loadFrameBuffer(GL_FRAMEBUFFER);
-    }
-    else
-    {
-        this->_loadOutputFramebuffer();
-    }
+    this->_loadOutputFramebuffer();
 
     glClear(this->_options.clearBufferFlags);
     glEnable(GL_DEPTH_TEST);
 
     this->_renderRec(this->_sceneGraph.getRoot());
-
-    if (this->_multiSampledFramebuffer)
-    {
-        this->_context.loadFramebuffer(this->_multiSampledFramebuffer, GL_READ_FRAMEBUFFER);
-        this->_context.loadFramebuffer(this->_output, GL_DRAW_FRAMEBUFFER);
-        glBlitFramebuffer(0, 0, 1620, 1080, 0, 0, 1620, 1080, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    }
-
-}
-
-void MainNode::enableMultiSampling(unsigned int nbSamples, bool custom)
-{
-    this->disableMultiSampling();
-    FramebufferOptions options;
-    options.multiSampled = true;
-    options.nbSamples = nbSamples;
-    this->_multiSampledFramebuffer = new Framebuffer(options);
-    this->_multiSampledFramebuffer->generate();
-    this->_customMultiSampling = custom;
-}
-
-void MainNode::disableMultiSampling()
-{
-    if (this->_multiSampledFramebuffer)
-    {
-        delete this->_multiSampledFramebuffer;
-        this->_multiSampledFramebuffer = nullptr;
-    }
 }
 
 void MainNode::_renderRec(const Entity *root)

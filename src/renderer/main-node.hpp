@@ -26,15 +26,10 @@ class MainNode : public RenderNode
 public:
   MainNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const Camera &camera,
            RenderNodeOptions = {GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT});
-  virtual ~MainNode();
 
 public:
   virtual void render();
   virtual void notified(Subject *subject, Event event);
-
-  public:
-  void enableMultiSampling(unsigned int nbSamples=4, bool custom=false);
-  void disableMultiSampling();
 
 protected:
   virtual void _loadShader() override;
@@ -60,8 +55,6 @@ private: // TODO: make private
 private:
   GLuint _lightsUBO = 0;
   const SceneGraph &_sceneGraph;
-  Framebuffer *_multiSampledFramebuffer = nullptr;
-  bool _customMultiSampling = false;
 };
 
 } // namespace leo

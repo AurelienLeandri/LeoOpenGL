@@ -5,8 +5,12 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/opengl-context.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/renderer.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/renderer.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/render-graph-node.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/render-graph-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/render-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/render-node.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/blit-node.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/blit-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/main-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/main-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/instanced-node.cpp

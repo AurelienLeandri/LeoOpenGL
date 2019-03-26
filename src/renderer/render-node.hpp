@@ -1,5 +1,6 @@
 #pragma once
 
+#include <renderer/render-graph-node.hpp>
 #include <controller/observer.hpp>
 #include <renderer/render-node-options.hpp>
 
@@ -18,13 +19,12 @@ class Shader;
 class OpenGLContext;
 class Texture;
 
-class RenderNode : public Observer
+class RenderNode : public Observer, public RenderGraphNode
 {
 public:
   RenderNode(OpenGLContext &context, Shader &shader, const Camera &camera, RenderNodeOptions options = {});
 
 public:
-  virtual void render() = 0;
   virtual void notified(Subject *subject, Event event) = 0;
 
 protected:
@@ -34,18 +34,12 @@ protected:
   virtual void _loadInputFramebuffers();
 
 public:
-  std::map<std::string, Framebuffer *> &getInputs();
-  const Framebuffer *getOutput() const;
-  void setOutput(Framebuffer *output);
   void setOptions(RenderNodeOptions options);
   const RenderNodeOptions &getOptions() const;
 
 protected:
   Shader &_shader;
   const Camera &_camera;
-  std::map<std::string, Framebuffer *> _inputs;
-  Framebuffer *_output = nullptr;
-  OpenGLContext &_context;
   GLuint _materialTextureOffset = 0;
   RenderNodeOptions _options;
 

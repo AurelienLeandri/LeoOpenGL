@@ -6,6 +6,7 @@
 #include <renderer/light-uniforms.hpp>
 #include <renderer/buffer-collection.hpp>
 #include <renderer/opengl-context.hpp>
+#include <renderer/blit-node.hpp>
 
 #include <model/entity.hpp>
 
@@ -28,6 +29,7 @@ class MainNode;
 class CubeMapNode;
 class PostProcessNode;
 class InstancedNode;
+class BlitNode;
 
 class Renderer
 {
@@ -56,14 +58,13 @@ private:
   void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
   void _setCamera(Camera *camera);
   void _initFramebuffers();
-  void _loadInstanced(const Instanced *instanced);
-  void _getChildrenMeshes(const Entity *root, std::vector<const Volume *> &meshes);
 
 private:
   void _init();
 
 private:
   Framebuffer _main;
+  Framebuffer _multisampled;
   Camera *_camera = nullptr;
   GLFWwindow *_window = nullptr;
   InputManager *_inputManager = nullptr;
@@ -79,6 +80,7 @@ private:
   CubeMapNode *_cubeMapNode = nullptr;
   PostProcessNode *_postProcessNode = nullptr;
   InstancedNode *_instancedNode = nullptr;
+  BlitNode _blitNode;
 };
 
 } // namespace leo
