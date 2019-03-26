@@ -7,7 +7,7 @@ Material::Material() : Material(false)
 {
 }
 
-Material::Material(bool force) : force(force), diffuse_value(0.f, 0.f, 0.f), specular_value(0.f, 0.f, 0.f)
+Material::Material(bool force) : force(force), diffuse_value(1.f, 1.f, 1.f), specular_value(1.f, 1.f, 1.f)
 {
 }
 

@@ -138,7 +138,6 @@ void cubeScene()
 
   node1.addComponent(material);
   node1.addComponent(cube);
-  material->diffuse_value = glm::vec3(0.89f, 0.42f, 0.11f);
   material->diffuse_texture = textureManager.createTexture("resources/textures/crate_diffuse.png");
   material->specular_texture = textureManager.createTexture("resources/textures/crate_specular.png");
   material->reflection_map = textureManager.createTexture("resources/textures/specular.png");
@@ -150,12 +149,11 @@ void cubeScene()
 
   Transformation *t2 = componentManager.createComponent<Transformation>();
 
-  t2->setRelativeTranslation(glm::vec3(3.f, 0.f, 0.f));
+  t2->setRelativeTranslation(glm::vec3(0.f, 3.f, 0.f));
   t2->setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
   t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
   Entity node2;
   node1.addChild(&node2);
-  node2.addComponent(cube);
   node2.addComponent(t2);
   node2.addComponent(pl);
 
@@ -182,8 +180,6 @@ void cubeScene()
   Volume *ground = componentManager.createComponent<Volume>(Volume::createPlane(10.f, 10.f));
   node4.addComponent(ground);
   node4.addComponent(groundMat);
-  //Transformation *t4 = componentManager.createComponent<Transformation>();
-  //t4->rotate()
 
   Shader shader(
       "resources/shaders/basic.vs.glsl",

@@ -16,6 +16,7 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/type-id.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/component-manager.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/texture-manager.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/texture-manager.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/entity-manager.hpp
   PARENT_SCOPE
   )

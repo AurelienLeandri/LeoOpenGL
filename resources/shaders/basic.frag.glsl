@@ -67,20 +67,20 @@ void main()
     UPointLight iupl = upl[i];
     vec3 lightDir = normalize(iupl.position - FragPos);
     float diffuseFactor = max(dot(norm, lightDir), 0.0);
-    diffuse += iupl.diffuse * diffuseFactor * (material.diffuse_value + diffuse_sample);
+    diffuse += iupl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample);
     vec3 reflectDir = normalize(reflect(-lightDir, norm));
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    specular += iupl.specular * spec * (material.specular_value + specular_sample);
+    specular += iupl.specular * spec * (material.specular_value * specular_sample);
   }
 
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UDirectionLight iudl = udl[i];
     vec3 lightDir = normalize(-iudl.direction);
     float diffuseFactor = max(dot(norm, lightDir), 0.0);
-    diffuse += iudl.diffuse * diffuseFactor * (material.diffuse_value + diffuse_sample);
+    diffuse += iudl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample);
     vec3 reflectDir = normalize(reflect(-lightDir, norm));
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    specular += iudl.specular * spec * (material.specular_value + specular_sample);
+    specular += iudl.specular * spec * (material.specular_value * specular_sample);
   }
 
   /*

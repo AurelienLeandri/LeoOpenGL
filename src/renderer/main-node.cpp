@@ -12,6 +12,7 @@
 #include <model/scene-graph.hpp>
 #include <model/components/direction-light.hpp>
 #include <model/components/point-light.hpp>
+#include <model/texture-manager.hpp>
 
 #include <utils/texture.hpp>
 
@@ -156,22 +157,16 @@ void MainNode::_setModelMatrix(const glm::mat4x4 *transformation)
 void MainNode::_setCurrentMaterial(const Material *material)
 {
     this->_shader.setVector3("material.diffuse_value", material->diffuse_value);
-    if (material->diffuse_texture)
-    {
-        this->_loadTextureToShader("material.diffuse_texture", this->_materialTextureOffset + 0, *material->diffuse_texture);
-    }
+    this->_loadTextureToShader("material.diffuse_texture", this->_materialTextureOffset + 0,
+                               material->diffuse_texture ? *material->diffuse_texture : *TextureManager::white.get());
 
     this->_shader.setVector3("material.specular_value", material->specular_value);
     this->_shader.setInt("material.shininess", material->shininess);
-    if (material->specular_texture)
-    {
-        this->_loadTextureToShader("material.specular_texture", this->_materialTextureOffset + 1, *material->specular_texture);
-    }
-
-    if (material->reflection_map)
-    {
-        this->_loadTextureToShader("material.reflection_map", this->_materialTextureOffset + 2, *material->reflection_map);
-    }
+    this->_loadTextureToShader("material.specular_texture", this->_materialTextureOffset + 1,
+                               material->specular_texture ? *material->specular_texture : *TextureManager::white.get());
+                               
+    this->_loadTextureToShader("material.reflection_map", this->_materialTextureOffset + 2,
+                               material->reflection_map ? *material->reflection_map : *TextureManager::black.get());
 }
 
 void MainNode::_loadAllLightsFromSceneGraph()
