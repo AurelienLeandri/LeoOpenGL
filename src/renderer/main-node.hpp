@@ -37,9 +37,10 @@ protected:
 protected:
   void _loadLightsToShader();
   void _setModelMatrix(const Transformation *transformation);
+  void _setModelMatrix(const glm::mat4x4 *transformation);
   void _setModelMatrix();
   void _setCurrentMaterial(const Material *material);
-  void _renderRec(const Entity *root);
+  void _renderRec(const Entity *root, const Material *material, const glm::mat4x4 *matrix);
   void _loadAllLightsFromSceneGraph();
   void _loadLight(const DirectionLight *light);
   void _loadLight(const PointLight *light);

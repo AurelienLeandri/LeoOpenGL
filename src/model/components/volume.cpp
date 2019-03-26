@@ -206,14 +206,81 @@ Volume Volume::createCube(float side)
 Volume Volume::createPlane(float width, float height)
 {
   std::vector<float> pos{
-      width,
+      width / 2,
       0.0f,
+      -height / 2,
+      width / 2,
+      0.0f,
+      height / 2,
+      -width / 2,
+      0.0f,
+      height / 2,
+      -width / 2,
+      0.0f,
+      -height / 2,
+  };
+
+  std::vector<float> norm{
+      0.0f,
+      -1.0f,
+      0.0f,
+      0.0f,
+      -1.0f,
+      0.0f,
+      0.0f,
+      -1.0f,
+      0.0f,
+      0.0f,
+      -1.0f,
+      0.0f,
+  };
+
+  std::vector<float> texCoords{
+      width,
       0.0f,
       width,
       height,
       0.0f,
-      0.0f,
       height,
+      0.0f,
+      0.0f,
+  };
+
+  Volume volume;
+  int texIt = 0;
+  for (int i = 0; i < 4 * 3; i += 3)
+  {
+    struct Vertex v;
+    v.position = glm::vec3(pos[i], pos[i + 1], pos[i + 2]);
+    v.normal = glm::vec3(norm[i], norm[i + 1], norm[i + 2]);
+    v.texCoords = glm::vec2(texCoords[texIt], texCoords[texIt + 1]);
+    volume._vertices.push_back(v);
+    texIt += 2;
+  }
+
+  volume._indices = std::vector<unsigned int>{
+      3,
+      1,
+      0,
+      3,
+      2,
+      1,
+  };
+
+  return volume;
+}
+
+Volume Volume::createPostProcessPlane()
+{
+  std::vector<float> pos{
+      1.0f,
+      0.0f,
+      0.0f,
+      1.0f,
+      1.0f,
+      0.0f,
+      0.0f,
+      1.0f,
       0.0f,
       0.0f,
       0.0f,

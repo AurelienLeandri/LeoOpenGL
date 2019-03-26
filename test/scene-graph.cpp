@@ -120,14 +120,17 @@ void cubeScene()
   EntityManager entityManager;
   ModelLoader modelLoader(entityManager, componentManager, textureManager);
 
+  Entity root;
+
   Entity *m = modelLoader.loadModel("resources/models/nanosuit/", "nanosuit.obj");
+  root.addChild(m);
   SceneGraph scene;
   CubeMap cubeMap("skybox", "resources/textures");
   scene.setCubeMap(&cubeMap);
-  scene.setRoot(m);
+  scene.setRoot(&root);
 
   Entity node1;
-  m->addChild(&node1);
+  root.addChild(&node1);
 
   Material *material = componentManager.createComponent<Material>();
 
@@ -152,7 +155,6 @@ void cubeScene()
   t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
   Entity node2;
   node1.addChild(&node2);
-  node2.addComponent(material);
   node2.addComponent(cube);
   node2.addComponent(t2);
   node2.addComponent(pl);
@@ -169,10 +171,19 @@ void cubeScene()
   t3->setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
   Entity node3;
   node1.addChild(&node3);
-  node3.addComponent(material);
   node3.addComponent(cube);
   node3.addComponent(t3);
   node3.addComponent(dl);
+
+  Material *groundMat = componentManager.createComponent<Material>();
+  groundMat->diffuse_texture = textureManager.createTexture("resources/textures/wood.png");
+  Entity node4;
+  root.addChild(&node4);
+  Volume *ground = componentManager.createComponent<Volume>(Volume::createPlane(10.f, 10.f));
+  node4.addComponent(ground);
+  node4.addComponent(groundMat);
+  //Transformation *t4 = componentManager.createComponent<Transformation>();
+  //t4->rotate()
 
   Shader shader(
       "resources/shaders/basic.vs.glsl",

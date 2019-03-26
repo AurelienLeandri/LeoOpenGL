@@ -58,21 +58,27 @@ void MainNode::render()
     glClear(this->_options.clearBufferFlags);
     glEnable(GL_DEPTH_TEST);
 
-    this->_renderRec(this->_sceneGraph.getRoot());
+    glm::mat4x4 m;
+    Material defaultMat;
+    this->_renderRec(this->_sceneGraph.getRoot(), &defaultMat, &m);
 }
 
-void MainNode::_renderRec(const Entity *root)
+void MainNode::_renderRec(const Entity *root, const Material *material, const glm::mat4x4 *matrix)
 {
+    const Material *newMaterial = material;
+    const glm::mat4x4 *newMatrix = matrix;
     const IComponent *p_component;
     p_component = root->getComponent(ComponentType::MATERIAL);
     if (p_component)
     {
-        this->_setCurrentMaterial(static_cast<const Material *>(p_component));
+        newMaterial = static_cast<const Material *>(p_component);
+        this->_setCurrentMaterial(newMaterial);
     }
     p_component = root->getComponent(ComponentType::TRANSFORMATION);
     if (p_component)
     {
-        this->_setModelMatrix(static_cast<const Transformation *>(p_component));
+        newMatrix = &(static_cast<const Transformation *>(p_component))->getTransformationMatrix();
+        this->_setModelMatrix(newMatrix);
     }
     // NOTE: Keep volume at the end as it is affected by the transform and material
     p_component = root->getComponent(ComponentType::VOLUME);
@@ -82,7 +88,17 @@ void MainNode::_renderRec(const Entity *root)
     }
 
     for (auto &child : root->getChildren())
-        this->_renderRec(child.second);
+    {
+        this->_renderRec(child.second, newMaterial, newMatrix);
+    }
+    if (newMatrix != matrix)
+    {
+        this->_setModelMatrix(matrix);
+    }
+    if (newMaterial != material)
+    {
+        this->_setCurrentMaterial(material);
+    }
 }
 
 void MainNode::_drawVolume(const Volume *volume)
@@ -130,6 +146,11 @@ void MainNode::_setModelMatrix()
 {
     glm::mat4 m;
     this->_shader.setMat4("model", m);
+}
+
+void MainNode::_setModelMatrix(const glm::mat4x4 *transformation)
+{
+    this->_shader.setMat4("model", *transformation);
 }
 
 void MainNode::_setCurrentMaterial(const Material *material)

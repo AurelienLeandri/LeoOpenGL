@@ -13,7 +13,7 @@ namespace leo
 PostProcessNode::PostProcessNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const Camera &camera)
     : RenderNode(context, shader, camera), _sceneGraph(sceneGraph)
 {
-    this->_postProcessGeometry = new Volume(Volume::createPlane(1.f, 1.f));
+    this->_postProcessGeometry = new Volume(Volume::createPostProcessPlane());
     this->_loadPostProcessQuad();
 }
 

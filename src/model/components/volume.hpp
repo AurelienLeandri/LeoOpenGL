@@ -26,6 +26,7 @@ public:
   static Volume createCustom(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
   static Volume createCube(float side);
   static Volume createPlane(float width, float height);
+  static Volume createPostProcessPlane();
 
 public:
   virtual ComponentType getTypeId() const override
