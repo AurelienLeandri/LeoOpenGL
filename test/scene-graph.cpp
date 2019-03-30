@@ -175,6 +175,7 @@ void cubeScene()
 
   Material *groundMat = componentManager.createComponent<Material>();
   groundMat->diffuse_texture = textureManager.createTexture("resources/textures/wood.png");
+  groundMat->shininess = 1.0f;
   Entity node4;
   root.addChild(&node4);
   Volume *ground = componentManager.createComponent<Volume>(Volume::createPlane(10.f, 10.f));
@@ -193,9 +194,119 @@ void cubeScene()
   engine.gameLoop();
 }
 
+void blinnPhong()
+{
+  ComponentManager componentManager;
+  TextureManager textureManager;
+  EntityManager entityManager;
+  ModelLoader modelLoader(entityManager, componentManager, textureManager);
+
+  DirectionLight *dl = componentManager.createComponent<DirectionLight>(
+      glm::vec3(0.2f, 0.2f, 0.2f),
+      glm::vec3(0.6f, 0.6f, 0.6f),
+      glm::vec3(0.6f, 0.6f, 0.6f));
+
+  Entity root;
+  SceneGraph scene;
+  CubeMap cubeMap("skybox", "resources/textures");
+  scene.setCubeMap(&cubeMap);
+  scene.setRoot(&root);
+
+  root.addComponent(dl);
+
+  Material *m1 = componentManager.createComponent<Material>();
+  Volume *cube = componentManager.createComponent<Volume>(Volume::createCube(1.f));
+
+  Entity node1;
+  root.addChild(&node1);
+  node1.addComponent(m1);
+  node1.addComponent(cube);
+  Transformation *t1 = componentManager.createComponent<Transformation>();
+  node1.addComponent(t1);
+  t1->rotate(glm::vec3(0.f, 45.f, 0.f));
+  m1->diffuse_value = glm::vec3(0.8f, 0.4f, 0.2f);
+  m1->specular_value = glm::vec3(1.f, 1.f, 1.f);
+  m1->shininess = 1.0f;
+
+  /*
+  Entity node2;
+  Material *m2 = componentManager.cloneComponent<Material>(m1);
+  m2->shininess = 4.0f;
+  root.addChild(&node2);
+  node2.addComponent(m2);
+  node2.addComponent(cube);
+  Transformation *t2 = componentManager.cloneComponent<Transformation>(t1);
+  node2.addComponent(t2);
+  t2->translate(glm::vec3(2.f, 0.f, 0.f));
+  
+
+
+  Entity node3;
+  Material *m3 = componentManager.cloneComponent<Material>(m1);
+  m3->shininess = 8.0f;
+  root.addChild(&node3);
+  node3.addComponent(m3);
+  node3.addComponent(cube);
+  Transformation *t3 = componentManager.cloneComponent<Transformation>(t2);
+  node3.addComponent(t3);
+  t3->translate(glm::vec3(2.f, 0.f, 0.f));
+
+  Entity node4;
+  Material *m4 = componentManager.cloneComponent<Material>(m1);
+  m4->shininess = 16.0f;
+  root.addChild(&node4);
+  node4.addComponent(m4);
+  node4.addComponent(cube);
+  Transformation *t4 = componentManager.cloneComponent<Transformation>(t3);
+  node4.addComponent(t4);
+  t4->translate(glm::vec3(2.f, 0.f, 0.f));
+
+  Entity node5;
+  Material *m5 = componentManager.cloneComponent<Material>(m1);
+  m5->shininess = 32.0f;
+  root.addChild(&node5);
+  node5.addComponent(m5);
+  node5.addComponent(cube);
+  Transformation *t5 = componentManager.cloneComponent<Transformation>(t4);
+  node5.addComponent(t5);
+  t5->translate(glm::vec3(2.f, 0.f, 0.f));
+
+  Entity node6;
+  Material *m6 = componentManager.cloneComponent<Material>(m1);
+  m6->shininess = 64.0f;
+  root.addChild(&node6);
+  node6.addComponent(m6);
+  node6.addComponent(cube);
+  Transformation *t6 = componentManager.cloneComponent<Transformation>(t5);
+  node6.addComponent(t6);
+  t6->translate(glm::vec3(2.f, 0.f, 0.f));
+
+  Entity node7;
+  Material *m7 = componentManager.cloneComponent<Material>(m1);
+  m7->shininess = 128.0f;
+  root.addChild(&node7);
+  node7.addComponent(m7);
+  node7.addComponent(cube);
+  Transformation *t7 = componentManager.cloneComponent<Transformation>(t6);
+  node7.addComponent(t7);
+  t7->translate(glm::vec3(2.f, 0.f, 0.f));
+  */
+
+  Shader shader(
+      "resources/shaders/basic.vs.glsl",
+      "resources/shaders/basic.frag.glsl");
+
+  Engine engine;
+  engine.initRenderer(shader);
+
+  engine.setScene(&scene);
+  engine.gameLoop();
+}
+
 int main()
 {
   cubeScene();
   //testInstanced();
+  //blinnPhong();
   return 0;
 }

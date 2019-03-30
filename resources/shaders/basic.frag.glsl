@@ -62,6 +62,7 @@ void main()
 
   vec3 diffuse = vec3(0.0, 0.0, 0.0);
   vec3 specular = vec3(0.0, 0.0, 0.0);
+  vec3 ambient = ambientLight * material.diffuse_value * diffuse_sample;
 
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UPointLight iupl = upl[i];
@@ -89,9 +90,10 @@ void main()
   float reflectionFactor = texture(material.reflection_map, TexCoords).x;
   */
 
-  //vec3 result = diffuse + specular + vec3(reflectionColor * reflectionFactor);
-  vec3 result = (diffuse) + specular;
+  vec3 result = diffuse + specular + ambient/* + vec3(reflectionColor * reflectionFactor)*/;
+  //vec3 result = specular;
   color = vec4(result, 1.0);
+  //color = vec4(diffuse_value, 1.0);
   //color = vec4(diffuse_sample, 1.0);
   //color = vec4(udl[0].diffuse, 1.0);
 

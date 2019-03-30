@@ -35,6 +35,14 @@ public:
     return c;
   }
 
+  template <typename T>
+  T *cloneComponent(T *other)
+  {
+    T *c = new T(*other);
+    this->_components.insert(std::pair<t_componentId, std::unique_ptr<T>>(c->getId(), c));
+    return c;
+  }
+
   IComponent *getComponent(t_componentId id)
   {
     auto it = this->_components.find(id);

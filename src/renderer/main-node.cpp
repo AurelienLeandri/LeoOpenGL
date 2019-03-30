@@ -61,6 +61,8 @@ void MainNode::render()
 
     glm::mat4x4 m;
     Material defaultMat;
+    this->_shader.setVector3("viewPos", this->_camera.getPosition());
+    this->_shader.setVector3("ambientLight", glm::vec3(0.2, 0.2, 0.2));
     this->_renderRec(this->_sceneGraph.getRoot(), &defaultMat, &m);
 }
 
@@ -164,7 +166,7 @@ void MainNode::_setCurrentMaterial(const Material *material)
     this->_shader.setInt("material.shininess", material->shininess);
     this->_loadTextureToShader("material.specular_texture", this->_materialTextureOffset + 1,
                                material->specular_texture ? *material->specular_texture : *TextureManager::white.get());
-                               
+
     this->_loadTextureToShader("material.reflection_map", this->_materialTextureOffset + 2,
                                material->reflection_map ? *material->reflection_map : *TextureManager::black.get());
 }
