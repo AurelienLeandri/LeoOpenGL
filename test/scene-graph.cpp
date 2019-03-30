@@ -141,6 +141,7 @@ void cubeScene()
   material->diffuse_texture = textureManager.createTexture("resources/textures/crate_diffuse.png");
   material->specular_texture = textureManager.createTexture("resources/textures/crate_specular.png");
   material->reflection_map = textureManager.createTexture("resources/textures/specular.png");
+  material->shininess = 8.f;
 
   PointLight *pl = componentManager.createComponent<PointLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
@@ -226,7 +227,7 @@ void blinnPhong()
   t1->rotate(glm::vec3(0.f, 45.f, 0.f));
   m1->diffuse_value = glm::vec3(0.8f, 0.4f, 0.2f);
   m1->specular_value = glm::vec3(1.f, 1.f, 1.f);
-  m1->shininess = 1.0f;
+  m1->shininess = 0.5f;
 
   /*
   Entity node2;

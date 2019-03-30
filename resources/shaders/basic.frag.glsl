@@ -28,7 +28,7 @@ struct Material {
   vec3 specular_value;
   sampler2D specular_texture;
   sampler2D reflection_map;
-  int shininess;
+  float shininess;
 };
 
 layout (std140, binding = 1) uniform s1 {
@@ -69,8 +69,10 @@ void main()
     vec3 lightDir = normalize(iupl.position - FragPos);
     float diffuseFactor = max(dot(norm, lightDir), 0.0);
     diffuse += iupl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample);
-    vec3 reflectDir = normalize(reflect(-lightDir, norm));
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    //vec3 reflectDir = normalize(reflect(-lightDir, norm));
+    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 halfwayVec = normalize(-lightDir + viewDir);
+    float spec = pow(max(dot(Normal, halfwayVec), 0.0), material.shininess);
     specular += iupl.specular * spec * (material.specular_value * specular_sample);
   }
 
@@ -79,8 +81,10 @@ void main()
     vec3 lightDir = normalize(-iudl.direction);
     float diffuseFactor = max(dot(norm, lightDir), 0.0);
     diffuse += iudl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample);
-    vec3 reflectDir = normalize(reflect(-lightDir, norm));
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    //vec3 reflectDir = normalize(reflect(-lightDir, norm));
+    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 halfwayVec = normalize(-lightDir + viewDir);
+    float spec = pow(max(dot(Normal, halfwayVec), 0.0), material.shininess);
     specular += iudl.specular * spec * (material.specular_value * specular_sample);
   }
 

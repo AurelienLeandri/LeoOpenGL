@@ -163,7 +163,7 @@ void MainNode::_setCurrentMaterial(const Material *material)
                                material->diffuse_texture ? *material->diffuse_texture : *TextureManager::white.get());
 
     this->_shader.setVector3("material.specular_value", material->specular_value);
-    this->_shader.setInt("material.shininess", material->shininess);
+    this->_shader.setFloat("material.shininess", material->shininess);
     this->_loadTextureToShader("material.specular_texture", this->_materialTextureOffset + 1,
                                material->specular_texture ? *material->specular_texture : *TextureManager::white.get());
 
