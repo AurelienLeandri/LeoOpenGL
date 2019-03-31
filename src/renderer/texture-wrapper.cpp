@@ -51,20 +51,21 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
     switch (this->_texture->mode)
     {
     case (RGB):
-        type = GL_RGB;
-        format = GL_RGB;
+        type = format = GL_RGB;
         break;
     case (SRGB):
         type = this->_gammaCorrection ? GL_SRGB : GL_RGB;
         format = GL_RGB;
         break;
     case (RGBA):
-        type = GL_RGBA;
-        format = GL_RGBA;
+        type = format = GL_RGBA;
         break;
     case (SRGBA):
         type = this->_gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
         format = GL_RGBA;
+        break;
+    case (DEPTH):
+        type = format = GL_DEPTH_COMPONENT;
         break;
     }
     unsigned char *data = this->_texture->data;

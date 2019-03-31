@@ -14,6 +14,7 @@ RGB,
 SRGB,
 RGBA,
 SRGBA,
+DEPTH,
 ERROR,
 };
 

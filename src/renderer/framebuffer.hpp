@@ -10,10 +10,17 @@ namespace leo
 
 class Texture;
 
+enum FrameBufferType
+{
+  DEFAULT,
+  DEPTH_MAP
+};
+
 typedef struct FramebufferOptions
 {
   bool multiSampled = false;
   unsigned int nbSamples = 4;
+  FrameBufferType type = FrameBufferType::DEFAULT;
 }
 FramebufferOptions;
 

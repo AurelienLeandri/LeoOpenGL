@@ -11,7 +11,14 @@ Framebuffer::Framebuffer(FramebufferOptions options) : _id(0), _options(options)
 
 void Framebuffer::generate()
 {
-  this->_renderedTexture = new Texture(1620, 1080, RGBA);
+  if (this->_options.type == FrameBufferType::DEFAULT)
+  {
+    this->_renderedTexture = new Texture(1620, 1080, RGBA);
+  }
+  else
+  {
+    this->_renderedTexture = new Texture(1620 * 2, 1080 * 2, DEPTH);
+  }
 
   TextureOptions options;
   if (this->_options.multiSampled)
@@ -24,29 +31,38 @@ void Framebuffer::generate()
   glGenFramebuffers(1, &this->_id);
   glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
 
-  // Set "renderedTexture" as our colour attachement #0
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, options.textureType, tw.getId(), 0);
-
-  // The depth buffer
-  GLuint depthrenderbuffer;
-  glGenRenderbuffers(1, &depthrenderbuffer);
-  glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
-
-  if (this->_options.multiSampled)
+  if (this->_options.type== FrameBufferType::DEFAULT)
   {
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, options.nbSamples, GL_DEPTH24_STENCIL8, 1620, 1080);  
+    // Set "renderedTexture" as our colour attachement #0
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, options.textureType, tw.getId(), 0);
+
+    // The depth buffer
+    GLuint depthrenderbuffer;
+    glGenRenderbuffers(1, &depthrenderbuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
+
+    if (this->_options.multiSampled)
+    {
+      glRenderbufferStorageMultisample(GL_RENDERBUFFER, options.nbSamples, GL_DEPTH24_STENCIL8, 1620, 1080);
+    }
+    else
+    {
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1620, 1080);
+    }
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
+
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tw.getId(), 0);
+
+    // Set the list of draw buffers.
+    glDrawBuffers(1, this->_drawBuffers); // "1" is the size of DrawBuffers
   }
-  else
+  else if (this->_options.type == FrameBufferType::DEPTH_MAP)
   {
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1620, 1080);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tw.getId(), 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
   }
-
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
-
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tw.getId(), 0);
-
-  // Set the list of draw buffers.
-  glDrawBuffers(1, this->_drawBuffers); // "1" is the size of DrawBuffers
 
   // Always check that our framebuffer is ok
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
