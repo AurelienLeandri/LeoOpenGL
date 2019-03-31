@@ -32,6 +32,7 @@ class CubeMapNode;
 class PostProcessNode;
 class InstancedNode;
 class BlitNode;
+class ShadowMappingNode;
 
 class Renderer : public Observer
 {
@@ -58,6 +59,7 @@ public:
   void createPostProcessNode(SceneGraph *sceneGraph);
   void createGammaCorrectionNode(SceneGraph *sceneGraph);
   void createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm::mat4> &transformations);
+  void setShadowSceneGraph(SceneGraph &sceneGraph);
 
 private:
   void _loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output);
@@ -73,8 +75,7 @@ private:
   Framebuffer _multisampled;
   Framebuffer _postProcess;
   std::map<t_id, Framebuffer> _directionalShadowMaps;
-  std::map<t_id, Camera> _directionalShadowCameras;
-  std::map<t_id, MainNode> _directionalShadowNodes;
+  std::map<t_id, ShadowMappingNode> _directionalShadowNodes;
 
   Camera *_camera = nullptr;
   GLFWwindow *_window = nullptr;
@@ -85,6 +86,7 @@ private:
   Shader _cubeMapShader;
   Shader _instancingShader;
   Shader _gammaCorrectionShader;
+  Shader _shadowMappingShader;
 
   OpenGLContext _context;
 
@@ -94,6 +96,8 @@ private:
   PostProcessNode *_gammaCorrectionNode = nullptr;
   InstancedNode *_instancedNode = nullptr;
   BlitNode _blitNode;
+
+  SceneGraph *_shadowSceneGraph;
 };
 
 } // namespace leo

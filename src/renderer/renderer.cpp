@@ -9,6 +9,7 @@
 #include <renderer/cube-map-node.hpp>
 #include <renderer/post-process-node.hpp>
 #include <renderer/instanced-node.hpp>
+#include <renderer/shadow-mapping-node.hpp>
 
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
@@ -34,7 +35,8 @@ Renderer::Renderer(GLFWwindow *window,
                                     _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/basic.frag.glsl"),
                                     _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
                                     _multisampled({true, 4}),
-                                    _blitNode(this->_context)
+                                    _blitNode(this->_context),
+                                    _shadowMappingShader(shader)
 {
   this->_setWindowContext(window, inputManager);
   this->_setCamera(camera);
@@ -76,6 +78,10 @@ void Renderer::_setCamera(Camera *camera)
 
 void Renderer::render(const SceneGraph *sceneGraph)
 {
+
+  for (auto &p : this->_directionalShadowNodes) {
+    p.second.render();
+  }
 
   this->_mainNode->render();
 
@@ -148,19 +154,33 @@ void Renderer::createGammaCorrectionNode(SceneGraph *sceneGraph)
   }
 }
 
+void Renderer::setShadowSceneGraph(SceneGraph &sceneGraph)
+{
+  this->_shadowSceneGraph = &sceneGraph;
+  this->_shadowSceneGraph->watch(this);
+  std::vector<Observer *> obs;
+  obs.push_back(this);
+  sceneGraph.reloadScene(obs);
+}
+
 void Renderer::notified(Subject *subject, Event event)
 {
   DirectionLight *c = dynamic_cast<DirectionLight *>(subject);
   if (c)
   {
-    /*
-    this->_directionalShadowNodes.insert(
-      std::pair<t_id, MainNode> (
+    ShadowMappingNode &shadowMap = this->_directionalShadowNodes.insert(std::pair<t_id, ShadowMappingNode>(
         c->getId(),
-        MainNode(glm::vec3(), this->_context, *)
-      )
-    );
-    */
+        ShadowMappingNode(this->_context, *this->_shadowSceneGraph, this->_shadowMappingShader, *c))).first->second;
+    FramebufferOptions options;
+    options.width = 1620 * 2;
+    options.height = 1080 * 2;
+    options.type = FrameBufferType::DEPTH_MAP;
+    Framebuffer &fbOut = this->_directionalShadowMaps.insert(std::pair<t_id, Framebuffer>(
+      c->getId(),
+      Framebuffer(options)
+    )).first->second;
+    fbOut.generate();
+    shadowMap.setOutput(&fbOut);
   }
 }
 

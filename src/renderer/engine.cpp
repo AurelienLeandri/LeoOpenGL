@@ -66,6 +66,7 @@ void Engine::setScene(SceneGraph *scene)
   this->_renderer->createCubeMapNode(this->_scene);
   this->_renderer->createPostProcessNode(this->_scene);
   this->_renderer->createGammaCorrectionNode(this->_scene);
+  this->_renderer->setShadowSceneGraph(*this->_scene);
 }
 
 void Engine::setInstancedScene(SceneGraph *scene, const std::vector<glm::mat4> &transformations)
