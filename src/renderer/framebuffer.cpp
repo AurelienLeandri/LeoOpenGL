@@ -11,7 +11,7 @@ Framebuffer::Framebuffer(FramebufferOptions options) : _id(0), _options(options)
 
 void Framebuffer::generate()
 {
-  this->_renderedTexture = new Texture(1620, 1080);
+  this->_renderedTexture = new Texture(1620, 1080, RGBA);
 
   TextureOptions options;
   if (this->_options.multiSampled)

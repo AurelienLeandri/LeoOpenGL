@@ -138,10 +138,10 @@ void cubeScene()
 
   node1.addComponent(material);
   node1.addComponent(cube);
-  material->diffuse_texture = textureManager.createTexture("resources/textures/crate_diffuse.png");
-  material->specular_texture = textureManager.createTexture("resources/textures/crate_specular.png");
-  material->reflection_map = textureManager.createTexture("resources/textures/specular.png");
-  material->shininess = 8.f;
+  material->diffuse_texture = textureManager.createTexture("resources/textures/crate_diffuse.png", SRGBA);
+  material->specular_texture = textureManager.createTexture("resources/textures/crate_specular.png", RGBA);
+  material->reflection_map = textureManager.createTexture("resources/textures/specular.png", RGBA);
+  material->shininess = 32.f;
 
   PointLight *pl = componentManager.createComponent<PointLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
@@ -175,7 +175,7 @@ void cubeScene()
   node3.addComponent(dl);
 
   Material *groundMat = componentManager.createComponent<Material>();
-  groundMat->diffuse_texture = textureManager.createTexture("resources/textures/wood.png");
+  groundMat->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", SRGBA);
   groundMat->shininess = 1.0f;
   Entity node4;
   root.addChild(&node4);

@@ -51,6 +51,7 @@ public:
   void createMainNode(SceneGraph *sceneGraph);
   void createCubeMapNode(SceneGraph *sceneGraph);
   void createPostProcessNode(SceneGraph *sceneGraph);
+  void createGammaCorrectionNode(SceneGraph *sceneGraph);
   void createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm::mat4> &transformations);
 
 private:
@@ -65,6 +66,7 @@ private:
 private:
   Framebuffer _main;
   Framebuffer _multisampled;
+  Framebuffer _postProcess;
   Camera *_camera = nullptr;
   GLFWwindow *_window = nullptr;
   InputManager *_inputManager = nullptr;
@@ -73,12 +75,14 @@ private:
   Shader _postProcessShader;
   Shader _cubeMapShader;
   Shader _instancingShader;
+  Shader _gammaCorrectionShader;
 
   OpenGLContext _context;
 
   MainNode *_mainNode = nullptr;
   CubeMapNode *_cubeMapNode = nullptr;
   PostProcessNode *_postProcessNode = nullptr;
+  PostProcessNode *_gammaCorrectionNode = nullptr;
   InstancedNode *_instancedNode = nullptr;
   BlitNode _blitNode;
 };

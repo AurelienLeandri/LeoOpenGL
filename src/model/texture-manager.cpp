@@ -3,8 +3,8 @@
 namespace leo
 {
 
-std::unique_ptr<Texture> TextureManager::white = std::unique_ptr<Texture>(new Texture("resources/textures/white.png"));
-std::unique_ptr<Texture> TextureManager::black = std::unique_ptr<Texture>(new Texture("resources/textures/black.png"));
+std::unique_ptr<Texture> TextureManager::white = std::unique_ptr<Texture>(new Texture("resources/textures/white.png", RGBA));
+std::unique_ptr<Texture> TextureManager::black = std::unique_ptr<Texture>(new Texture("resources/textures/black.png", RGBA));
 
 TextureManager::TextureManager()
 {

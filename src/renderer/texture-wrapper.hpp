@@ -36,6 +36,7 @@ private:
   GLuint _id = 0;
   const Texture *_texture = nullptr;
   TextureOptions _options;
+  bool _gammaCorrection = true;
 };
 
 } // namespace leo

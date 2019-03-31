@@ -13,28 +13,11 @@ Texture::Texture(int width, int height, TextureMode textureMode)
 
 Texture::Texture(const char *path, TextureMode mode)
     : RegisteredObject(_count++), path(path),
-      mode(mode == TextureMode::ERROR ? this->_getTextureModeFromPath(path) : mode)
+      mode(mode)
 {
   this->data = SOIL_load_image(path,
                                &this->width, &this->height, 0,
-                               this->mode == RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
-}
-
-TextureMode Texture::_getTextureModeFromPath(std::string path)
-{
-  std::string sub = path.substr(path.find_last_of(".") + 1);
-  if (sub == "jpg")
-  {
-    return TextureMode::RGB;
-  }
-  else if (sub == "png")
-  {
-    return TextureMode::RGBA;
-  }
-  else
-  {
-    return TextureMode::ERROR;
-  }
+                               this->mode == RGBA || this->mode == SRGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
 }
 
 Texture::~Texture()

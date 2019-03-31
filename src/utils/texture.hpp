@@ -11,15 +11,17 @@ namespace leo
 
 enum TextureMode {
 RGB,
+SRGB,
 RGBA,
+SRGBA,
 ERROR,
 };
 
 class Texture : public RegisteredObject
 {
 public:
-  Texture(int witdh, int height, TextureMode mode=TextureMode::RGBA);
-  Texture(const char *path, TextureMode mode=TextureMode::ERROR);
+  Texture(int witdh, int height, TextureMode mode);
+  Texture(const char *path, TextureMode mode);
   Texture(const Texture &other) = delete;
   virtual ~Texture();
 
@@ -32,9 +34,6 @@ public:
   int width = 0;
   int height = 0;
   const TextureMode mode = TextureMode::ERROR;
-
-private:
-  TextureMode _getTextureModeFromPath(std::string path);
 
 private:
   static t_id _count;

@@ -46,7 +46,27 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
     GLuint textureType = this->_options.textureType;
     glBindTexture(textureType, this->_id);
 
-    GLuint channels = this->_texture->mode == TextureMode::RGB ? GL_RGB : GL_RGBA;
+    GLuint type = 0;
+    GLuint format = 0;
+    switch (this->_texture->mode)
+    {
+    case (RGB):
+        type = GL_RGB;
+        format = GL_RGB;
+        break;
+    case (SRGB):
+        type = this->_gammaCorrection ? GL_SRGB : GL_RGB;
+        format = GL_RGB;
+        break;
+    case (RGBA):
+        type = GL_RGBA;
+        format = GL_RGBA;
+        break;
+    case (SRGBA):
+        type = this->_gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
+        format = GL_RGBA;
+        break;
+    }
     unsigned char *data = this->_texture->data;
     int height = this->_texture->height;
     int width = this->_texture->width;
@@ -56,17 +76,17 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
         for (int i = 0; i < 6; ++i)
         {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                         0, channels, width, height, 0, channels, GL_UNSIGNED_BYTE,
+                         0, type, width, height, 0, format, GL_UNSIGNED_BYTE,
                          textures ? (*textures)[i]->data : data);
         }
     }
     else if (textureType == GL_TEXTURE_2D_MULTISAMPLE)
     {
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, channels, width, height, GL_TRUE);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, format, width, height, GL_TRUE);
     }
     else
     {
-        glTexImage2D(textureType, 0, channels, width, height, 0, channels,
+        glTexImage2D(textureType, 0, type, width, height, 0, format,
                      GL_UNSIGNED_BYTE, data ? data : 0);
     }
 

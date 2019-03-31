@@ -12,6 +12,8 @@
 namespace leo
 {
 
+bool pathHasExtension(const std::string &path, const char *extension);
+
 ModelLoader::ModelLoader(EntityManager &entityManager, ComponentManager &componentManager, TextureManager &textureManager) : _entityManager(entityManager), _componentManager(componentManager), _textureManager(textureManager)
 {
 }
@@ -142,12 +144,33 @@ std::vector<Texture *> ModelLoader::_loadMaterialTextures(aiMaterial *mat, aiTex
         }
         if (!skip)
         { // If texture hasn't been loaded already, load it
-            Texture *t = this->_textureManager.createTexture(texturePath.c_str());
+            TextureMode mode;
+            if (pathHasExtension(texturePath, "png"))
+            {
+                if (type == aiTextureType_DIFFUSE)
+                    mode = TextureMode::SRGBA;
+                else
+                    mode = TextureMode::RGBA;
+            }
+            else
+            {
+                if (type == aiTextureType_DIFFUSE)
+                    mode = TextureMode::SRGB;
+                else
+                    mode = TextureMode::RGB;
+            }
+            Texture *t = this->_textureManager.createTexture(texturePath.c_str(), mode);
             textures.push_back(t);
             textureCache.push_back(t); // Add to loaded _textures
         }
     }
     return textures;
+}
+
+bool pathHasExtension(const std::string &path, const char *extension)
+{
+    auto sub = path.substr(path.find_last_of(".") + 1);
+    return sub == extension;
 }
 
 } // namespace leo
