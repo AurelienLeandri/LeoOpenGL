@@ -238,4 +238,12 @@ GLuint OpenGLContext::loadCubeMap(const CubeMap &cubeMap)
     return bc.VAO;
 }
 
+void OpenGLContext::drawVolume(const Volume &volume)
+{
+    this->bindVAO(volume);
+    const std::vector<GLuint> &indices = volume.getIndices();
+    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(),
+                   GL_UNSIGNED_INT, 0);
+}
+
 } // namespace leo

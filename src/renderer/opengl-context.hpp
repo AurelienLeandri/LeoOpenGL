@@ -39,6 +39,7 @@ public:
   t_id getTextureWrapperId(const Texture &texture);
   void loadFramebuffer(const Framebuffer *fb=nullptr, GLuint bindingType=GL_FRAMEBUFFER);
   GLuint loadCubeMap(const CubeMap &cubeMap);
+  void drawVolume(const Volume &volume);
 
 public:
   OpenGLContext(OpenGLContext const &) = delete;

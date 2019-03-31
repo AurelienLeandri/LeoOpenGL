@@ -87,7 +87,7 @@ void MainNode::_renderRec(const Entity *root, const Material *material, const gl
     p_component = root->getComponent(ComponentType::VOLUME);
     if (p_component)
     {
-        this->_drawVolume(static_cast<const Volume *>(p_component));
+        this->_context.drawVolume(*static_cast<const Volume *>(p_component));
     }
 
     for (auto &child : root->getChildren())
@@ -106,10 +106,7 @@ void MainNode::_renderRec(const Entity *root, const Material *material, const gl
 
 void MainNode::_drawVolume(const Volume *volume)
 {
-    this->_context.bindVAO(*volume);
-    const std::vector<GLuint> &indices = volume->getIndices();
-    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(),
-                   GL_UNSIGNED_INT, 0);
+    this->_context.drawVolume(*volume);
 }
 
 void MainNode::_loadLightsToShader()
