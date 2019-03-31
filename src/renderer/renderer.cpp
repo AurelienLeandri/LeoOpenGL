@@ -33,7 +33,7 @@ Renderer::Renderer(GLFWwindow *window,
                                     _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
                                     _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/basic.frag.glsl"),
                                     _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
-                                    _multisampled({ true, 4 }),
+                                    _multisampled({true, 4}),
                                     _blitNode(this->_context)
 {
   this->_setWindowContext(window, inputManager);
@@ -132,7 +132,7 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
 {
   if (this->_postProcessNode == nullptr)
   {
-    this->_postProcessNode = new PostProcessNode(this->_context, *sceneGraph, this->_postProcessShader, *this->_camera);
+    this->_postProcessNode = new PostProcessNode(this->_context, *sceneGraph, this->_postProcessShader);
     this->_postProcessNode->getInputs().insert(std::pair<std::string, Framebuffer *>("fb", &this->_main));
     this->_postProcessNode->setOutput(&this->_postProcess);
   }
@@ -142,9 +142,25 @@ void Renderer::createGammaCorrectionNode(SceneGraph *sceneGraph)
 {
   if (this->_gammaCorrectionNode == nullptr)
   {
-    this->_gammaCorrectionNode = new PostProcessNode(this->_context, *sceneGraph, this->_gammaCorrectionShader, *this->_camera);
+    this->_gammaCorrectionNode = new PostProcessNode(this->_context, *sceneGraph, this->_gammaCorrectionShader);
     this->_gammaCorrectionNode->getInputs().insert(std::pair<std::string, Framebuffer *>("fb", &this->_postProcess));
     this->_gammaCorrectionNode->setOutput(nullptr);
+  }
+}
+
+void Renderer::notified(Subject *subject, Event event)
+{
+  DirectionLight *c = dynamic_cast<DirectionLight *>(subject);
+  if (c)
+  {
+    /*
+    this->_directionalShadowNodes.insert(
+      std::pair<t_id, MainNode> (
+        c->getId(),
+        MainNode(glm::vec3(), this->_context, *)
+      )
+    );
+    */
   }
 }
 

@@ -16,7 +16,7 @@ class Volume;
 class PostProcessNode : public RenderNode
 {
   public:
-    PostProcessNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const Camera &camera);
+    PostProcessNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader);
     virtual ~PostProcessNode();
 
   public:

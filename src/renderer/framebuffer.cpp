@@ -13,11 +13,11 @@ void Framebuffer::generate()
 {
   if (this->_options.type == FrameBufferType::DEFAULT)
   {
-    this->_renderedTexture = new Texture(1620, 1080, RGBA);
+    this->_renderedTexture = new Texture(this->_options.width, this->_options.height, RGBA);
   }
   else
   {
-    this->_renderedTexture = new Texture(1620 * 2, 1080 * 2, DEPTH);
+    this->_renderedTexture = new Texture(this->_options.width, this->_options.height, DEPTH);
   }
 
   TextureOptions options;
@@ -31,7 +31,7 @@ void Framebuffer::generate()
   glGenFramebuffers(1, &this->_id);
   glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
 
-  if (this->_options.type== FrameBufferType::DEFAULT)
+  if (this->_options.type == FrameBufferType::DEFAULT)
   {
     // Set "renderedTexture" as our colour attachement #0
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, options.textureType, tw.getId(), 0);
@@ -43,11 +43,11 @@ void Framebuffer::generate()
 
     if (this->_options.multiSampled)
     {
-      glRenderbufferStorageMultisample(GL_RENDERBUFFER, options.nbSamples, GL_DEPTH24_STENCIL8, 1620, 1080);
+      glRenderbufferStorageMultisample(GL_RENDERBUFFER, options.nbSamples, GL_DEPTH24_STENCIL8, this->_options.width, this->_options.height);
     }
     else
     {
-      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1620, 1080);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, this->_options.width, this->_options.height);
     }
 
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
@@ -99,6 +99,11 @@ Framebuffer &Framebuffer::operator=(const Framebuffer &other)
 void Framebuffer::loadFrameBuffer(GLuint bindingType) const
 {
   glBindFramebuffer(bindingType, this->_id);
+}
+
+const FramebufferOptions &Framebuffer::getOptions() const
+{
+  return this->_options;
 }
 
 } // namespace leo

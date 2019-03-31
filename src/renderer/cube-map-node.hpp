@@ -35,6 +35,7 @@ class CubeMapNode : public RenderNode
   private:
     const CubeMap *_cubeMap = nullptr;
     const SceneGraph &_sceneGraph;
+    const Camera &_camera;
 };
 
 } // namespace leo

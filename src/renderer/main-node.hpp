@@ -56,6 +56,7 @@ private: // TODO: make private
 private:
   GLuint _lightsUBO = 0;
   const SceneGraph &_sceneGraph;
+  const Camera &_camera;
 };
 
 } // namespace leo

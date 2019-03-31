@@ -22,7 +22,7 @@ class Texture;
 class RenderNode : public Observer, public RenderGraphNode
 {
 public:
-  RenderNode(OpenGLContext &context, Shader &shader, const Camera &camera, RenderNodeOptions options = {});
+  RenderNode(OpenGLContext &context, Shader &shader, RenderNodeOptions options = {});
 
 public:
   virtual void notified(Subject *subject, Event event) = 0;
@@ -39,7 +39,6 @@ public:
 
 protected:
   Shader &_shader;
-  const Camera &_camera;
   GLuint _materialTextureOffset = 0;
   RenderNodeOptions _options;
 

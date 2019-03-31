@@ -33,5 +33,6 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/framebuffer.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/shader.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/shader.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/shadow-map-data.hpp
   PARENT_SCOPE
   )

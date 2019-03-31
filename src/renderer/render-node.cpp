@@ -2,7 +2,6 @@
 
 #include <renderer/shader.hpp>
 #include <renderer/framebuffer.hpp>
-#include <renderer/camera.hpp>
 #include <renderer/opengl-context.hpp>
 
 #include <sstream>
@@ -10,8 +9,8 @@
 namespace leo
 {
 
-RenderNode::RenderNode(OpenGLContext &context, Shader &shader, const Camera &camera, RenderNodeOptions options)
-    : RenderGraphNode(context), _shader(shader), _camera(camera), _options(options)
+RenderNode::RenderNode(OpenGLContext &context, Shader &shader, RenderNodeOptions options)
+    : RenderGraphNode(context), _shader(shader), _options(options)
 {
 }
 

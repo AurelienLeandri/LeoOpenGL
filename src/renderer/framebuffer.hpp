@@ -21,6 +21,8 @@ typedef struct FramebufferOptions
   bool multiSampled = false;
   unsigned int nbSamples = 4;
   FrameBufferType type = FrameBufferType::DEFAULT;
+  unsigned int width = 1620;
+  unsigned int height = 1080;
 }
 FramebufferOptions;
 
@@ -39,6 +41,7 @@ public:
   const std::vector<TextureWrapper> &getColorBuffers() const { return this->_colorBuffers; }
   void loadFrameBuffer(GLuint bindingType=GL_FRAMEBUFFER) const;
   void generate();
+  const FramebufferOptions &getOptions() const;
 
 private:
   GLuint _id = 0;

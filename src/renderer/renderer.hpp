@@ -8,6 +8,8 @@
 #include <renderer/opengl-context.hpp>
 #include <renderer/blit-node.hpp>
 
+#include <controller/observer.hpp>
+
 #include <model/entity.hpp>
 
 #include <renderer/global.hpp>
@@ -31,7 +33,7 @@ class PostProcessNode;
 class InstancedNode;
 class BlitNode;
 
-class Renderer
+class Renderer : public Observer
 {
 public:
   Renderer(GLFWwindow *window,
@@ -40,6 +42,9 @@ public:
            Shader shader);
   virtual ~Renderer();
   Renderer(const Renderer &other) = delete;
+
+public:
+  virtual void notified(Subject *subject, Event event);
 
 public:
   const Renderer &operator=(const Renderer &other) = delete;
@@ -67,6 +72,10 @@ private:
   Framebuffer _main;
   Framebuffer _multisampled;
   Framebuffer _postProcess;
+  std::map<t_id, Framebuffer> _directionalShadowMaps;
+  std::map<t_id, Camera> _directionalShadowCameras;
+  std::map<t_id, MainNode> _directionalShadowNodes;
+
   Camera *_camera = nullptr;
   GLFWwindow *_window = nullptr;
   InputManager *_inputManager = nullptr;

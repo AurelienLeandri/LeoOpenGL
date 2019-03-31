@@ -22,7 +22,7 @@ namespace leo
 {
 
 MainNode::MainNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const Camera &camera, RenderNodeOptions options)
-    : RenderNode(context, shader, camera, options), _sceneGraph(sceneGraph)
+    : RenderNode(context, shader, options), _sceneGraph(sceneGraph), _camera(camera)
 {
     sceneGraph.watch(this);
     this->_loadAllLightsFromSceneGraph();
