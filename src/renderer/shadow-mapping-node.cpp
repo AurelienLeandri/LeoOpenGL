@@ -47,11 +47,22 @@ void ShadowMappingNode::render()
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    float near_plane = 1.0f, far_plane = 7.5f;
+    float near_plane = 1.0f, far_plane = 100.f;
     glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-    glm::mat4 lightView = glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f),
-                                      glm::vec3(0.0f, 0.0f, 0.0f),
-                                      glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::vec3 front = this->_light.direction;
+    glm::vec3 pos = -front * ((near_plane + far_plane) * 0.5f);
+    glm::vec3 up(0.f, 0.f, 0.f);
+    int index = 0;
+    for (index; index < 3; index++) {
+        if (front[index] != 0.f)
+            break;
+    }
+    up[(index + 1) % 3] = front[index];
+    up[index] = -front[(index + 1) % 3];
+    up = glm::normalize(up);
+    glm::mat4 lightView = glm::lookAt(pos,
+                                      pos + front,
+                                      up);
     glm::mat4 lightSpaceMatrix = lightProjection * lightView;
     this->_shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
@@ -61,6 +72,7 @@ void ShadowMappingNode::render()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     // 2. then render scene as normal with shadow mapping (using depth map)
     glViewport(0, 0, 1620, 1080);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void ShadowMappingNode::_renderRec(const Entity *root, const glm::mat4x4 *matrix)

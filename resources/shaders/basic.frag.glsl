@@ -46,6 +46,7 @@ uniform Material material;
 uniform vec3 viewPos;
 uniform vec3 ambientLight;
 uniform samplerCube cubeMap;
+uniform sampler2D shadowMap;
 
 void main()
 {

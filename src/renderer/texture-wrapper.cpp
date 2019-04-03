@@ -72,6 +72,18 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
     int height = this->_texture->height;
     int width = this->_texture->width;
 
+    if (textureType != GL_TEXTURE_2D_MULTISAMPLE)
+    { // The following is not applicable to multisampled textures
+        GLuint wrapping = this->_options.wrapping;
+
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_S, wrapping);
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_T, wrapping);
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_R, wrapping);
+
+        glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, this->_texture->mode == DEPTH ? GL_NEAREST : GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, this->_texture->mode == DEPTH ? GL_NEAREST : GL_LINEAR);
+    }
+
     if (textureType == GL_TEXTURE_CUBE_MAP)
     {
         for (int i = 0; i < 6; ++i)
@@ -88,21 +100,12 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
     else
     {
         glTexImage2D(textureType, 0, type, width, height, 0, format,
-                     GL_UNSIGNED_BYTE, data ? data : 0);
+                     this->_texture->mode == DEPTH ? GL_FLOAT : GL_UNSIGNED_BYTE, data ? data : 0);
     }
 
     if (textureType != GL_TEXTURE_2D_MULTISAMPLE)
     { // The following is not applicable to multisampled textures
         glGenerateMipmap(textureType);
-
-        GLuint wrapping = this->_options.wrapping;
-
-        glTexParameteri(textureType, GL_TEXTURE_WRAP_S, wrapping);
-        glTexParameteri(textureType, GL_TEXTURE_WRAP_T, wrapping);
-        glTexParameteri(textureType, GL_TEXTURE_WRAP_R, wrapping);
-
-        glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
     glBindTexture(textureType, 0);

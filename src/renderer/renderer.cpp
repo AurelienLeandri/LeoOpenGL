@@ -36,7 +36,8 @@ Renderer::Renderer(GLFWwindow *window,
                                     _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
                                     _multisampled({true, 4}),
                                     _blitNode(this->_context),
-                                    _shadowMappingShader(shader)
+                                    _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl")
+
 {
   this->_setWindowContext(window, inputManager);
   this->_setCamera(camera);
@@ -79,7 +80,8 @@ void Renderer::_setCamera(Camera *camera)
 void Renderer::render(const SceneGraph *sceneGraph)
 {
 
-  for (auto &p : this->_directionalShadowNodes) {
+  for (auto &p : this->_directionalShadowNodes)
+  {
     p.second.render();
   }
 
@@ -169,18 +171,20 @@ void Renderer::notified(Subject *subject, Event event)
   if (c)
   {
     ShadowMappingNode &shadowMap = this->_directionalShadowNodes.insert(std::pair<t_id, ShadowMappingNode>(
-        c->getId(),
-        ShadowMappingNode(this->_context, *this->_shadowSceneGraph, this->_shadowMappingShader, *c))).first->second;
+                                                                            c->getId(),
+                                                                            ShadowMappingNode(this->_context, *this->_shadowSceneGraph, this->_shadowMappingShader, *c)))
+                                       .first->second;
     FramebufferOptions options;
     options.width = 1620 * 2;
     options.height = 1080 * 2;
     options.type = FrameBufferType::DEPTH_MAP;
     Framebuffer &fbOut = this->_directionalShadowMaps.insert(std::pair<t_id, Framebuffer>(
-      c->getId(),
-      Framebuffer(options)
-    )).first->second;
+                                                                 c->getId(),
+                                                                 Framebuffer(options)))
+                             .first->second;
     fbOut.generate();
     shadowMap.setOutput(&fbOut);
+    this->_mainNode->getInputs().insert(std::pair<std::string, Framebuffer *>("shadowMap", &fbOut));
   }
 }
 

@@ -76,7 +76,8 @@ void Framebuffer::generate()
 }
 
 Framebuffer::Framebuffer(const Framebuffer &other) : _id(other._id),
-                                                     _colorBuffers(other._colorBuffers)
+                                                     _colorBuffers(other._colorBuffers),
+                                                     _options(other._options)
 {
 }
 
