@@ -30,6 +30,7 @@ public:
 public:
   virtual void render();
   virtual void notified(Subject *subject, Event event);
+  void setLightSpaceMatrix(glm::mat4x4 lightSpaceMatrix);
 
 protected:
   virtual void _loadShader() override;
@@ -57,6 +58,7 @@ private:
   GLuint _lightsUBO = 0;
   const SceneGraph &_sceneGraph;
   const Camera &_camera;
+  glm::mat4x4 _lightSpaceMatrix;
 };
 
 } // namespace leo

@@ -39,6 +39,7 @@ layout (std140, binding = 1) uniform s1 {
 in vec2 TexCoords;
 in vec3 Normal;
 in vec3 FragPos;
+in vec3 FragPosLightSpace;
 
 out vec4 color;
 
@@ -97,7 +98,7 @@ void main()
 
   vec3 result = diffuse + specular + ambient/* + vec3(reflectionColor * reflectionFactor)*/;
   //vec3 result = specular;
-  color = vec4(result, 1.0);
+  color = vec4(FragPosLightSpace, 1.0);
   //color = vec4(diffuse_value, 1.0);
   //color = vec4(diffuse_sample, 1.0);
   //color = vec4(udl[0].diffuse, 1.0);

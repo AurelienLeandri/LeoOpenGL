@@ -216,10 +216,16 @@ void MainNode::_loadShader()
     this->_shader.use();
     this->_shader.setMat4("view", this->_camera.getViewMatrix());
     this->_shader.setMat4("projection", glm::perspective(this->_camera.getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
+    this->_shader.setMat4("lightSpaceMatrix", this->_lightSpaceMatrix);
 
     this->_loadLightsToShader();
     this->_setModelMatrix();
 }
+
+  void MainNode::setLightSpaceMatrix(glm::mat4x4 lightSpaceMatrix)
+  {
+      this->_lightSpaceMatrix = lightSpaceMatrix;
+  }
 
 void MainNode::notified(Subject *subject, Event event)
 {

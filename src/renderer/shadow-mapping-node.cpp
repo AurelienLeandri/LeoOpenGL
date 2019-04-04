@@ -47,24 +47,7 @@ void ShadowMappingNode::render()
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    float near_plane = 1.0f, far_plane = 100.f;
-    glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-    glm::vec3 front = this->_light.direction;
-    glm::vec3 pos = -front * ((near_plane + far_plane) * 0.5f);
-    glm::vec3 up(0.f, 0.f, 0.f);
-    int index = 0;
-    for (index; index < 3; index++) {
-        if (front[index] != 0.f)
-            break;
-    }
-    up[(index + 1) % 3] = front[index];
-    up[index] = -front[(index + 1) % 3];
-    up = glm::normalize(up);
-    glm::mat4 lightView = glm::lookAt(pos,
-                                      pos + front,
-                                      up);
-    glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-    this->_shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+    this->_shader.setMat4("lightSpaceMatrix", this->_lightSpaceMatrix);
 
     glm::mat4x4 m;
     this->_renderRec(this->_sceneGraph.getRoot(), &m);
@@ -105,6 +88,11 @@ void ShadowMappingNode::_loadShader()
 
     glm::mat4 m;
     this->_shader.setMat4("model", m);
+}
+
+void ShadowMappingNode::setLightSpaceMatrix(glm::mat4x4 lightSpaceMatrix)
+{
+    this->_lightSpaceMatrix = lightSpaceMatrix;
 }
 
 void ShadowMappingNode::notified(Subject *subject, Event event)

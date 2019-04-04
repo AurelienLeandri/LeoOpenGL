@@ -185,6 +185,28 @@ void Renderer::notified(Subject *subject, Event event)
     fbOut.generate();
     shadowMap.setOutput(&fbOut);
     this->_mainNode->getInputs().insert(std::pair<std::string, Framebuffer *>("shadowMap", &fbOut));
+
+    float near_plane = 1.0f, far_plane = 100.f;
+    glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+    glm::vec3 front = c->direction;
+    glm::vec3 pos = -front * ((near_plane + far_plane) * 0.5f);
+    glm::vec3 up(0.f, 0.f, 0.f);
+    int index = 0;
+    for (index; index < 3; index++)
+    {
+      if (front[index] != 0.f)
+        break;
+    }
+    up[(index + 1) % 3] = front[index];
+    up[index] = -front[(index + 1) % 3];
+    up = glm::normalize(up);
+    glm::mat4 lightView = glm::lookAt(pos,
+                                      pos + front,
+                                      up);
+    glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+    this->_mainNode->setLightSpaceMatrix(lightSpaceMatrix);
+    shadowMap.setLightSpaceMatrix(lightSpaceMatrix);
   }
 }
 

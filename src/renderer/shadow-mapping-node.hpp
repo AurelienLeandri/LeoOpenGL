@@ -18,6 +18,7 @@ class ShadowMappingNode : public RenderNode
   public:
     virtual void render() override;
     virtual void notified(Subject *subject, Event event) override;
+    void setLightSpaceMatrix(glm::mat4x4 lightSpaceMatrix);
 
   private:
     void _renderRec(const Entity *root, const glm::mat4x4 *matrix);
@@ -26,5 +27,6 @@ class ShadowMappingNode : public RenderNode
   private:
     const DirectionLight &_light;
     const SceneGraph &_sceneGraph;
+    glm::mat4x4 _lightSpaceMatrix;
 };
 } // namespace leo
