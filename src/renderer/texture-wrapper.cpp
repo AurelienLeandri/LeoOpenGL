@@ -76,8 +76,19 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
     { // The following is not applicable to multisampled textures
         GLuint wrapping = this->_options.wrapping;
 
-        glTexParameteri(textureType, GL_TEXTURE_WRAP_S, wrapping);
-        glTexParameteri(textureType, GL_TEXTURE_WRAP_T, wrapping);
+        if (this->_texture->mode == DEPTH)
+        { // Over sampling
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+            float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+        }
+        else
+        {
+            glTexParameteri(textureType, GL_TEXTURE_WRAP_S, wrapping);
+            glTexParameteri(textureType, GL_TEXTURE_WRAP_T, wrapping);
+        }
+
         glTexParameteri(textureType, GL_TEXTURE_WRAP_R, wrapping);
 
         glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, this->_texture->mode == DEPTH ? GL_NEAREST : GL_LINEAR_MIPMAP_LINEAR);

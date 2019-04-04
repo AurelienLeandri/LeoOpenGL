@@ -62,7 +62,7 @@ void MainNode::render()
     glm::mat4x4 m;
     Material defaultMat;
     this->_shader.setVector3("viewPos", this->_camera.getPosition());
-    this->_shader.setVector3("ambientLight", glm::vec3(0.2, 0.2, 0.2));
+    this->_shader.setVector3("ambientLight", glm::vec3(0.4, 0.4, 0.4));
     this->_renderRec(this->_sceneGraph.getRoot(), &defaultMat, &m);
 }
 

@@ -39,7 +39,7 @@ layout (std140, binding = 1) uniform s1 {
 in vec2 TexCoords;
 in vec3 Normal;
 in vec3 FragPos;
-in vec3 FragPosLightSpace;
+in vec4 FragPosLightSpace;
 
 out vec4 color;
 
@@ -48,6 +48,26 @@ uniform vec3 viewPos;
 uniform vec3 ambientLight;
 uniform samplerCube cubeMap;
 uniform sampler2D shadowMap;
+
+float computeShadow(float bias)
+{
+  vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;
+  projCoords = projCoords * 0.5 + 0.5;
+  float closestDepth = texture(shadowMap, projCoords.xy).r;
+  float currentDepth = projCoords.z;
+  vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+  float shadow = 0.0;
+  for(int x = -1; x <= 1; ++x)
+  {
+    for(int y = -1; y <= 1; ++y)
+    {
+        float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+        shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
+    }    
+  }
+  shadow /= 9.0;
+  return shadow;
+}
 
 void main()
 {
@@ -96,9 +116,10 @@ void main()
   float reflectionFactor = texture(material.reflection_map, TexCoords).x;
   */
 
-  vec3 result = diffuse + specular + ambient/* + vec3(reflectionColor * reflectionFactor)*/;
+  float bias = 0.005;
+  vec3 result = (1 - computeShadow(bias)) * (diffuse + specular) + (ambient * diffuse_sample)/* + vec3(reflectionColor * reflectionFactor)*/;
   //vec3 result = specular;
-  color = vec4(FragPosLightSpace, 1.0);
+  //color = vec4(FragPosLightSpace, 1.0);
   //color = vec4(diffuse_value, 1.0);
   //color = vec4(diffuse_sample, 1.0);
   //color = vec4(udl[0].diffuse, 1.0);
@@ -107,5 +128,5 @@ void main()
   //color = vec4(texture(material.diffuse_texture, TexCoords).rgb, 1.0);
   //color = vec4(texture(material.specular_texture, TexCoords).rgb, 1.0);
   //color = vec4(texture(material.reflection_map, TexCoords).rgb, 1.0);
-  //color = vec4(TexCoords, 1.0, 1.0);
+  color = vec4(result, 1.0);
 }
