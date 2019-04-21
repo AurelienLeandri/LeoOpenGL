@@ -106,7 +106,6 @@ void testInstanced()
 
   // Render
   Engine engine;
-  engine.initRenderer(shader);
 
   engine.setScene(&scene);
   engine.setInstancedScene(&instancedScene, transformations);
@@ -189,7 +188,6 @@ void cubeScene()
 
   // Render
   Engine engine;
-  engine.initRenderer(shader);
 
   engine.setScene(&scene);
   engine.gameLoop();
@@ -298,7 +296,6 @@ void blinnPhong()
       "resources/shaders/basic.frag.glsl");
 
   Engine engine;
-  engine.initRenderer(shader);
 
   engine.setScene(&scene);
   engine.gameLoop();

@@ -46,27 +46,33 @@ void Engine::_init()
   this->inputManager = InputManager::getInstance();
 }
 
-void Engine::initRenderer(Shader shader)
+void Engine::_initRenderer(Shader shader)
 {
-  this->_renderer = new Renderer(
-      this->_window,
-      this->inputManager,
-      this->_camera,
-      shader);
   if (this->_scene)
   {
-    this->setScene(this->_scene);
+    this->_renderer = new Renderer(
+        this->_window,
+        this->inputManager,
+        this->_camera,
+        shader,
+        *this->_scene);
+    this->_renderer->createMainNode(this->_scene);
+    this->_renderer->createCubeMapNode(this->_scene);
+    this->_renderer->createPostProcessNode(this->_scene);
+    this->_renderer->createGammaCorrectionNode(this->_scene);
   }
 }
 
 void Engine::setScene(SceneGraph *scene)
 {
   this->_scene = scene;
-  this->_renderer->createMainNode(this->_scene);
-  this->_renderer->createCubeMapNode(this->_scene);
-  this->_renderer->createPostProcessNode(this->_scene);
-  this->_renderer->createGammaCorrectionNode(this->_scene);
-  this->_renderer->setShadowSceneGraph(*this->_scene);
+  if (!this->_renderer)
+  {
+    Shader shader(
+        "resources/shaders/basic.vs.glsl",
+        "resources/shaders/basic.frag.glsl");
+    this->_initRenderer(shader);
+  }
 }
 
 void Engine::setInstancedScene(SceneGraph *scene, const std::vector<glm::mat4> &transformations)

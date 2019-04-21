@@ -3,10 +3,10 @@
 #include <renderer/framebuffer.hpp>
 #include <renderer/shader.hpp>
 #include <renderer/texture-wrapper.hpp>
-#include <renderer/light-uniforms.hpp>
 #include <renderer/buffer-collection.hpp>
 #include <renderer/opengl-context.hpp>
 #include <renderer/blit-node.hpp>
+#include <renderer/scene-context.hpp>
 
 #include <controller/observer.hpp>
 
@@ -33,6 +33,8 @@ class PostProcessNode;
 class InstancedNode;
 class BlitNode;
 class ShadowMappingNode;
+class PointLightWrapper;
+class DirectionLightWrapper;
 
 class Renderer : public Observer
 {
@@ -40,7 +42,8 @@ public:
   Renderer(GLFWwindow *window,
            InputManager *inputManager,
            Camera *camera,
-           Shader shader);
+           Shader shader,
+           const SceneGraph &sceneGraph);
   virtual ~Renderer();
   Renderer(const Renderer &other) = delete;
 
@@ -59,13 +62,16 @@ public:
   void createPostProcessNode(SceneGraph *sceneGraph);
   void createGammaCorrectionNode(SceneGraph *sceneGraph);
   void createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm::mat4> &transformations);
-  void setShadowSceneGraph(SceneGraph &sceneGraph);
 
 private:
   void _loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output);
   void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
   void _setCamera(Camera *camera);
   void _initFramebuffers();
+  void _visitSceneGraph();
+  void _visitSceneGraphRec(const Entity &root);
+  void _registerComponent(const IComponent &component);
+  void _registerDirectionLight(const DirectionLight &dl);
 
 private:
   void _init();
@@ -89,6 +95,7 @@ private:
   Shader _shadowMappingShader;
 
   OpenGLContext _context;
+  SceneContext _sceneContext;
 
   MainNode *_mainNode = nullptr;
   CubeMapNode *_cubeMapNode = nullptr;
@@ -97,7 +104,9 @@ private:
   InstancedNode *_instancedNode = nullptr;
   BlitNode _blitNode;
 
-  SceneGraph *_shadowSceneGraph;
+  const SceneGraph &_sceneGraph;
+
+  
 };
 
 } // namespace leo

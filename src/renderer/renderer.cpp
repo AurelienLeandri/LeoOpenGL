@@ -10,6 +10,7 @@
 #include <renderer/post-process-node.hpp>
 #include <renderer/instanced-node.hpp>
 #include <renderer/shadow-mapping-node.hpp>
+#include <renderer/light-wrapper.hpp>
 
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
@@ -30,13 +31,16 @@ namespace leo
 Renderer::Renderer(GLFWwindow *window,
                    InputManager *inputManager,
                    Camera *camera,
-                   Shader shader) : _shader(shader), _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl"),
-                                    _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
-                                    _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/basic.frag.glsl"),
-                                    _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
-                                    _multisampled({true, 4}),
-                                    _blitNode(this->_context),
-                                    _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl")
+                   Shader shader,
+                   const SceneGraph &sceneGraph) : _shader(shader), _sceneGraph(sceneGraph),
+                                                   _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl"),
+                                                   _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
+                                                   _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/basic.frag.glsl"),
+                                                   _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
+                                                   _multisampled({true, 4}),
+                                                   _blitNode(this->_context),
+                                                   _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl"),
+                                                   _sceneContext(this->_context)
 
 {
   this->_setWindowContext(window, inputManager);
@@ -54,6 +58,7 @@ void Renderer::_init()
 {
   this->_context.init();
   this->_initFramebuffers();
+  this->_visitSceneGraph();
 }
 
 void Renderer::_initFramebuffers()
@@ -77,12 +82,75 @@ void Renderer::_setCamera(Camera *camera)
   this->_camera = camera;
 }
 
+void Renderer::_visitSceneGraph()
+{
+  const Entity *root = this->_sceneGraph.getRoot();
+  if (root)
+    this->_visitSceneGraphRec(*root);
+}
+
+void Renderer::_visitSceneGraphRec(const Entity &root)
+{
+  for (auto &p : root.getComponents())
+  {
+    const IComponent *component = p.second;
+    if (component)
+    {
+      this->_registerComponent(*component);
+    }
+  }
+  for (auto &p : root.getChildren())
+  {
+    const Entity *child = p.second;
+    if (child)
+    {
+      this->_visitSceneGraphRec(*child);
+    }
+  }
+}
+
+void Renderer::_registerComponent(const IComponent &component)
+{
+  ComponentType componentType = component.getTypeId();
+  switch (componentType)
+  {
+  case ComponentType::DIRECTION_LIGHT:
+  {
+    const DirectionLight *dl = static_cast<const DirectionLight *>(&component);
+    this->_sceneContext.registerDirectionLight(*dl, this->_sceneGraph, this->_shadowMappingShader);
+  }
+  break;
+  case ComponentType::POINT_LIGHT:
+  {
+  }
+  break;
+  case ComponentType::INSTANCED:
+  {
+  }
+  break;
+  case ComponentType::MATERIAL:
+  {
+  }
+  break;
+  case ComponentType::TRANSFORMATION:
+  {
+  }
+  break;
+  case ComponentType::VOLUME:
+  {
+  }
+  break;
+  default:
+    break;
+  }
+}
+
 void Renderer::render(const SceneGraph *sceneGraph)
 {
 
-  for (auto &p : this->_directionalShadowNodes)
+  for (auto &p : this->_sceneContext.dLights)
   {
-    p.second.render();
+    p.second.renderNode.render();
   }
 
   this->_mainNode->render();
@@ -107,7 +175,7 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
 {
   if (this->_mainNode == nullptr)
   {
-    this->_mainNode = new MainNode(this->_context, *sceneGraph, this->_shader, *this->_camera);
+    this->_mainNode = new MainNode(this->_context, this->_sceneContext, *sceneGraph, this->_shader, *this->_camera);
     this->_mainNode->setOutput(&this->_multisampled);
   }
   std::vector<Observer *> obs;
@@ -119,7 +187,7 @@ void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm
 {
   if (this->_instancedNode == nullptr)
   {
-    this->_instancedNode = new InstancedNode(this->_context, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
+    this->_instancedNode = new InstancedNode(this->_context, this->_sceneContext, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
     this->_instancedNode->setOutput(&this->_multisampled);
   }
   std::vector<Observer *> obs;
@@ -156,57 +224,12 @@ void Renderer::createGammaCorrectionNode(SceneGraph *sceneGraph)
   }
 }
 
-void Renderer::setShadowSceneGraph(SceneGraph &sceneGraph)
-{
-  this->_shadowSceneGraph = &sceneGraph;
-  this->_shadowSceneGraph->watch(this);
-  std::vector<Observer *> obs;
-  obs.push_back(this);
-  sceneGraph.reloadScene(obs);
-}
-
 void Renderer::notified(Subject *subject, Event event)
 {
   DirectionLight *c = dynamic_cast<DirectionLight *>(subject);
   if (c)
   {
-    ShadowMappingNode &shadowMap = this->_directionalShadowNodes.insert(std::pair<t_id, ShadowMappingNode>(
-                                                                            c->getId(),
-                                                                            ShadowMappingNode(this->_context, *this->_shadowSceneGraph, this->_shadowMappingShader, *c)))
-                                       .first->second;
-    FramebufferOptions options;
-    options.width = 1620 * 2;
-    options.height = 1080 * 2;
-    options.type = FrameBufferType::DEPTH_MAP;
-    Framebuffer &fbOut = this->_directionalShadowMaps.insert(std::pair<t_id, Framebuffer>(
-                                                                 c->getId(),
-                                                                 Framebuffer(options)))
-                             .first->second;
-    fbOut.generate();
-    shadowMap.setOutput(&fbOut);
-    this->_mainNode->getInputs().insert(std::pair<std::string, Framebuffer *>("shadowMap", &fbOut));
-
-    float near_plane = 1.0f, far_plane = 100.f;
-    glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-    glm::vec3 front = c->direction;
-    glm::vec3 pos = -front * ((near_plane + far_plane) * 0.5f);
-    glm::vec3 up(0.f, 0.f, 0.f);
-    int index = 0;
-    for (index; index < 3; index++)
-    {
-      if (front[index] != 0.f)
-        break;
-    }
-    up[(index + 1) % 3] = front[index];
-    up[index] = -front[(index + 1) % 3];
-    up = glm::normalize(up);
-    glm::mat4 lightView = glm::lookAt(pos,
-                                      pos + front,
-                                      up);
-    glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-
-    this->_mainNode->setLightSpaceMatrix(lightSpaceMatrix);
-    shadowMap.setLightSpaceMatrix(lightSpaceMatrix);
+    this->_sceneContext.registerDirectionLight(*c, this->_sceneGraph, this->_shadowMappingShader);
   }
 }
 

@@ -47,21 +47,21 @@ uniform Material material;
 uniform vec3 viewPos;
 uniform vec3 ambientLight;
 uniform samplerCube cubeMap;
-uniform sampler2D shadowMap;
+uniform sampler2D shadowMap0;
 
 float computeShadow(float bias)
 {
   vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;
   projCoords = projCoords * 0.5 + 0.5;
-  float closestDepth = texture(shadowMap, projCoords.xy).r;
+  float closestDepth = texture(shadowMap0, projCoords.xy).r;
   float currentDepth = projCoords.z;
-  vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+  vec2 texelSize = 1.0 / textureSize(shadowMap0, 0);
   float shadow = 0.0;
   for(int x = -1; x <= 1; ++x)
   {
     for(int y = -1; y <= 1; ++y)
     {
-        float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+        float pcfDepth = texture(shadowMap0, projCoords.xy + vec2(x, y) * texelSize).r; 
         shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
     }    
   }

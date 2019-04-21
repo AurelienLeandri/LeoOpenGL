@@ -12,10 +12,9 @@
 
 namespace leo
 {
-ShadowMappingNode::ShadowMappingNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const DirectionLight &light)
+ShadowMappingNode::ShadowMappingNode(OpenGLContext &context, const SceneGraph &sceneGraph, Shader &shader, const DirectionLight &light)
     : RenderNode(context, shader), _light(light), _sceneGraph(sceneGraph)
 {
-    sceneGraph.watch(this);
 }
 
 void ShadowMappingNode::render()

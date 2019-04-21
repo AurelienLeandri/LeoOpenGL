@@ -17,6 +17,7 @@ class Volume;
 class Texture;
 class DirectionLight;
 class PointLight;
+class SceneContext;
 
 class MainNode : public RenderNode
 {
@@ -24,13 +25,13 @@ class MainNode : public RenderNode
   using t_id = unsigned int;
 
 public:
-  MainNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const Camera &camera,
+  MainNode(OpenGLContext &context, SceneContext &sceneContext, SceneGraph &sceneGraph, Shader &shader, const Camera &camera,
            RenderNodeOptions = {GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT});
 
 public:
   virtual void render();
   virtual void notified(Subject *subject, Event event);
-  void setLightSpaceMatrix(glm::mat4x4 lightSpaceMatrix);
+  virtual void _loadInputFramebuffers() override;
 
 protected:
   virtual void _loadShader() override;
@@ -58,7 +59,7 @@ private:
   GLuint _lightsUBO = 0;
   const SceneGraph &_sceneGraph;
   const Camera &_camera;
-  glm::mat4x4 _lightSpaceMatrix;
+  SceneContext &_sceneContext;
 };
 
 } // namespace leo

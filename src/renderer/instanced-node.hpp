@@ -10,7 +10,7 @@ namespace leo
 class InstancedNode : public MainNode
 {
   public:
-    InstancedNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader,
+    InstancedNode(OpenGLContext &context, SceneContext &sceneContext, SceneGraph &sceneGraph, Shader &shader,
     const Camera &camera, std::vector<glm::mat4> transformations,
     RenderNodeOptions options = {});
 

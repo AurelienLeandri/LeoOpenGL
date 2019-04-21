@@ -4,6 +4,8 @@
 #include <renderer/framebuffer.hpp>
 #include <renderer/camera.hpp>
 #include <renderer/opengl-context.hpp>
+#include <renderer/scene-context.hpp>
+#include <renderer/light-wrapper.hpp>
 
 #include <model/components/transformation.hpp>
 #include <model/entity.hpp>
@@ -21,8 +23,8 @@
 namespace leo
 {
 
-MainNode::MainNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const Camera &camera, RenderNodeOptions options)
-    : RenderNode(context, shader, options), _sceneGraph(sceneGraph), _camera(camera)
+MainNode::MainNode(OpenGLContext &context, SceneContext &sceneContext, SceneGraph &sceneGraph, Shader &shader, const Camera &camera, RenderNodeOptions options)
+    : RenderNode(context, shader, options), _sceneContext(sceneContext), _sceneGraph(sceneGraph), _camera(camera)
 {
     sceneGraph.watch(this);
     this->_loadAllLightsFromSceneGraph();
@@ -64,6 +66,27 @@ void MainNode::render()
     this->_shader.setVector3("viewPos", this->_camera.getPosition());
     this->_shader.setVector3("ambientLight", glm::vec3(0.4, 0.4, 0.4));
     this->_renderRec(this->_sceneGraph.getRoot(), &defaultMat, &m);
+}
+
+void MainNode::_loadInputFramebuffers()
+{
+    RenderNode::_loadInputFramebuffers();
+    int inputNumber = this->_materialTextureOffset;
+    for (auto &p : this->_sceneContext.dLights)
+    {
+        Framebuffer &input = p.second.map;
+        const std::vector<TextureWrapper> &cb = input.getColorBuffers();
+        std::stringstream ss;
+        ss << inputNumber - this->_materialTextureOffset;
+        for (GLuint i = 0; i < cb.size(); i++)
+        {
+            glUniform1i(glGetUniformLocation(this->_shader.getProgram(), ("shadowMap" + ss.str()).c_str()), inputNumber);
+            glActiveTexture(GL_TEXTURE0 + inputNumber);
+            glBindTexture(GL_TEXTURE_2D, cb[i].getId());
+            inputNumber++;
+        }
+    }
+    this->_materialTextureOffset = inputNumber;
 }
 
 void MainNode::_renderRec(const Entity *root, const Material *material, const glm::mat4x4 *matrix)
@@ -216,16 +239,18 @@ void MainNode::_loadShader()
     this->_shader.use();
     this->_shader.setMat4("view", this->_camera.getViewMatrix());
     this->_shader.setMat4("projection", glm::perspective(this->_camera.getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
-    this->_shader.setMat4("lightSpaceMatrix", this->_lightSpaceMatrix);
+
+    int matNb = 0;
+    for (auto &p : this->_sceneContext.dLights)
+    {
+        std::stringstream ss;
+        ss << matNb;
+        this->_shader.setMat4(("lightSpaceMatrix" + ss.str()).c_str(), p.second.projection);
+    }
 
     this->_loadLightsToShader();
     this->_setModelMatrix();
 }
-
-  void MainNode::setLightSpaceMatrix(glm::mat4x4 lightSpaceMatrix)
-  {
-      this->_lightSpaceMatrix = lightSpaceMatrix;
-  }
 
 void MainNode::notified(Subject *subject, Event event)
 {

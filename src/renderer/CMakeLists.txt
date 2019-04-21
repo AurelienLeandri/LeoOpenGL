@@ -35,5 +35,7 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/shader.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/shadow-mapping-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/shadow-mapping-node.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/scene-context.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/scene-context.hpp
   PARENT_SCOPE
   )

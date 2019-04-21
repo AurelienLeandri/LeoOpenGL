@@ -13,7 +13,7 @@ class SceneGraph;
 class ShadowMappingNode : public RenderNode
 {
   public:
-    ShadowMappingNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader, const DirectionLight &light);
+    ShadowMappingNode(OpenGLContext &context, const SceneGraph &sceneGraph, Shader &shader, const DirectionLight &light);
 
   public:
     virtual void render() override;

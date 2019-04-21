@@ -29,9 +29,9 @@ public:
 private:
   void _init();
   void doMovement(float deltaTime);
+  void _initRenderer(Shader shader);
 
 public:
-  void initRenderer(Shader shader);
   void setScene(SceneGraph *scene);
   void setInstancedScene(SceneGraph *instancedScene, const std::vector<glm::mat4> &transformations);
   void gameLoop();
