@@ -27,7 +27,6 @@ MainNode::MainNode(OpenGLContext &context, SceneContext &sceneContext, SceneGrap
     : RenderNode(context, shader, options), _sceneContext(sceneContext), _sceneGraph(sceneGraph), _camera(camera)
 {
     sceneGraph.watch(this);
-    this->_loadAllLightsFromSceneGraph();
     { // Lights
         glGenBuffers(1, &this->_lightsUBO);
         glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
@@ -143,17 +142,17 @@ void MainNode::_loadLightsToShader()
     glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->_lightsUBO);
     glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
     int i = 0;
-    for (auto &p : this->_pointLights)
+    for (auto &p : this->_sceneContext.pLights)
     {
-        PointLightUniform &plu = p.second;
+        PointLightUniform &plu = p.second.uniform;
         glBufferSubData(GL_UNIFORM_BUFFER, i * sizeof(PointLightUniform), sizeof(PointLightUniform), &plu);
         i++;
     }
     i = 0;
     unsigned int offset = MAX_NUM_LIGHTS * sizeof(PointLightUniform);
-    for (auto &p : this->_directionLights)
+    for (auto &p : this->_sceneContext.dLights)
     {
-        DirectionLightUniform &dlu = p.second;
+        DirectionLightUniform &dlu = p.second.uniform;
         glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof(DirectionLightUniform), sizeof(DirectionLightUniform), &dlu);
         i++;
     }
@@ -189,42 +188,6 @@ void MainNode::_setCurrentMaterial(const Material *material)
 
     this->_loadTextureToShader("material.reflection_map", this->_materialTextureOffset + 2,
                                material->reflection_map ? *material->reflection_map : *TextureManager::black.get());
-}
-
-void MainNode::_loadAllLightsFromSceneGraph()
-{
-    for (auto &pair : this->_sceneGraph.getDirectionLights())
-    {
-        this->_loadLight(pair.second);
-    }
-    for (auto &pair : this->_sceneGraph.getPointLights())
-    {
-        this->_loadLight(pair.second);
-    }
-}
-
-void MainNode::_loadLight(const DirectionLight *light)
-{
-    this->_directionLights.insert(std::pair<t_id, DirectionLightUniform>(light->getId(), DirectionLightUniform(*light)));
-    DirectionLightUniform &dlu = this->_directionLights[light->getId()];
-    const Transformation *transform = static_cast<const Transformation *>(light->getEntity()->getComponent(ComponentType::TRANSFORMATION));
-    if (transform)
-    {
-        const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-        dlu.direction = transformation * light->direction;
-    }
-}
-
-void MainNode::_loadLight(const PointLight *light)
-{
-    this->_pointLights.insert(std::pair<t_id, PointLightUniform>(light->getId(), PointLightUniform(*light)));
-    PointLightUniform &plu = this->_pointLights[light->getId()];
-    const Transformation *transform = static_cast<const Transformation *>(light->getEntity()->getComponent(ComponentType::TRANSFORMATION));
-    if (transform)
-    {
-        const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-        plu.position = transformation * light->position;
-    }
 }
 
 void MainNode::_loadVolume(const Volume *volume)
@@ -269,25 +232,7 @@ void MainNode::notified(Subject *subject, Event event)
                 break;
             }
             break;
-        case ComponentType::POINT_LIGHT:
-            switch (event)
-            {
-            case Event::COMPONENT_ADDED:
-                this->_loadLight(static_cast<PointLight *>(c));
-                break;
-            default:
-                break;
-            }
-            break;
-        case ComponentType::DIRECTION_LIGHT:
-            switch (event)
-            {
-            case Event::COMPONENT_ADDED:
-                this->_loadLight(static_cast<DirectionLight *>(c));
-                break;
-            default:
-                break;
-            }
+        default:
             break;
         }
     }

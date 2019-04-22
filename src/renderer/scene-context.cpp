@@ -6,6 +6,9 @@
 #include <renderer/texture-wrapper.hpp>
 
 #include <model/components/direction-light.hpp>
+#include <model/components/point-light.hpp>
+#include <model/components/transformation.hpp>
+#include <model/entity.hpp>
 
 namespace leo
 {
@@ -53,6 +56,18 @@ void SceneContext::registerDirectionLight(const DirectionLight &dl, const SceneG
     wrapper.map.generate();
     wrapper.renderNode.setOutput(&wrapper.map);
     wrapper.renderNode.setLightSpaceMatrix(wrapper.projection);
+}
+
+void SceneContext::registerPointLight(const PointLight &pl)
+{
+    PointLightUniform &plu = this->pLights.insert(std::pair<t_id, PointLightWrapper>(pl.getId(), PointLightWrapper(pl)))
+                                 .first->second.uniform;
+    const Transformation *transform = static_cast<const Transformation *>(pl.getEntity()->getComponent(ComponentType::TRANSFORMATION));
+    if (transform)
+    {
+      const glm::mat4x4 &transformation = transform->getTransformationMatrix();
+      plu.position = transformation * pl.position;
+    }
 }
 
 } // namespace leo

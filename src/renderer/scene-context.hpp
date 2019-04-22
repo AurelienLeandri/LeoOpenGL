@@ -7,6 +7,7 @@ namespace leo
 {
 
 class DirectionLight;
+class PointLight;
 class BufferCollection;
 class TextureWrapper;
 class DirectionLightWrapper;
@@ -25,6 +26,7 @@ public:
 
 public:
     void registerDirectionLight(const DirectionLight &dl, const SceneGraph &sceneGraph, Shader &shadowShader);
+    void registerPointLight(const PointLight &dl);
 
 public:
     // SceneGraph data

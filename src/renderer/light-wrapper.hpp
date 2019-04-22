@@ -7,27 +7,24 @@
 namespace leo
 {
 
-typedef struct LightWrapper
+typedef struct PointLightWrapper
+{
+    PointLightUniform uniform;
+
+    PointLightWrapper(PointLightUniform uniform) : uniform(uniform)
+    {
+    }
+
+} PointLightWrapper;
+
+typedef struct DirectionLightWrapper
 {
     Framebuffer map;
     glm::mat4x4 projection;
-
-    LightWrapper(Framebuffer map, glm::mat4x4 projection) : map(map), projection(projection)
-    {
-    }
-} LightWrapper;
-
-typedef struct PointLightWrapper : public LightWrapper
-{
-    PointLightUniform uniform;
-} PointLightWrapper;
-
-typedef struct DirectionLightWrapper : public LightWrapper
-{
     DirectionLightUniform uniform;
     ShadowMappingNode renderNode;
 
-    DirectionLightWrapper(Framebuffer map, glm::mat4x4 projection, DirectionLightUniform uniform, ShadowMappingNode renderNode) : LightWrapper(map, projection), uniform(uniform), renderNode(renderNode)
+    DirectionLightWrapper(Framebuffer map, glm::mat4x4 projection, DirectionLightUniform uniform, ShadowMappingNode renderNode) : map(map), projection(projection), uniform(uniform), renderNode(renderNode)
     {
     }
 

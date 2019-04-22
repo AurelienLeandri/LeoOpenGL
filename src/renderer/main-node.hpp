@@ -43,17 +43,10 @@ protected:
   void _setModelMatrix();
   void _setCurrentMaterial(const Material *material);
   void _renderRec(const Entity *root, const Material *material, const glm::mat4x4 *matrix);
-  void _loadAllLightsFromSceneGraph();
-  void _loadLight(const DirectionLight *light);
-  void _loadLight(const PointLight *light);
 
 protected:
   virtual void _drawVolume(const Volume *volume);
   virtual void _loadVolume(const Volume *volume);
-
-private: // TODO: make private
-  std::map<t_id, DirectionLightUniform> _directionLights;
-  std::map<t_id, PointLightUniform> _pointLights;
 
 private:
   GLuint _lightsUBO = 0;

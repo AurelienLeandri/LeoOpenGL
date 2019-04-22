@@ -116,12 +116,13 @@ void Renderer::_registerComponent(const IComponent &component)
   {
   case ComponentType::DIRECTION_LIGHT:
   {
-    const DirectionLight *dl = static_cast<const DirectionLight *>(&component);
-    this->_sceneContext.registerDirectionLight(*dl, this->_sceneGraph, this->_shadowMappingShader);
+    this->_sceneContext.registerDirectionLight(*static_cast<const DirectionLight *>(&component),
+                                               this->_sceneGraph, this->_shadowMappingShader);
   }
   break;
   case ComponentType::POINT_LIGHT:
   {
+    this->_sceneContext.registerPointLight(*static_cast<const PointLight *>(&component));
   }
   break;
   case ComponentType::INSTANCED:
@@ -226,10 +227,11 @@ void Renderer::createGammaCorrectionNode(SceneGraph *sceneGraph)
 
 void Renderer::notified(Subject *subject, Event event)
 {
-  DirectionLight *c = dynamic_cast<DirectionLight *>(subject);
+  IComponent *c = dynamic_cast<IComponent *>(subject);
   if (c)
   {
-    this->_sceneContext.registerDirectionLight(*c, this->_sceneGraph, this->_shadowMappingShader);
+    if (event == Event::COMPONENT_ADDED)
+      this->_registerComponent(*c);
   }
 }
 
