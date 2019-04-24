@@ -149,7 +149,6 @@ void cubeScene()
 
   Transformation *t2 = componentManager.createComponent<Transformation>();
 
-  t2->setRelativeTranslation(glm::vec3(0.f, 3.f, 0.f));
   t2->setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
   t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
   Entity node2;
@@ -169,16 +168,61 @@ void cubeScene()
   Entity node3;
   node3.addComponent(cube);
   node3.addComponent(t3);
-  node3.addComponent(dl);
+  //node3.addComponent(dl);
 
   Material *groundMat = componentManager.createComponent<Material>();
   groundMat->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", SRGBA);
+  groundMat->specular_texture = groundMat->diffuse_texture;
   groundMat->shininess = 1.0f;
   Entity node4;
   root.addChild(&node4);
   Volume *ground = componentManager.createComponent<Volume>(Volume::createPlane(10.f, 10.f));
   node4.addComponent(ground);
   node4.addComponent(groundMat);
+
+  Entity node41;
+  Transformation *t41 = componentManager.createComponent<Transformation>();
+  t41->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
+  t41->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, 0.f));
+  t41->setRelativeTranslation(glm::vec3(0.f, 10.f, -5.f));
+  node4.addChild(&node41);
+  node41.addComponent(ground);
+  node41.addComponent(t41);
+
+  Entity node42;
+  Transformation *t42 = componentManager.createComponent<Transformation>();
+  t42->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
+  t42->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, 3.14f));
+  t42->setRelativeTranslation(glm::vec3(0.f, 10.f, 5.f));
+  node4.addChild(&node42);
+  node42.addComponent(ground);
+  node42.addComponent(t42);
+
+  Entity node43;
+  Transformation *t43 = componentManager.createComponent<Transformation>();
+  t43->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
+  t43->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, 3.14f / 2.f));
+  t43->setRelativeTranslation(glm::vec3(5.f, 10.f, 0.f));
+  node4.addChild(&node43);
+  node43.addComponent(ground);
+  node43.addComponent(t43);
+
+  Entity node44;
+  Transformation *t44 = componentManager.createComponent<Transformation>();
+  t44->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
+  t44->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, -3.14f / 2.f));
+  t44->setRelativeTranslation(glm::vec3(-5.f, 10.f, 0.f));
+  node4.addChild(&node44);
+  node44.addComponent(ground);
+  node44.addComponent(t44);
+
+  Entity node45;
+  Transformation *t45 = componentManager.createComponent<Transformation>();
+  t45->setRelativeRotation(glm::vec3(0.f, 0.f, 3.14f));
+  t45->setRelativeTranslation(glm::vec3(0.f, 20.f, 0.f));
+  node4.addChild(&node45);
+  node45.addComponent(ground);
+  node45.addComponent(t45);
 
   Shader shader(
       "resources/shaders/basic.vs.glsl",

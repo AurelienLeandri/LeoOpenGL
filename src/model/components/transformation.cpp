@@ -55,6 +55,7 @@ void Transformation::setRelativeTranslation(glm::vec3 value)
 
 void Transformation::setRelativeRotation(glm::vec3 value)
 {
+  value = glm::radians(value);
   this->_absoluteRotation += value - this->_relativeRotation;
   this->_relativeRotation = value;
   this->_recomputeTransformationMatrix();
@@ -63,8 +64,9 @@ void Transformation::setRelativeRotation(glm::vec3 value)
 
 void Transformation::setRelativeScaling(glm::vec3 value)
 {
-  this->_absoluteScaling += value - this->_relativeScaling;
+  this->_absoluteScaling /= this->_relativeScaling;
   this->_relativeScaling = value;
+  this->_absoluteScaling *= this->_relativeScaling;
   this->_recomputeTransformationMatrix();
   this->_notify(Event::COMPONENT_UPDATED);
 }
@@ -85,7 +87,7 @@ void Transformation::rotate(glm::vec3 value)
 
 void Transformation::scale(glm::vec3 value)
 {
-  this->setRelativeScaling(this->_relativeScaling + value);
+  this->setRelativeScaling(value);
   for (auto childTransformation : this->_getChildTransformations())
     childTransformation->scale(value);
 }

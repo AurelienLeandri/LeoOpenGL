@@ -76,7 +76,6 @@ void main()
 
   vec4 diffuse_sample_rgba = texture(material.diffuse_texture, TexCoords);
   vec3 diffuse_sample = diffuse_sample_rgba.xyz;
-
   float specularStrength = 0.5;
   vec3 viewDir = normalize(viewPos - FragPos);
   vec4 specular_sample_rgba = texture(material.specular_texture, TexCoords);
@@ -88,26 +87,35 @@ void main()
 
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UPointLight iupl = upl[i];
+
+    float distance = length(iupl.position - FragPos);
+    // Unstable because uninitialized lights yield negative values. SHoud fix itself once we generate shader code
+    float attenuation = 1.0 / (iupl.constant + iupl.linear * distance + iupl.quadratic * (distance * distance));
+
     vec3 lightDir = normalize(iupl.position - FragPos);
     float diffuseFactor = max(dot(norm, lightDir), 0.0);
-    diffuse += iupl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample);
+    vec3 diffuseContribution = attenuation * (iupl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample));
+    diffuse += max(vec3(0.0), diffuseContribution);  // TODO: remove max after attenuation fix
     //vec3 reflectDir = normalize(reflect(-lightDir, norm));
     //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 halfwayVec = normalize(-lightDir + viewDir);
-    float spec = pow(max(dot(Normal, halfwayVec), 0.0), material.shininess);
-    specular += iupl.specular * spec * (material.specular_value * specular_sample);
+    vec3 halfwayVec = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(norm, halfwayVec), 0.0), material.shininess);
+    vec3 specularContribution = attenuation * (iupl.specular * spec * (material.specular_value * specular_sample));
+    specular += max(vec3(0.0), specularContribution);  // TODO: remove max after attenuation fix
   }
 
+  float bias = 0.005;
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UDirectionLight iudl = udl[i];
     vec3 lightDir = normalize(-iudl.direction);
     float diffuseFactor = max(dot(norm, lightDir), 0.0);
-    diffuse += iudl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample);
+    float shadow = (1 - computeShadow(bias));
+    diffuse += shadow * (iudl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample));
     //vec3 reflectDir = normalize(reflect(-lightDir, norm));
     //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 halfwayVec = normalize(-lightDir + viewDir);
-    float spec = pow(max(dot(Normal, halfwayVec), 0.0), material.shininess);
-    specular += iudl.specular * spec * (material.specular_value * specular_sample);
+    vec3 halfwayVec = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(norm, halfwayVec), 0.0), material.shininess);
+    specular += shadow * (iudl.specular * spec * (material.specular_value * specular_sample));
   }
 
   /*
@@ -116,9 +124,8 @@ void main()
   float reflectionFactor = texture(material.reflection_map, TexCoords).x;
   */
 
-  float bias = 0.005;
-  vec3 result = (1 - computeShadow(bias)) * (diffuse + specular) + (ambient * diffuse_sample)/* + vec3(reflectionColor * reflectionFactor)*/;
-  //vec3 result = specular;
+  vec3 result = diffuse + specular + (ambient * diffuse_sample)/* + vec3(reflectionColor * reflectionFactor)*/;
+  //vec3 result = vec3(material.shininess / 100.0);
   //color = vec4(FragPosLightSpace, 1.0);
   //color = vec4(diffuse_value, 1.0);
   //color = vec4(diffuse_sample, 1.0);
