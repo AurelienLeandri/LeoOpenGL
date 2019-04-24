@@ -52,7 +52,6 @@ private:
   GLuint _lightsUBO = 0;
   const SceneGraph &_sceneGraph;
   const Camera &_camera;
-  SceneContext &_sceneContext;
 };
 
 } // namespace leo

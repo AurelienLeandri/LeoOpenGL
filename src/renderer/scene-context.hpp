@@ -10,11 +10,14 @@ class DirectionLight;
 class PointLight;
 class BufferCollection;
 class TextureWrapper;
+class Texture;
+class TextureOptions;
 class DirectionLightWrapper;
 class PointLightWrapper;
 class SceneGraph;
 class Shader;
 class OpenGLContext;
+class Material;
 
 class SceneContext
 {
@@ -27,6 +30,10 @@ public:
 public:
     void registerDirectionLight(const DirectionLight &dl, const SceneGraph &sceneGraph, Shader &shadowShader);
     void registerPointLight(const PointLight &dl);
+    void registerMaterial(const Material &m);
+
+private:
+    void registerTexture(const Texture &tex, TextureOptions textureOptions);
 
 public:
     // SceneGraph data

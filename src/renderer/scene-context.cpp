@@ -8,7 +8,11 @@
 #include <model/components/direction-light.hpp>
 #include <model/components/point-light.hpp>
 #include <model/components/transformation.hpp>
+#include <model/components/material.hpp>
 #include <model/entity.hpp>
+#include <model/texture-manager.hpp>
+
+#include <utils/texture.hpp>
 
 namespace leo
 {
@@ -50,7 +54,7 @@ void SceneContext::registerDirectionLight(const DirectionLight &dl, const SceneG
     DirectionLightWrapper &wrapper = this->dLights.insert(std::pair<t_id, DirectionLightWrapper>(
                                                               dl.getId(),
                                                               DirectionLightWrapper(Framebuffer(options), lightSpaceMatrix, DirectionLightUniform(dl),
-                                                                                    ShadowMappingNode(this->_context, sceneGraph, shadowShader, dl))))
+                                                                                    ShadowMappingNode(this->_context, *this, sceneGraph, shadowShader, dl))))
                                          .first->second;
 
     wrapper.map.generate();
@@ -65,9 +69,21 @@ void SceneContext::registerPointLight(const PointLight &pl)
     const Transformation *transform = static_cast<const Transformation *>(pl.getEntity()->getComponent(ComponentType::TRANSFORMATION));
     if (transform)
     {
-      const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-      plu.position = transformation * pl.position;
+        const glm::mat4x4 &transformation = transform->getTransformationMatrix();
+        plu.position = transformation * pl.position;
     }
+}
+
+void SceneContext::registerMaterial(const Material &m)
+{
+    for (const Texture *t : {m.diffuse_texture, m.specular_texture, m.reflection_map})
+        if (t)
+            this->registerTexture(*t, {});
+}
+
+void SceneContext::registerTexture(const Texture &tex, TextureOptions textureOptions = {})
+{
+    this->textures.insert(std::pair<t_id, TextureWrapper>(tex.getId(), TextureWrapper(tex, textureOptions)));
 }
 
 } // namespace leo

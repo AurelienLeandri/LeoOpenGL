@@ -3,14 +3,17 @@
 #include <renderer/shader.hpp>
 #include <renderer/framebuffer.hpp>
 #include <renderer/opengl-context.hpp>
+#include <renderer/scene-context.hpp>
+
+#include <utils/texture.hpp>
 
 #include <sstream>
 
 namespace leo
 {
 
-RenderNode::RenderNode(OpenGLContext &context, Shader &shader, RenderNodeOptions options)
-    : RenderGraphNode(context), _shader(shader), _options(options)
+RenderNode::RenderNode(OpenGLContext &context, SceneContext &sceneContext, Shader &shader, RenderNodeOptions options)
+    : RenderGraphNode(context), _sceneContext(sceneContext), _shader(shader), _options(options)
 {
 }
 
@@ -43,7 +46,7 @@ void RenderNode::_loadOutputFramebuffer()
 
 void RenderNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)
 {
-    this->_shader.setTexture(uniformName, this->_context.getTextureWrapperId(texture), textureSlot);
+    this->_shader.setTexture(uniformName, this->_sceneContext.textures.find(texture.getId())->second.getId(), textureSlot);
 }
 
 void RenderNode::setOptions(RenderNodeOptions options)

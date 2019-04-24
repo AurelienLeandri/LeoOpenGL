@@ -18,11 +18,12 @@ class Camera;
 class Shader;
 class OpenGLContext;
 class Texture;
+class SceneContext;
 
 class RenderNode : public Observer, public RenderGraphNode
 {
 public:
-  RenderNode(OpenGLContext &context, Shader &shader, RenderNodeOptions options = {});
+  RenderNode(OpenGLContext &context, SceneContext &sceneContext, Shader &shader, RenderNodeOptions options = {});
 
 public:
   virtual void notified(Subject *subject, Event event) = 0;
@@ -41,6 +42,7 @@ protected:
   Shader &_shader;
   GLuint _materialTextureOffset = 0;
   RenderNodeOptions _options;
+  SceneContext &_sceneContext;
 
 };
 

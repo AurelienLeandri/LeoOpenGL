@@ -131,6 +131,7 @@ void Renderer::_registerComponent(const IComponent &component)
   break;
   case ComponentType::MATERIAL:
   {
+    this->_sceneContext.registerMaterial(*static_cast<const Material *>(&component));
   }
   break;
   case ComponentType::TRANSFORMATION:
@@ -200,7 +201,7 @@ void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
 {
   if (this->_cubeMapNode == nullptr)
   {
-    this->_cubeMapNode = new CubeMapNode(this->_context, *sceneGraph, this->_cubeMapShader, *this->_camera);
+    this->_cubeMapNode = new CubeMapNode(this->_context, this->_sceneContext, *sceneGraph, this->_cubeMapShader, *this->_camera);
     this->_cubeMapNode->setOutput(&this->_multisampled);
   }
 }
@@ -209,7 +210,7 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
 {
   if (this->_postProcessNode == nullptr)
   {
-    this->_postProcessNode = new PostProcessNode(this->_context, *sceneGraph, this->_postProcessShader);
+    this->_postProcessNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_postProcessShader);
     this->_postProcessNode->getInputs().insert(std::pair<std::string, Framebuffer *>("fb", &this->_main));
     this->_postProcessNode->setOutput(&this->_postProcess);
   }
@@ -219,7 +220,7 @@ void Renderer::createGammaCorrectionNode(SceneGraph *sceneGraph)
 {
   if (this->_gammaCorrectionNode == nullptr)
   {
-    this->_gammaCorrectionNode = new PostProcessNode(this->_context, *sceneGraph, this->_gammaCorrectionShader);
+    this->_gammaCorrectionNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_gammaCorrectionShader);
     this->_gammaCorrectionNode->getInputs().insert(std::pair<std::string, Framebuffer *>("fb", &this->_postProcess));
     this->_gammaCorrectionNode->setOutput(nullptr);
   }

@@ -10,8 +10,8 @@
 namespace leo
 {
 
-PostProcessNode::PostProcessNode(OpenGLContext &context, SceneGraph &sceneGraph, Shader &shader)
-    : RenderNode(context, shader), _sceneGraph(sceneGraph)
+PostProcessNode::PostProcessNode(OpenGLContext &context, SceneContext &sceneContext, SceneGraph &sceneGraph, Shader &shader)
+    : RenderNode(context, sceneContext, shader), _sceneGraph(sceneGraph)
 {
     this->_postProcessGeometry = new Volume(Volume::createPostProcessPlane());
     this->_loadPostProcessQuad();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <model/icomponent.hpp>
+#include <model/texture-manager.hpp>
 
 #include <renderer/global.hpp>
 
@@ -23,10 +24,10 @@ public:
 
 public:
   glm::vec3 diffuse_value;
-  Texture *diffuse_texture = nullptr;
+  Texture *diffuse_texture = TextureManager::white.get();
   glm::vec3 specular_value;
-  Texture *specular_texture = nullptr;
-  Texture *reflection_map = nullptr;
+  Texture *specular_texture = TextureManager::white.get();
+  Texture *reflection_map = TextureManager::black.get();
   float shininess = 32.f;
   bool force = false;
 };
