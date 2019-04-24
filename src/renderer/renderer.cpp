@@ -35,7 +35,7 @@ Renderer::Renderer(GLFWwindow *window,
                    const SceneGraph &sceneGraph) : _shader(shader), _sceneGraph(sceneGraph),
                                                    _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl"),
                                                    _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
-                                                   _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/basic.frag.glsl"),
+                                                   _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl"),
                                                    _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
                                                    _multisampled({true, 4}),
                                                    _blitNode(this->_context),
@@ -188,6 +188,11 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
 
 void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm::mat4> &transformations)
 {
+  // Load instanced scene graph as well
+  const Entity *root = sceneGraph->getRoot();
+  if (root)
+    this->_visitSceneGraphRec(*root);
+
   if (this->_instancedNode == nullptr)
   {
     this->_sceneContext.setInstancingVBO(transformations);
