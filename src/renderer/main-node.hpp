@@ -46,7 +46,6 @@ protected:
 
 protected:
   virtual void _drawVolume(const Volume *volume);
-  virtual void _loadVolume(const Volume *volume);
 
 private:
   GLuint _lightsUBO = 0;

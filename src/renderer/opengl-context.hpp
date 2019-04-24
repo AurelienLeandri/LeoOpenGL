@@ -33,20 +33,21 @@ public:
   void init();
   void init(const OpenGLContextOptions &options);
   void setWindowContext(GLFWwindow &window, InputManager &inputManager);
-  void loadVAO(const Volume &v);
-  void loadVAOInstanced(const Volume &v, const GLuint &transformationsVBO);
-  void bindVAO(const Volume &volume);
   t_id getTextureWrapperId(const Texture &texture);
-  void loadFramebuffer(const Framebuffer *fb=nullptr, GLuint bindingType=GL_FRAMEBUFFER);
+  void loadFramebuffer(const Framebuffer *fb = nullptr, GLuint bindingType = GL_FRAMEBUFFER);
   GLuint loadCubeMap(const CubeMap &cubeMap);
-  void drawVolume(const Volume &volume);
+  void drawVolume(const Volume &volume, const BufferCollection &bc);
+  void drawVolumeInstanced(const Volume &volume, const BufferCollection &bc, int amount);
+  void generateBufferCollection(BufferCollection &bc, const Volume &volume);
+  void generateBufferCollectionInstanced(BufferCollection &bc, const Volume &volume, GLuint transformationsVBO);
+  GLuint generateInstancingVBO(const std::vector<glm::mat4> &transformations);
 
 public:
   OpenGLContext(OpenGLContext const &) = delete;
   void operator=(OpenGLContext const &) = delete;
 
 private:
-  void _generateBufferCollection(BufferCollection &bc, const Volume &volume);
+  void _loadBuffers(const BufferCollection &bc);
 
 private:
   std::map<t_id, BufferCollection> _bufferCollections;

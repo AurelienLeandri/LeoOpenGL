@@ -16,7 +16,6 @@ class InstancedNode : public MainNode
 
   private:
     virtual void _drawVolume(const Volume *volume) override;
-    virtual void _loadVolume(const Volume *volume) override;
 
   private:
     std::vector<glm::mat4> _transformations;

@@ -3,6 +3,7 @@
 #include <renderer/shader.hpp>
 #include <renderer/opengl-context.hpp>
 #include <renderer/framebuffer.hpp>
+#include <renderer/scene-context.hpp>
 
 #include <model/scene-graph.hpp>
 #include <model/entity.hpp>
@@ -71,7 +72,8 @@ void ShadowMappingNode::_renderRec(const Entity *root, const glm::mat4x4 *matrix
     p_component = root->getComponent(ComponentType::VOLUME);
     if (p_component)
     {
-        this->_context.drawVolume(*static_cast<const Volume *>(p_component));
+        this->_context.drawVolume(*static_cast<const Volume *>(p_component),
+                                  this->_sceneContext.bufferCollections.find(p_component->getId())->second);
     }
 
     for (auto &child : root->getChildren())
@@ -105,7 +107,7 @@ void ShadowMappingNode::notified(Subject *subject, Event event)
             switch (event)
             {
             case Event::COMPONENT_ADDED:
-                this->_context.loadVAO(*static_cast<Volume *>(c));
+                //this->_context.loadVAO(*static_cast<Volume *>(c));
                 break;
             default:
                 break;

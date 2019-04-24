@@ -68,22 +68,7 @@ void OpenGLContext::setWindowContext(GLFWwindow &window, InputManager &inputMana
     glfwSetInputMode(&window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void OpenGLContext::loadVAO(const Volume &volume)
-{
-    this->_bufferCollectionsInstanced.erase(volume.getId());
-
-    auto it = this->_bufferCollections.find(volume.getId());
-
-    if (it == this->_bufferCollections.end())
-    {
-        this->_bufferCollections.insert(std::pair<t_id, BufferCollection>(volume.getId(), BufferCollection())).first;
-        BufferCollection &bc = this->_bufferCollections[volume.getId()];
-
-        this->_generateBufferCollection(bc, volume);
-    }
-}
-
-void OpenGLContext::_generateBufferCollection(BufferCollection &bc, const Volume &volume)
+void OpenGLContext::generateBufferCollection(BufferCollection &bc, const Volume &volume)
 {
     glGenVertexArrays(1, &bc.VAO);
     glGenBuffers(1, &bc.VBO);
@@ -116,71 +101,48 @@ void OpenGLContext::_generateBufferCollection(BufferCollection &bc, const Volume
                  &indices[0], GL_STATIC_DRAW);
 }
 
-void OpenGLContext::loadVAOInstanced(const Volume &volume, const GLuint &transformationsVBO)
+void OpenGLContext::generateBufferCollectionInstanced(BufferCollection &bc, const Volume &volume, GLuint transformationsVBO)
 {
-    auto it = this->_bufferCollectionsInstanced.find(volume.getId());
+    if (bc.VAO == 0)
+        this->generateBufferCollection(bc, volume);
 
-    if (it == this->_bufferCollectionsInstanced.end())
-    {
-        unsigned int VAO = 0;
+    unsigned int VAO = bc.VAO;
 
-        auto it2 = this->_bufferCollections.find(volume.getId());
-        if (it2 != this->_bufferCollections.end())
-        {
-            this->_bufferCollectionsInstanced.insert(
-                std::pair<t_id, BufferCollection>(
-                    volume.getId(), it2->second));
-            this->_bufferCollections.erase(volume.getId());
-        }
-        else
-        {
-            this->_bufferCollectionsInstanced.insert(
-                std::pair<t_id, BufferCollection>(
-                    volume.getId(), BufferCollection()));
-            this->_generateBufferCollection(this->_bufferCollectionsInstanced[volume.getId()], volume);
-        }
-        BufferCollection &bc = this->_bufferCollectionsInstanced[volume.getId()];
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, transformationsVBO);
+    // vertex Attributes
+    GLsizei vec4Size = sizeof(glm::vec4);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)0);
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(vec4Size));
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(2 * vec4Size));
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(3 * vec4Size));
 
-        VAO = bc.VAO;
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
 
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, transformationsVBO);
-        // vertex Attributes
-        GLsizei vec4Size = sizeof(glm::vec4);
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)0);
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(vec4Size));
-        glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(2 * vec4Size));
-        glEnableVertexAttribArray(6);
-        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(3 * vec4Size));
-
-        glVertexAttribDivisor(3, 1);
-        glVertexAttribDivisor(4, 1);
-        glVertexAttribDivisor(5, 1);
-        glVertexAttribDivisor(6, 1);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
-void OpenGLContext::bindVAO(const Volume &volume)
+GLuint OpenGLContext::generateInstancingVBO(const std::vector<glm::mat4> &transformations)
 {
-    auto it = this->_bufferCollections.find(volume.getId());
-    if (it != this->_bufferCollections.end())
-    {
-        glBindVertexArray(it->second.VAO);
-        return;
-    }
-    auto it2 = this->_bufferCollectionsInstanced.find(volume.getId());
-    if (it2 != this->_bufferCollectionsInstanced.end())
-    {
-        glBindVertexArray(it2->second.VAO);
-        return;
-    }
-    std::cerr << "Error: buffer collection of volume ID " << volume.getId() << " not found." << std::endl;
+    GLuint VBO = 0;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, transformations.size() * sizeof(glm::mat4), &transformations[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    return VBO;
+}
+
+void OpenGLContext::_loadBuffers(const BufferCollection &bc)
+{
+    glBindVertexArray(bc.VAO);
 }
 
 t_id OpenGLContext::getTextureWrapperId(const Texture &texture)
@@ -238,12 +200,20 @@ GLuint OpenGLContext::loadCubeMap(const CubeMap &cubeMap)
     return bc.VAO;
 }
 
-void OpenGLContext::drawVolume(const Volume &volume)
+void OpenGLContext::drawVolume(const Volume &volume, const BufferCollection &bc)
 {
-    this->bindVAO(volume);
+    this->_loadBuffers(bc);
     const std::vector<GLuint> &indices = volume.getIndices();
     glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(),
                    GL_UNSIGNED_INT, 0);
+}
+
+void OpenGLContext::drawVolumeInstanced(const Volume &volume, const BufferCollection &bc, int amount)
+{
+    this->_loadBuffers(bc);
+    const std::vector<GLuint> &indices = volume.getIndices();
+    glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)indices.size(),
+                            GL_UNSIGNED_INT, 0, amount);
 }
 
 } // namespace leo

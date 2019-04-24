@@ -140,6 +140,7 @@ void Renderer::_registerComponent(const IComponent &component)
   break;
   case ComponentType::VOLUME:
   {
+    this->_sceneContext.registerVolume(*static_cast<const Volume *>(&component));
   }
   break;
   default:
@@ -189,6 +190,7 @@ void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm
 {
   if (this->_instancedNode == nullptr)
   {
+    this->_sceneContext.setInstancingVBO(transformations);
     this->_instancedNode = new InstancedNode(this->_context, this->_sceneContext, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
     this->_instancedNode->setOutput(&this->_multisampled);
   }

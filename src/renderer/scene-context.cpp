@@ -4,11 +4,13 @@
 #include <renderer/light-wrapper.hpp>
 #include <renderer/buffer-collection.hpp>
 #include <renderer/texture-wrapper.hpp>
+#include <renderer/opengl-context.hpp>
 
 #include <model/components/direction-light.hpp>
 #include <model/components/point-light.hpp>
 #include <model/components/transformation.hpp>
 #include <model/components/material.hpp>
+#include <model/components/volume.hpp>
 #include <model/entity.hpp>
 #include <model/texture-manager.hpp>
 
@@ -84,6 +86,52 @@ void SceneContext::registerMaterial(const Material &m)
 void SceneContext::registerTexture(const Texture &tex, TextureOptions textureOptions = {})
 {
     this->textures.insert(std::pair<t_id, TextureWrapper>(tex.getId(), TextureWrapper(tex, textureOptions)));
+}
+
+void SceneContext::registerVolume(const Volume &volume)
+{
+    this->bufferCollectionsInstanced.erase(volume.getId());
+
+    auto it = this->bufferCollections.find(volume.getId());
+
+    if (it == this->bufferCollections.end())
+    {
+        this->bufferCollections.insert(std::pair<t_id, BufferCollection>(volume.getId(), BufferCollection())).first;
+        BufferCollection &bc = this->bufferCollections[volume.getId()];
+
+        this->_context.generateBufferCollection(bc, volume);
+    }
+}
+
+void SceneContext::registerInstancedVolume(const Volume &volume)
+{
+    auto it = this->bufferCollectionsInstanced.find(volume.getId());
+
+    if (it == this->bufferCollectionsInstanced.end())
+    {
+
+        auto it2 = this->bufferCollections.find(volume.getId());
+        if (it2 != this->bufferCollections.end())
+        {
+            this->bufferCollectionsInstanced.insert(
+                std::pair<t_id, BufferCollection>(
+                    volume.getId(), it2->second));
+            this->bufferCollections.erase(volume.getId());
+        }
+        else
+        {
+            this->bufferCollectionsInstanced.insert(
+                std::pair<t_id, BufferCollection>(
+                    volume.getId(), BufferCollection()));
+        }
+        BufferCollection &bc = this->bufferCollectionsInstanced[volume.getId()];
+        this->_context.generateBufferCollectionInstanced(bc, volume, this->instancingVBO);
+    }
+}
+
+void SceneContext::setInstancingVBO(const std::vector<glm::mat4> &transformations)
+{
+    this->instancingVBO = this->_context.generateInstancingVBO(transformations);
 }
 
 } // namespace leo

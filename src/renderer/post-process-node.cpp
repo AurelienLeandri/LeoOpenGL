@@ -4,6 +4,7 @@
 #include <renderer/framebuffer.hpp>
 #include <renderer/camera.hpp>
 #include <renderer/opengl-context.hpp>
+#include <renderer/scene-context.hpp>
 
 #include <model/scene-graph.hpp>
 
@@ -30,11 +31,8 @@ void PostProcessNode::render()
     glClear(GL_COLOR_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
 
-    this->_context.bindVAO(*this->_postProcessGeometry);
-    const std::vector<GLuint> &indices = this->_postProcessGeometry->getIndices();
-    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(),
-                   GL_UNSIGNED_INT, 0);
-
+    this->_context.drawVolume(*this->_postProcessGeometry,
+                              this->_sceneContext.bufferCollections.find(this->_postProcessGeometry->getId())->second);
 }
 
 void PostProcessNode::notified(Subject *subject, Event event)
@@ -51,7 +49,7 @@ void PostProcessNode::_unload()
 
 void PostProcessNode::_loadPostProcessQuad()
 {
-    this->_context.loadVAO(*this->_postProcessGeometry);
+    this->_sceneContext.registerVolume(*this->_postProcessGeometry);
 }
 
 } // namespace leo

@@ -109,7 +109,8 @@ void MainNode::_renderRec(const Entity *root, const Material *material, const gl
     p_component = root->getComponent(ComponentType::VOLUME);
     if (p_component)
     {
-        this->_context.drawVolume(*static_cast<const Volume *>(p_component));
+        this->_context.drawVolume(*static_cast<const Volume *>(p_component),
+                                  this->_sceneContext.bufferCollections.find(p_component->getId())->second);
     }
 
     for (auto &child : root->getChildren())
@@ -128,7 +129,7 @@ void MainNode::_renderRec(const Entity *root, const Material *material, const gl
 
 void MainNode::_drawVolume(const Volume *volume)
 {
-    this->_context.drawVolume(*volume);
+    this->_context.drawVolume(*volume, this->_sceneContext.bufferCollections.find(volume->getId())->second);
 }
 
 void MainNode::_loadLightsToShader()
@@ -190,11 +191,6 @@ void MainNode::_setCurrentMaterial(const Material *material)
                                material->reflection_map ? *material->reflection_map : *TextureManager::black.get());
 }
 
-void MainNode::_loadVolume(const Volume *volume)
-{
-    this->_context.loadVAO(*volume);
-}
-
 void MainNode::_loadShader()
 {
     RenderNode::_loadShader();
@@ -226,7 +222,6 @@ void MainNode::notified(Subject *subject, Event event)
             switch (event)
             {
             case Event::COMPONENT_ADDED:
-                this->_loadVolume(static_cast<Volume *>(c));
                 break;
             default:
                 break;
