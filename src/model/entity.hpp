@@ -24,6 +24,9 @@ public:
   Entity();
 
 public:
+  virtual void watch(Observer *observer) override;
+
+public:
   bool addComponent(IComponent *component);
   bool addComponent(DirectionLight *component);
   bool addComponent(PointLight *component);
@@ -35,7 +38,6 @@ public:
   void setParent(Entity *parent);
   const SceneGraph *getSceneGraph() const;
   void setSceneGraph(SceneGraph *sceneGraph);
-  void reloadScene(std::vector<Observer *> observers);
 
 private:
   void _setSceneGraphRec(SceneGraph *sceneGraph);

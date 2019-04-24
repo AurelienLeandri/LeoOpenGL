@@ -43,7 +43,7 @@ public:
            InputManager *inputManager,
            Camera *camera,
            Shader shader,
-           const SceneGraph &sceneGraph);
+           SceneGraph &sceneGraph);
   virtual ~Renderer();
   Renderer(const Renderer &other) = delete;
 
@@ -104,9 +104,7 @@ private:
   InstancedNode *_instancedNode = nullptr;
   BlitNode _blitNode;
 
-  const SceneGraph &_sceneGraph;
-
-  
+  SceneGraph &_sceneGraph;
 };
 
 } // namespace leo

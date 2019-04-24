@@ -153,7 +153,6 @@ void cubeScene()
   t2->setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
   t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
   Entity node2;
-  node1.addChild(&node2);
   node2.addComponent(t2);
   node2.addComponent(pl);
 
@@ -168,7 +167,6 @@ void cubeScene()
   t3->setRelativeRotation(glm::vec3(45.f, 0.f, 0.f));
   t3->setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
   Entity node3;
-  node1.addChild(&node3);
   node3.addComponent(cube);
   node3.addComponent(t3);
   node3.addComponent(dl);
@@ -190,6 +188,11 @@ void cubeScene()
   Engine engine;
 
   engine.setScene(&scene);
+
+  // Test oberver mode
+  node1.addChild(&node3);
+  node1.addChild(&node2);
+
   engine.gameLoop();
 }
 

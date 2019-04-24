@@ -34,13 +34,11 @@ bool Entity::addComponent(IComponent *component)
 
 bool Entity::addComponent(PointLight *component)
 {
-  this->_sceneGraph->addLight(component);
   return this->addComponent(static_cast<IComponent *>(component));
 }
 
 bool Entity::addComponent(DirectionLight *component)
 {
-  this->_sceneGraph->addLight(component);
   return this->addComponent(static_cast<IComponent *>(component));
 }
 
@@ -67,7 +65,9 @@ bool Entity::addChild(Entity *child)
     child->setParent(this);
     child->_setSceneGraphRec(this->_sceneGraph);
   }
-  this->reloadScene(this->_observers);
+  for (Observer *obs : this->_observers)
+    child->watch(obs);
+  child->_notify(Event::BASE_ADDED);
   return success;
 }
 
@@ -101,19 +101,16 @@ void Entity::_setSceneGraphRec(SceneGraph *sceneGraph)
     it.second->_setSceneGraphRec(sceneGraph);
 }
 
-void Entity::reloadScene(std::vector<Observer *> observers)
+void Entity::watch(Observer *observer)
 {
-  this->_observers = observers;
+  Subject::watch(observer);
   for (auto &p : this->_components)
   {
-    IComponent *c = p.second;
-    this->_notify(*c, Event::COMPONENT_ADDED);
+    p.second->watch(observer);
   }
   for (auto &p : this->_children)
   {
-    Entity *e = p.second;
-    this->_notify(*e, Event::BASE_ADDED);
-    e->reloadScene(this->_observers);
+    p.second->watch(observer);
   }
 }
 

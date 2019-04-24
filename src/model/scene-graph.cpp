@@ -22,36 +22,6 @@ void SceneGraph::setRoot(Entity *root)
     this->_root->setSceneGraph(this);
 }
 
-void SceneGraph::addLight(PointLight *light)
-{
-    this->_pointLights.insert(std::pair<t_id, PointLight *>(light->getId(), light));
-}
-
-void SceneGraph::addLight(DirectionLight *light)
-{
-    this->_directionLights.insert(std::pair<t_id, DirectionLight *>(light->getId(), light));
-}
-
-void SceneGraph::removeLight(PointLight *light)
-{
-    this->_pointLights.erase(light->getId());
-}
-
-void SceneGraph::removeLight(DirectionLight *light)
-{
-    this->_directionLights.erase(light->getId());
-}
-
-const std::map<t_id, PointLight *> &SceneGraph::getPointLights() const
-{
-    return this->_pointLights;
-}
-
-const std::map<t_id, DirectionLight *> &SceneGraph::getDirectionLights() const
-{
-    return this->_directionLights;
-}
-
 const CubeMap *SceneGraph::getCubeMap() const
 {
     return this->_cubeMap;
@@ -63,9 +33,11 @@ void SceneGraph::setCubeMap(CubeMap *cubeMap)
     this->_notify(*this, Event::CUBE_MAP_UPDATED);
 }
 
-void SceneGraph::reloadScene(std::vector<Observer *> observers)
+void SceneGraph::watch(Observer *observer)
 {
-    this->_root->reloadScene(observers);
+    Subject::watch(observer);
+    if (this->_root)
+        this->_root->watch(observer);
 }
 
 } // namespace leo

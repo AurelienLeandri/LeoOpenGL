@@ -32,17 +32,18 @@ Renderer::Renderer(GLFWwindow *window,
                    InputManager *inputManager,
                    Camera *camera,
                    Shader shader,
-                   const SceneGraph &sceneGraph) : _shader(shader), _sceneGraph(sceneGraph),
-                                                   _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl"),
-                                                   _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
-                                                   _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl"),
-                                                   _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
-                                                   _multisampled({true, 4}),
-                                                   _blitNode(this->_context),
-                                                   _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl"),
-                                                   _sceneContext(this->_context)
+                   SceneGraph &sceneGraph) : _shader(shader), _sceneGraph(sceneGraph),
+                                             _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/post-process.fragment.glsl"),
+                                             _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
+                                             _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl"),
+                                             _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
+                                             _multisampled({true, 4}),
+                                             _blitNode(this->_context),
+                                             _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl"),
+                                             _sceneContext(this->_context)
 
 {
+  this->_sceneGraph.watch(this);
   this->_setWindowContext(window, inputManager);
   this->_setCamera(camera);
   this->_init();
@@ -181,9 +182,6 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
     this->_mainNode = new MainNode(this->_context, this->_sceneContext, *sceneGraph, this->_shader, *this->_camera);
     this->_mainNode->setOutput(&this->_multisampled);
   }
-  std::vector<Observer *> obs;
-  obs.push_back(this->_mainNode);
-  sceneGraph->reloadScene(obs);
 }
 
 void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm::mat4> &transformations)
@@ -199,9 +197,6 @@ void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm
     this->_instancedNode = new InstancedNode(this->_context, this->_sceneContext, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
     this->_instancedNode->setOutput(&this->_multisampled);
   }
-  std::vector<Observer *> obs;
-  obs.push_back(this->_instancedNode);
-  sceneGraph->reloadScene(obs);
 }
 
 void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
@@ -238,8 +233,16 @@ void Renderer::notified(Subject *subject, Event event)
   IComponent *c = dynamic_cast<IComponent *>(subject);
   if (c)
   {
-    if (event == Event::COMPONENT_ADDED)
-      this->_registerComponent(*c);
+    // TODO: Separate events crated, updated, deleted etc. But for now lets focus on batch mode
+    this->_registerComponent(*c);
+    return;
+  }
+  Entity *e = dynamic_cast<Entity *>(subject);
+  if (e)
+  {
+    // TODO: Separate events crated, updated, deleted etc. But for now lets focus on batch mode
+    this->_visitSceneGraphRec(*e);
+    return;
   }
 }
 

@@ -15,8 +15,8 @@ public:
   virtual ~Subject();
 
 public:
-  void watch(Observer *observer);
-  void unwatch(Observer *observer);
+  virtual void watch(Observer *observer);
+  virtual void unwatch(Observer *observer);
   void setObservers(std::vector<Observer *> observers);
 
 protected:

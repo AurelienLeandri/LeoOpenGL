@@ -23,19 +23,15 @@ public:
   SceneGraph();
 
 public:
+  virtual void watch(Observer *observer) override;
+
+public:
   const Entity *getRoot() const;
   void setRoot(Entity *root);
 
 public:
-  void addLight(PointLight *light);
-  void addLight(DirectionLight *light);
-  void removeLight(PointLight *light);
-  void removeLight(DirectionLight *light);
-  const std::map<t_id, PointLight *> &getPointLights() const;
-  const std::map<t_id, DirectionLight *> &getDirectionLights() const;
   const CubeMap *getCubeMap() const;
   void setCubeMap(CubeMap *cubeMap);
-  void reloadScene(std::vector<Observer *> observers);
 
 private:
   std::map<t_id, PointLight *> _pointLights;

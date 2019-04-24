@@ -26,7 +26,6 @@ namespace leo
 MainNode::MainNode(OpenGLContext &context, SceneContext &sceneContext, SceneGraph &sceneGraph, Shader &shader, const Camera &camera, RenderNodeOptions options)
     : RenderNode(context, sceneContext, shader, options), _sceneGraph(sceneGraph), _camera(camera)
 {
-    sceneGraph.watch(this);
     { // Lights
         glGenBuffers(1, &this->_lightsUBO);
         glBindBuffer(GL_UNIFORM_BUFFER, this->_lightsUBO);
