@@ -1,24 +1,47 @@
-#include <renderer/shadow-mapping-node.hpp>
+#include <renderer/cube-shadow-map-node.hpp>
 
 #include <renderer/shader.hpp>
-#include <renderer/opengl-context.hpp>
 #include <renderer/framebuffer.hpp>
+#include <renderer/camera.hpp>
+#include <renderer/opengl-context.hpp>
 #include <renderer/scene-context.hpp>
 
 #include <model/scene-graph.hpp>
+#include <model/cube-map.hpp>
 #include <model/entity.hpp>
-#include <model/components/direction-light.hpp>
+#include <model/icomponent.hpp>
 #include <model/components/volume.hpp>
 #include <model/components/transformation.hpp>
 
+#include <sstream>
+
 namespace leo
 {
-ShadowMappingNode::ShadowMappingNode(OpenGLContext &context, SceneContext &sceneContext, const SceneGraph &sceneGraph, Shader &shader, const DirectionLight &light)
-    : RenderNode(context, sceneContext, shader), _light(light), _sceneGraph(sceneGraph)
+
+CubeShadowMapNode::CubeShadowMapNode(OpenGLContext &context, SceneContext &sceneContext, const SceneGraph &sceneGraph, Shader &shader, const PointLight &light)
+    : RenderNode(context, sceneContext, shader), _sceneGraph(sceneGraph), _light(light)
 {
+    FramebufferOptions options;
+    options.width = 1620 * 2;
+    options.height = 1080 * 2;
+    options.type = FrameBufferType::DEPTH_MAP;
+
+    for (int i = 0; i < 6; i++)
+    {
+        std::stringstream ss;
+        ss << "out";
+        if (i > 0)
+            ss << i;
+        FramebufferOptions options;
+        options.width = 1620 * 2;
+        options.height = 1080 * 2;
+        options.type = FrameBufferType::DEPTH_MAP;
+        this->_outputs[ss.str()] = new Framebuffer(options);
+        this->_outputs[ss.str()]->generate();
+    }
 }
 
-void ShadowMappingNode::render()
+void CubeShadowMapNode::render()
 {
     if (!this->_outputs.size())
         return;
@@ -43,11 +66,11 @@ void ShadowMappingNode::render()
     glEnable(GL_DEPTH_TEST);
 
     // 1. first render to depth map
-    glViewport(0, 0, this->_outputs["out"]->getOptions().width, this->_outputs["out"]->getOptions().height);
+    glViewport(0, 0, this->_outputs["out0"]->getOptions().width, this->_outputs["out0"]->getOptions().height);
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    this->_shader.setMat4("lightSpaceMatrix", this->_lightSpaceMatrix);
+    //this->_shader.setMat4("lightSpaceMatrix", this->_lightSpaceMatrix);
 
     glm::mat4x4 m;
     this->_renderRec(this->_sceneGraph.getRoot(), &m);
@@ -58,7 +81,7 @@ void ShadowMappingNode::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void ShadowMappingNode::_renderRec(const Entity *root, const glm::mat4x4 *matrix)
+void CubeShadowMapNode::_renderRec(const Entity *root, const glm::mat4x4 *matrix)
 {
     const glm::mat4x4 *newMatrix = matrix;
     const IComponent *p_component;
@@ -82,38 +105,8 @@ void ShadowMappingNode::_renderRec(const Entity *root, const glm::mat4x4 *matrix
         this->_shader.setMat4("model", *matrix);
 }
 
-void ShadowMappingNode::_loadShader()
+void CubeShadowMapNode::notified(Subject *subject, Event event)
 {
-    RenderNode::_loadShader();
-    this->_shader.use();
-
-    glm::mat4 m;
-    this->_shader.setMat4("model", m);
 }
 
-void ShadowMappingNode::setLightSpaceMatrix(glm::mat4x4 lightSpaceMatrix)
-{
-    this->_lightSpaceMatrix = lightSpaceMatrix;
-}
-
-void ShadowMappingNode::notified(Subject *subject, Event event)
-{
-    IComponent *c = dynamic_cast<IComponent *>(subject);
-    if (c)
-    {
-        switch (c->getTypeId())
-        {
-        case ComponentType::VOLUME:
-            switch (event)
-            {
-            case Event::COMPONENT_ADDED:
-                //this->_context.loadVAO(*static_cast<Volume *>(c));
-                break;
-            default:
-                break;
-            }
-            break;
-        }
-    }
-}
 } // namespace leo

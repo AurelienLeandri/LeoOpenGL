@@ -32,7 +32,7 @@ public:
 
 public:
     void registerDirectionLight(const DirectionLight &dl, const SceneGraph &sceneGraph, Shader &shadowShader);
-    void registerPointLight(const PointLight &dl);
+    void registerPointLight(const PointLight &dl, const SceneGraph &sceneGraph, Shader &shadowShader);
     void registerMaterial(const Material &m);
     void registerVolume(const Volume &volume);
     void setInstancingVBO(const std::vector<glm::mat4> &transformations);  // TODO: Should use Instancing node when the time is right

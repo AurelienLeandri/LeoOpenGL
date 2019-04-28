@@ -41,7 +41,7 @@ void RenderNode::_loadInputFramebuffers()
 
 void RenderNode::_loadOutputFramebuffer()
 {
-    this->_context.loadFramebuffer(this->_output);
+    this->_context.loadFramebuffer(this->_outputs.size() ? this->_outputs["out"] : nullptr);
 }
 
 void RenderNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)

@@ -19,7 +19,7 @@ class CubeMap;
 class CubeMapNode : public RenderNode
 {
   public:
-    CubeMapNode(OpenGLContext &context, SceneContext &sceneContext, SceneGraph &sceneGraph, Shader &shader, const Camera &camera);
+    CubeMapNode(OpenGLContext &context, SceneContext &sceneContext, const SceneGraph &sceneGraph, Shader &shader, const Camera &camera);
 
   public:
     virtual void render();

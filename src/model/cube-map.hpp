@@ -16,6 +16,7 @@ class Texture;
 class CubeMap
 {
 public:
+  CubeMap();
   CubeMap(std::string name, std::string path);
 
 public:

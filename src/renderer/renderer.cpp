@@ -67,7 +67,7 @@ void Renderer::_initFramebuffers()
   this->_main.generate();
   this->_multisampled.generate();
   this->_postProcess.generate();
-  this->_blitNode.setOutput(&this->_main);
+  this->_blitNode.getOutputs()["out"] = &this->_main;
   this->_blitNode.getInputs().insert(std::pair<std::string, Framebuffer *>("in", &this->_multisampled));
 }
 
@@ -123,7 +123,8 @@ void Renderer::_registerComponent(const IComponent &component)
   break;
   case ComponentType::POINT_LIGHT:
   {
-    this->_sceneContext.registerPointLight(*static_cast<const PointLight *>(&component));
+    this->_sceneContext.registerPointLight(*static_cast<const PointLight *>(&component),
+                                           this->_sceneGraph, this->_shadowMappingShader);
   }
   break;
   case ComponentType::INSTANCED:
@@ -180,7 +181,7 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
   if (this->_mainNode == nullptr)
   {
     this->_mainNode = new MainNode(this->_context, this->_sceneContext, *sceneGraph, this->_shader, *this->_camera);
-    this->_mainNode->setOutput(&this->_multisampled);
+    this->_mainNode->getOutputs()["out"] = &this->_multisampled;
   }
 }
 
@@ -195,7 +196,7 @@ void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm
   {
     this->_sceneContext.setInstancingVBO(transformations);
     this->_instancedNode = new InstancedNode(this->_context, this->_sceneContext, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
-    this->_instancedNode->setOutput(&this->_multisampled);
+    this->_instancedNode->getOutputs()["out"] = &this->_multisampled;
   }
 }
 
@@ -204,7 +205,7 @@ void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
   if (this->_cubeMapNode == nullptr)
   {
     this->_cubeMapNode = new CubeMapNode(this->_context, this->_sceneContext, *sceneGraph, this->_cubeMapShader, *this->_camera);
-    this->_cubeMapNode->setOutput(&this->_multisampled);
+    this->_cubeMapNode->getOutputs()["out"] = &this->_multisampled;
   }
 }
 
@@ -214,7 +215,7 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
   {
     this->_postProcessNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_postProcessShader);
     this->_postProcessNode->getInputs().insert(std::pair<std::string, Framebuffer *>("fb", &this->_main));
-    this->_postProcessNode->setOutput(&this->_postProcess);
+    this->_postProcessNode->getOutputs()["out"] = &this->_postProcess;
   }
 }
 
@@ -224,7 +225,6 @@ void Renderer::createGammaCorrectionNode(SceneGraph *sceneGraph)
   {
     this->_gammaCorrectionNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_gammaCorrectionShader);
     this->_gammaCorrectionNode->getInputs().insert(std::pair<std::string, Framebuffer *>("fb", &this->_postProcess));
-    this->_gammaCorrectionNode->setOutput(nullptr);
   }
 }
 

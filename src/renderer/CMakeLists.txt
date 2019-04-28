@@ -17,6 +17,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/instanced-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cube-map-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/cube-map-node.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/cube-shadow-map-node.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/cube-shadow-map-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/post-process-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/post-process-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/light-uniforms.cpp

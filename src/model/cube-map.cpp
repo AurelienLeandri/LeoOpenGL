@@ -7,7 +7,7 @@
 namespace leo
 {
 
-CubeMap::CubeMap(std::string name, std::string path)
+CubeMap::CubeMap()
 {
   this->_vertices = {
       // positions
@@ -52,6 +52,10 @@ CubeMap::CubeMap(std::string name, std::string path)
       1.0f, -1.0f, -1.0f,
       -1.0f, -1.0f, 1.0f,
       1.0f, -1.0f, 1.0f};
+}
+
+CubeMap::CubeMap(std::string name, std::string path) : CubeMap()
+{
   this->_loadCubeMapTextures(name, path);
 }
 

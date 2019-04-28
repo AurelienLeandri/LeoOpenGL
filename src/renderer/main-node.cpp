@@ -84,6 +84,22 @@ void MainNode::_loadInputFramebuffers()
             inputNumber++;
         }
     }
+    int cubeMapNb = 0;
+    for (auto &p : this->_sceneContext.pLights)
+    {
+        Framebuffer &input = p.second.map;
+        const std::vector<TextureWrapper> &cb = input.getColorBuffers();
+        std::stringstream ss;
+        ss << cubeMapNb;
+        for (GLuint i = 0; i < cb.size(); i++)
+        {
+            glUniform1i(glGetUniformLocation(this->_shader.getProgram(), ("shadowCubeMap" + ss.str()).c_str()), inputNumber);
+            glActiveTexture(GL_TEXTURE0 + inputNumber);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, cb[i].getId());
+            inputNumber++;
+            cubeMapNb++;
+        }
+    }
     this->_materialTextureOffset = inputNumber;
 }
 

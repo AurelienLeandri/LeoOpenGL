@@ -19,7 +19,7 @@ void BlitNode::render()
     {
         auto *input = p.second;
         this->_context.loadFramebuffer(input, GL_READ_FRAMEBUFFER);
-        this->_context.loadFramebuffer(this->_output, GL_DRAW_FRAMEBUFFER);
+        this->_context.loadFramebuffer(this->_outputs.size() ? this->_outputs["out"] : nullptr, GL_DRAW_FRAMEBUFFER);
         glBlitFramebuffer(0, 0, 1620, 1080, 0, 0, 1620, 1080,
                           GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
     }

@@ -11,7 +11,7 @@
 namespace leo
 {
 
-CubeMapNode::CubeMapNode(OpenGLContext &context, SceneContext &sceneContext, SceneGraph &sceneGraph, Shader &shader, const Camera &camera)
+CubeMapNode::CubeMapNode(OpenGLContext &context, SceneContext &sceneContext, const SceneGraph &sceneGraph, Shader &shader, const Camera &camera)
     : RenderNode(context, sceneContext, shader), _sceneGraph(sceneGraph), _camera(camera)
 {
     this->_cubeMap = sceneGraph.getCubeMap();

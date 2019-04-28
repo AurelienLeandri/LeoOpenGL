@@ -15,14 +15,9 @@ std::map<std::string, Framebuffer *> &RenderGraphNode::getInputs()
     return this->_inputs;
 }
 
-const Framebuffer *RenderGraphNode::getOutput() const
+std::map<std::string, Framebuffer *> &RenderGraphNode::getOutputs()
 {
-    return this->_output;
-}
-
-void RenderGraphNode::setOutput(Framebuffer *output)
-{
-    this->_output = output;
+    return this->_outputs;
 }
 
 } // namespace leo

@@ -22,12 +22,11 @@ class RenderGraphNode
 
   public:
     std::map<std::string, Framebuffer *> &getInputs();
-    const Framebuffer *getOutput() const;
-    void setOutput(Framebuffer *output);
-
+    std::map<std::string, Framebuffer *> &getOutputs();
+    
   protected:
     std::map<std::string, Framebuffer *> _inputs;
-    Framebuffer *_output = nullptr;
+    std::map<std::string, Framebuffer *> _outputs;
     OpenGLContext &_context;
 };
 

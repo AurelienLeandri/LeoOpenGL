@@ -60,19 +60,20 @@ void SceneContext::registerDirectionLight(const DirectionLight &dl, const SceneG
                                          .first->second;
 
     wrapper.map.generate();
-    wrapper.renderNode.setOutput(&wrapper.map);
+    wrapper.renderNode.getOutputs()["out"] = &wrapper.map;
     wrapper.renderNode.setLightSpaceMatrix(wrapper.projection);
 }
 
-void SceneContext::registerPointLight(const PointLight &pl)
+void SceneContext::registerPointLight(const PointLight &pl, const SceneGraph &sceneGraph, Shader &shadowShader)
 {
-    PointLightUniform &plu = this->pLights.insert(std::pair<t_id, PointLightWrapper>(pl.getId(), PointLightWrapper(pl)))
-                                 .first->second.uniform;
+    PointLightWrapper &plw = this->pLights.insert(std::pair<t_id, PointLightWrapper>(pl.getId(),
+                                                                                     PointLightWrapper(pl, CubeShadowMapNode(this->_context, *this, sceneGraph, shadowShader, pl))))
+                                 .first->second;
     const Transformation *transform = static_cast<const Transformation *>(pl.getEntity()->getComponent(ComponentType::TRANSFORMATION));
     if (transform)
     {
         const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-        plu.position = transformation * pl.position;
+        plw.uniform.position = transformation * pl.position;
     }
 }
 
