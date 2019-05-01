@@ -11,15 +11,14 @@ namespace leo
 
 typedef struct PointLightWrapper
 {
+    static const float near;
+    static const float far;
     Framebuffer &map;
-    glm::mat4x4 projections[6];
+    std::vector<glm::mat4> shadowTransforms;
     PointLightUniform uniform;
     CubeShadowMapNode renderNode;
 
-    PointLightWrapper(PointLightUniform uniform, CubeShadowMapNode renderNode)
-    : map(*renderNode.getOutputs()["out"]), uniform(uniform), renderNode(renderNode)
-    {
-    }
+    PointLightWrapper(PointLightUniform uniform, CubeShadowMapNode renderNode);
 
 } PointLightWrapper;
 
@@ -31,10 +30,7 @@ typedef struct DirectionLightWrapper
     ShadowMappingNode renderNode;
 
     DirectionLightWrapper(
-        Framebuffer map, glm::mat4x4 projection, DirectionLightUniform uniform, ShadowMappingNode renderNode)
-    : map(map), projection(projection), uniform(uniform), renderNode(renderNode)
-    {
-    }
+        Framebuffer map, glm::mat4x4 projection, DirectionLightUniform uniform, ShadowMappingNode renderNode);
 
 } DirectionLightWrapper;
 

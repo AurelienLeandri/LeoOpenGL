@@ -93,6 +93,7 @@ private:
   Shader _instancingShader;
   Shader _gammaCorrectionShader;
   Shader _shadowMappingShader;
+  Shader _cubeShadowMapShader;
 
   OpenGLContext _context;
   SceneContext _sceneContext;

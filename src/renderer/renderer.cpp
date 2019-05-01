@@ -40,6 +40,7 @@ Renderer::Renderer(GLFWwindow *window,
                                              _multisampled({true, 4}),
                                              _blitNode(this->_context),
                                              _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl"),
+                                             _cubeShadowMapShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl"),
                                              _sceneContext(this->_context)
 
 {
@@ -124,7 +125,7 @@ void Renderer::_registerComponent(const IComponent &component)
   case ComponentType::POINT_LIGHT:
   {
     this->_sceneContext.registerPointLight(*static_cast<const PointLight *>(&component),
-                                           this->_sceneGraph, this->_shadowMappingShader);
+                                           this->_sceneGraph, this->_cubeShadowMapShader);
   }
   break;
   case ComponentType::INSTANCED:
@@ -157,6 +158,11 @@ void Renderer::render(const SceneGraph *sceneGraph)
   {
     p.second.renderNode.render();
   }
+
+  for (auto &p : this->_sceneContext.pLights)
+  {
+    p.second.renderNode.render();
+  } 
 
   this->_mainNode->render();
 

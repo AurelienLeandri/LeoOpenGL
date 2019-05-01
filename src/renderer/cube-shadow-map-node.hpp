@@ -30,6 +30,7 @@ class CubeShadowMapNode : public RenderNode
 
   private:
     void _renderRec(const Entity *root, const glm::mat4x4 *matrix);
+    void _loadShader();
 
   private:
     const SceneGraph &_sceneGraph;

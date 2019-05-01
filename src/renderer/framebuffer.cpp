@@ -11,7 +11,7 @@ Framebuffer::Framebuffer(FramebufferOptions options) : _id(0), _options(options)
 
 void Framebuffer::generate()
 {
-  if (!this->_renderedTexture)
+  if (!this->_renderedTexture && this->_options.type != FrameBufferType::CUBE_MAP)
   {
     if (this->_options.type == FrameBufferType::DEFAULT)
     {
@@ -30,13 +30,20 @@ void Framebuffer::generate()
     options.nbSamples = this->_options.nbSamples;
   }
 
-  if (this->_options.type = FrameBufferType::CUBE_MAP)  // For depth cube map
+  if (this->_options.type == FrameBufferType::CUBE_MAP) // For depth cube map
   {
     options.textureType = GL_TEXTURE_CUBE_MAP;
-    this->_colorBuffers.push_back(TextureWrapper(*this->_renderedTexture, options));
+    for (int i = 0; i < 6; i++)
+    {
+      this->_cubeMapTextures.push_back(std::make_shared<Texture>(this->_options.width, this->_options.height, DEPTH));
+    }
+    this->_colorBuffers.push_back(TextureWrapper(this->_cubeMapTextures, options));
     TextureWrapper &tw = this->_colorBuffers[this->_colorBuffers.size() - 1];
     glGenFramebuffers(1, &this->_id);
     glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tw.getId(), 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
   }
   else
   {

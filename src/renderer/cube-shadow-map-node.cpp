@@ -5,6 +5,7 @@
 #include <renderer/camera.hpp>
 #include <renderer/opengl-context.hpp>
 #include <renderer/scene-context.hpp>
+#include <renderer/light-wrapper.hpp>
 
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
@@ -12,6 +13,7 @@
 #include <model/icomponent.hpp>
 #include <model/components/volume.hpp>
 #include <model/components/transformation.hpp>
+#include <model/components/point-light.hpp>
 
 #include <sstream>
 
@@ -22,23 +24,11 @@ CubeShadowMapNode::CubeShadowMapNode(OpenGLContext &context, SceneContext &scene
     : RenderNode(context, sceneContext, shader), _sceneGraph(sceneGraph), _light(light)
 {
     FramebufferOptions options;
-    options.width = 1620 * 2;
-    options.height = 1080 * 2;
-    options.type = FrameBufferType::DEPTH_MAP;
-
-    for (int i = 0; i < 6; i++)
-    {
-        std::stringstream ss;
-        ss << "out";
-        if (i > 0)
-            ss << i;
-        FramebufferOptions options;
-        options.width = 1620 * 2;
-        options.height = 1080 * 2;
-        options.type = FrameBufferType::DEPTH_MAP;
-        this->_outputs[ss.str()] = new Framebuffer(options);
-        this->_outputs[ss.str()]->generate();
-    }
+    options.width = 1024;
+    options.height = 1024;
+    options.type = FrameBufferType::CUBE_MAP;
+    this->_outputs["out"] = new Framebuffer(options);
+    this->_outputs["out"]->generate();
 }
 
 void CubeShadowMapNode::render()
@@ -66,7 +56,7 @@ void CubeShadowMapNode::render()
     glEnable(GL_DEPTH_TEST);
 
     // 1. first render to depth map
-    glViewport(0, 0, this->_outputs["out0"]->getOptions().width, this->_outputs["out0"]->getOptions().height);
+    glViewport(0, 0, this->_outputs["out"]->getOptions().width, this->_outputs["out"]->getOptions().height);
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -103,6 +93,23 @@ void CubeShadowMapNode::_renderRec(const Entity *root, const glm::mat4x4 *matrix
         this->_renderRec(child.second, newMatrix);
     if (newMatrix != matrix)
         this->_shader.setMat4("model", *matrix);
+}
+
+void CubeShadowMapNode::_loadShader()
+{
+    RenderNode::_loadShader();
+
+    this->_shader.use();
+
+    int matNb = 0;
+    const PointLightWrapper &plw = this->_sceneContext.pLights.find(this->_light.getId())->second;
+    const auto &shadowTransforms = plw.shadowTransforms;
+    for (int i = 0; i < 6; ++i)
+    {
+        this->_shader.setMat4(("lightSpaceMatrix[" + std::to_string(i) + "]").c_str(), shadowTransforms[i]);
+    }
+    this->_shader.setVector3("lightPos", this->_light.position);
+    this->_shader.setFloat("far_plane", PointLightWrapper::far);
 }
 
 void CubeShadowMapNode::notified(Subject *subject, Event event)

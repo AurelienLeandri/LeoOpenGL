@@ -13,7 +13,8 @@ class Texture;
 enum FrameBufferType
 {
   DEFAULT,
-  DEPTH_MAP
+  DEPTH_MAP,
+  CUBE_MAP // TODO: cleaner solution
 };
 
 typedef struct FramebufferOptions
@@ -46,6 +47,7 @@ public:
 private:
   GLuint _id = 0;
   std::vector<TextureWrapper> _colorBuffers;
+  std::vector<std::shared_ptr<Texture>> _cubeMapTextures;
   GLenum _drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
   Texture *_renderedTexture = nullptr;
   const FramebufferOptions _options;

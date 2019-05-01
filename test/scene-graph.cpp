@@ -168,7 +168,7 @@ void cubeScene()
   Entity node3;
   node3.addComponent(cube);
   node3.addComponent(t3);
-  //node3.addComponent(dl);
+  node3.addComponent(dl);
 
   Material *groundMat = componentManager.createComponent<Material>();
   groundMat->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", SRGBA);

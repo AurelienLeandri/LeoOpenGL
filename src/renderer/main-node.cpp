@@ -93,9 +93,11 @@ void MainNode::_loadInputFramebuffers()
         ss << cubeMapNb;
         for (GLuint i = 0; i < cb.size(); i++)
         {
-            glUniform1i(glGetUniformLocation(this->_shader.getProgram(), ("shadowCubeMap" + ss.str()).c_str()), inputNumber);
+            GLuint ul = glGetUniformLocation(this->_shader.getProgram(), ("shadowCubeMap" + ss.str()).c_str());
+            glUniform1i(ul, inputNumber);
             glActiveTexture(GL_TEXTURE0 + inputNumber);
             glBindTexture(GL_TEXTURE_CUBE_MAP, cb[i].getId());
+            this->_shader.setVector3(("lightPos" + std::to_string(i)).c_str(), p.second.uniform.position);
             inputNumber++;
             cubeMapNb++;
         }
@@ -213,6 +215,7 @@ void MainNode::_loadShader()
     this->_shader.use();
     this->_shader.setMat4("view", this->_camera.getViewMatrix());
     this->_shader.setMat4("projection", glm::perspective(this->_camera.getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
+    this->_shader.setFloat("far_plane", PointLightWrapper::far);
 
     int matNb = 0;
     for (auto &p : this->_sceneContext.dLights)

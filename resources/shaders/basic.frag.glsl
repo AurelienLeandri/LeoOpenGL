@@ -46,8 +46,11 @@ out vec4 color;
 uniform Material material;
 uniform vec3 viewPos;
 uniform vec3 ambientLight;
-uniform samplerCube cubeMap;
 uniform sampler2D shadowMap0;
+
+uniform float far_plane;
+uniform vec3 lightPos0;
+uniform samplerCube shadowCubeMap0;
 
 float computeShadow(float bias)
 {
@@ -135,5 +138,13 @@ void main()
   //color = vec4(texture(material.diffuse_texture, TexCoords).rgb, 1.0);
   //color = vec4(texture(material.specular_texture, TexCoords).rgb, 1.0);
   //color = vec4(texture(material.reflection_map, TexCoords).rgb, 1.0);
-  color = vec4(result, 1.0);
+
+// get vector between fragment position and light position
+    vec3 fragToLight = FragPos - lightPos0;
+    // use the light to fragment vector to sample from the depth map    
+    float closestDepth = texture(shadowCubeMap0, fragToLight).r;
+    // it is currently in linear range between [0,1]. Re-transform back to original value
+
+  color = vec4(vec3(closestDepth / far_plane), 1.0);
+  //color = vec4(result, 1.0);
 }
