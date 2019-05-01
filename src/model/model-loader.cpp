@@ -27,7 +27,8 @@ Entity *ModelLoader::loadModel(std::string path, std::string objFileName)
 
     Assimp::Importer import;
     const aiScene *scene = import.ReadFile(path + objFileName, aiProcess_Triangulate |
-                                                                   aiProcess_FlipUVs);
+                                                                   aiProcess_FlipUVs |
+                                                                   aiProcess_CalcTangentSpace);
     if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE ||
         !scene->mRootNode)
     {
@@ -76,6 +77,10 @@ Entity *ModelLoader::_processMesh(aiMesh *mesh, const aiScene *scene, const std:
         vector.y = mesh->mNormals[i].y;
         vector.z = mesh->mNormals[i].z;
         vertex.normal = vector;
+        vector.x = mesh->mTangents[i].x;
+        vector.y = mesh->mTangents[i].y;
+        vector.z = mesh->mTangents[i].z;
+        vertex.tangent = vector; 
         if (mesh->mTextureCoords[0])
         {
             glm::vec2 vec;
@@ -107,7 +112,7 @@ Entity *ModelLoader::_processMesh(aiMesh *mesh, const aiScene *scene, const std:
         this->_loadMaterialTextures(meshMaterial, aiTextureType_AMBIENT,
                                     "texture_ambient", path);
     std::vector<Texture *> normalMaps =
-        this->_loadMaterialTextures(meshMaterial, aiTextureType_NORMALS,
+        this->_loadMaterialTextures(meshMaterial, aiTextureType_HEIGHT,
                                     "texture_normals", path);
     Material *material = this->_componentManager.createComponent<Material>();
     if (material)

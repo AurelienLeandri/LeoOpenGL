@@ -3,11 +3,14 @@
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texCoords;
+layout (location = 2) in vec3 tangent;
 
 out vec2 TexCoords;
 out vec3 Normal;
 out vec3 FragPos;
 out vec4 FragPosLightSpace;
+out vec3 Tangent;
+out mat3 TBN;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -20,4 +23,7 @@ void main() {
     FragPos = vec3(model * vec4(position, 1.0));
     FragPosLightSpace = lightSpaceMatrix0 * vec4(FragPos, 1.0);
     Normal = mat3(transpose(inverse(model))) * normal;
+    Tangent = mat3(transpose(inverse(model))) * tangent;
+    vec3 BiTangent = normalize(cross(Normal, Tangent));
+    TBN = transpose(mat3(Tangent, BiTangent, Normal));
 }

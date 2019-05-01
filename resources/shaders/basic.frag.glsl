@@ -39,8 +39,10 @@ layout (std140, binding = 1) uniform s1 {
 
 in vec2 TexCoords;
 in vec3 Normal;
+in vec3 Tangent;
 in vec3 FragPos;
 in vec4 FragPosLightSpace;
+in mat3 TBN;
 
 out vec4 color;
 
@@ -110,12 +112,13 @@ void main()
 {
   // Light Variables
   vec3 norm = normalize(Normal);
+  vec3 tang = normalize(Tangent);
 
   vec4 diffuse_sample_rgba = texture(material.diffuse_texture, TexCoords);
   vec3 diffuse_sample = diffuse_sample_rgba.xyz;
 
   float specularStrength = 0.5;
-  vec3 viewDir = normalize(viewPos - FragPos);
+  vec3 viewDir = TBN * normalize(viewPos - FragPos);
   vec4 specular_sample_rgba = texture(material.specular_texture, TexCoords);
   vec3 specular_sample = specular_sample_rgba.xyz;
 
@@ -136,7 +139,7 @@ void main()
     // Unstable because uninitialized lights yield negative values. SHoud fix itself once we generate shader code
     float attenuation = 1.0 / (iupl.constant + iupl.linear * distance + iupl.quadratic * (distance * distance));
 
-    vec3 lightDir = normalize(iupl.position - FragPos);
+    vec3 lightDir = TBN * normalize(iupl.position - FragPos);
     float diffuseFactor = max(dot(normal, lightDir), 0.0);
     vec3 diffuseContribution = attenuation * (iupl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample));
     float shadow = (1 - computePointLightShadow(bias));
@@ -151,7 +154,7 @@ void main()
 
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UDirectionLight iudl = udl[i];
-    vec3 lightDir = normalize(-iudl.direction);
+    vec3 lightDir = TBN * normalize(-iudl.direction);
     float diffuseFactor = max(dot(normal, lightDir), 0.0);
     float shadow = (1 - computeShadow(bias));
     diffuse += shadow * (iudl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample));
