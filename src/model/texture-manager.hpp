@@ -32,6 +32,7 @@ public:
 public:
   static std::unique_ptr<Texture> black;
   static std::unique_ptr<Texture> white;
+  static std::unique_ptr<Texture> blue;
 
 private:
   std::map<t_textureId, std::unique_ptr<Texture>> _textures;

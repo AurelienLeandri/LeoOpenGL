@@ -28,6 +28,7 @@ struct Material {
   vec3 specular_value;
   sampler2D specular_texture;
   sampler2D reflection_map;
+  sampler2D normal_map;
   float shininess;
 };
 
@@ -112,10 +113,15 @@ void main()
 
   vec4 diffuse_sample_rgba = texture(material.diffuse_texture, TexCoords);
   vec3 diffuse_sample = diffuse_sample_rgba.xyz;
+
   float specularStrength = 0.5;
   vec3 viewDir = normalize(viewPos - FragPos);
   vec4 specular_sample_rgba = texture(material.specular_texture, TexCoords);
   vec3 specular_sample = specular_sample_rgba.xyz;
+
+  vec4 normal_sample_rgba = texture(material.normal_map, TexCoords);
+  vec3 normal_sample = normal_sample_rgba.xyz;
+  vec3 normal = normalize(normal_sample * 2.0 - 1.0);
 
   vec3 diffuse = vec3(0.0, 0.0, 0.0);
   vec3 specular = vec3(0.0, 0.0, 0.0);
@@ -131,14 +137,14 @@ void main()
     float attenuation = 1.0 / (iupl.constant + iupl.linear * distance + iupl.quadratic * (distance * distance));
 
     vec3 lightDir = normalize(iupl.position - FragPos);
-    float diffuseFactor = max(dot(norm, lightDir), 0.0);
+    float diffuseFactor = max(dot(normal, lightDir), 0.0);
     vec3 diffuseContribution = attenuation * (iupl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample));
     float shadow = (1 - computePointLightShadow(bias));
     diffuse += shadow * (max(vec3(0.0), diffuseContribution));  // TODO: remove max after attenuation fix
     //vec3 reflectDir = normalize(reflect(-lightDir, norm));
     //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 halfwayVec = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(norm, halfwayVec), 0.0), material.shininess);
+    float spec = pow(max(dot(normal, halfwayVec), 0.0), material.shininess);
     vec3 specularContribution = attenuation * (iupl.specular * spec * (material.specular_value * specular_sample));
     specular += shadow * (max(vec3(0.0), specularContribution));  // TODO: remove max after attenuation fix
   }
@@ -146,13 +152,13 @@ void main()
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UDirectionLight iudl = udl[i];
     vec3 lightDir = normalize(-iudl.direction);
-    float diffuseFactor = max(dot(norm, lightDir), 0.0);
+    float diffuseFactor = max(dot(normal, lightDir), 0.0);
     float shadow = (1 - computeShadow(bias));
     diffuse += shadow * (iudl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample));
     //vec3 reflectDir = normalize(reflect(-lightDir, norm));
     //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 halfwayVec = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(norm, halfwayVec), 0.0), material.shininess);
+    float spec = pow(max(dot(normal, halfwayVec), 0.0), material.shininess);
     specular += shadow * (iudl.specular * spec * (material.specular_value * specular_sample));
   }
 

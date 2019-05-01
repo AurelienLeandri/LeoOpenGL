@@ -171,15 +171,26 @@ void cubeScene()
   node3.addComponent(t3);
   node3.addComponent(dl);
 
-  Material *groundMat = componentManager.createComponent<Material>();
-  groundMat->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", SRGBA);
-  groundMat->specular_texture = groundMat->diffuse_texture;
-  groundMat->shininess = 1.0f;
+  Material *groundMaterial = componentManager.createComponent<Material>();
+  groundMaterial->diffuse_texture = textureManager.createTexture("resources/textures/brickwall.jpg", SRGB);
+  groundMaterial->specular_texture = textureManager.createTexture("resources/textures/brickwall.jpg", SRGB);
+  groundMaterial->normal_map = textureManager.createTexture("resources/textures/brickwall_normal.jpg", RGB);
+  groundMaterial->shininess = 32.f;
+
+  Material *wallMat = componentManager.createComponent<Material>();
+  wallMat->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", SRGBA);
+  wallMat->specular_texture = wallMat->diffuse_texture;
+  wallMat->shininess = 1.0f;
+
   Entity node4;
   root.addChild(&node4);
   Volume *ground = componentManager.createComponent<Volume>(Volume::createPlane(10.f, 10.f));
-  node4.addComponent(ground);
-  node4.addComponent(groundMat);
+  node4.addComponent(groundMaterial);
+
+  Entity node40;
+  node4.addChild(&node40);
+  node40.addComponent(ground);
+  node40.addComponent(wallMat);
 
   Entity node41;
   Transformation *t41 = componentManager.createComponent<Transformation>();

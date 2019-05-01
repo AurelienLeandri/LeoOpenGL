@@ -206,6 +206,8 @@ void MainNode::_setCurrentMaterial(const Material *material)
 
     this->_loadTextureToShader("material.reflection_map", this->_materialTextureOffset + 2,
                                material->reflection_map ? *material->reflection_map : *TextureManager::black.get());
+    this->_loadTextureToShader("material.normal_map", this->_materialTextureOffset + 3,
+                               material->normal_map ? *material->normal_map : *TextureManager::blue.get());
 }
 
 void MainNode::_loadShader()

@@ -106,6 +106,9 @@ Entity *ModelLoader::_processMesh(aiMesh *mesh, const aiScene *scene, const std:
     std::vector<Texture *> ambientMaps =
         this->_loadMaterialTextures(meshMaterial, aiTextureType_AMBIENT,
                                     "texture_ambient", path);
+    std::vector<Texture *> normalMaps =
+        this->_loadMaterialTextures(meshMaterial, aiTextureType_NORMALS,
+                                    "texture_normals", path);
     Material *material = this->_componentManager.createComponent<Material>();
     if (material)
     {
@@ -115,6 +118,8 @@ Entity *ModelLoader::_processMesh(aiMesh *mesh, const aiScene *scene, const std:
             material->specular_texture = specularMaps[0];
         if (ambientMaps.size())
             material->reflection_map = ambientMaps[0];
+        if (normalMaps.size())
+            material->normal_map = normalMaps[0];
     }
 
     entity->addComponent(volume);
