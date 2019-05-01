@@ -149,6 +149,7 @@ void cubeScene()
 
   Transformation *t2 = componentManager.createComponent<Transformation>();
 
+  t2->setRelativeTranslation(glm::vec3(0.f, 2.f, 0.f));
   t2->setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
   t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
   Entity node2;

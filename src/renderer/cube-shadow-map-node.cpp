@@ -36,16 +36,7 @@ void CubeShadowMapNode::render()
     if (!this->_outputs.size())
         return;
 
-    glClearColor(0.0, 0.0, 0.0, 1);
-
-    // Setup some OpenGL options
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL); // Set to always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glEnable(GL_MULTISAMPLE);
+    glClearColor(1.0, 1.0, 1.0, 1);
 
     this->_loadShader();
 
@@ -56,11 +47,18 @@ void CubeShadowMapNode::render()
     glEnable(GL_DEPTH_TEST);
 
     // 1. first render to depth map
-    glViewport(0, 0, this->_outputs["out"]->getOptions().width, this->_outputs["out"]->getOptions().height);
+    glViewport(0, 0, 1024, 1024);
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    //this->_shader.setMat4("lightSpaceMatrix", this->_lightSpaceMatrix);
+    const PointLightWrapper &plw = this->_sceneContext.pLights.find(this->_light.getId())->second;
+    const auto &shadowTransforms = plw.shadowTransforms;
+    for (int i = 0; i < 6; ++i)
+    {
+        this->_shader.setMat4(("shadowMatrices[" + std::to_string(i) + "]").c_str(), shadowTransforms[i]);
+    }
+    this->_shader.setVector3("lightPos", plw.uniform.position);
+    this->_shader.setFloat("far_plane", PointLightWrapper::far);
 
     glm::mat4x4 m;
     this->_renderRec(this->_sceneGraph.getRoot(), &m);
@@ -98,18 +96,10 @@ void CubeShadowMapNode::_renderRec(const Entity *root, const glm::mat4x4 *matrix
 void CubeShadowMapNode::_loadShader()
 {
     RenderNode::_loadShader();
-
     this->_shader.use();
 
-    int matNb = 0;
-    const PointLightWrapper &plw = this->_sceneContext.pLights.find(this->_light.getId())->second;
-    const auto &shadowTransforms = plw.shadowTransforms;
-    for (int i = 0; i < 6; ++i)
-    {
-        this->_shader.setMat4(("lightSpaceMatrix[" + std::to_string(i) + "]").c_str(), shadowTransforms[i]);
-    }
-    this->_shader.setVector3("lightPos", this->_light.position);
-    this->_shader.setFloat("far_plane", PointLightWrapper::far);
+    glm::mat4 m;
+    this->_shader.setMat4("model", m);
 }
 
 void CubeShadowMapNode::notified(Subject *subject, Event event)

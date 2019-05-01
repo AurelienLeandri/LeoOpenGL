@@ -3,15 +3,15 @@
 namespace leo
 {
 
-const float PointLightWrapper::near = 1.0f;
+const float PointLightWrapper::near = 0.01f;
 const float PointLightWrapper::far = 25.f;
 
 PointLightWrapper::PointLightWrapper(PointLightUniform uniform, CubeShadowMapNode renderNode)
     : map(*renderNode.getOutputs()["out"]), uniform(uniform), renderNode(renderNode)
 {
-    float aspect = (float)(1620) / (float)(1080);
+    float aspect = 1024.f / 1024.f;
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
-    glm::vec3 lightPos = uniform.position;
+    glm::vec3 lightPos = this->uniform.position;
     shadowTransforms.push_back(shadowProj *
                                glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
     shadowTransforms.push_back(shadowProj *

@@ -145,6 +145,6 @@ void main()
     float closestDepth = texture(shadowCubeMap0, fragToLight).r;
     // it is currently in linear range between [0,1]. Re-transform back to original value
 
-  color = vec4(vec3(closestDepth / far_plane), 1.0);
+  color = vec4(vec3(closestDepth), 1.0);
   //color = vec4(result, 1.0);
 }

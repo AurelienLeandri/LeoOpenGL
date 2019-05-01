@@ -66,15 +66,17 @@ void SceneContext::registerDirectionLight(const DirectionLight &dl, const SceneG
 
 void SceneContext::registerPointLight(const PointLight &pl, const SceneGraph &sceneGraph, Shader &shadowShader)
 {
-    PointLightWrapper &plw = this->pLights.insert(std::pair<t_id, PointLightWrapper>(pl.getId(),
-                                                                                     PointLightWrapper(pl, CubeShadowMapNode(this->_context, *this, sceneGraph, shadowShader, pl))))
-                                 .first->second;
+    PointLightUniform plu(pl);
     const Transformation *transform = static_cast<const Transformation *>(pl.getEntity()->getComponent(ComponentType::TRANSFORMATION));
+
     if (transform)
     {
         const glm::mat4x4 &transformation = transform->getTransformationMatrix();
-        plw.uniform.position = transformation * pl.position;
+        plu.position = transformation * pl.position;
     }
+    PointLightWrapper &plw = this->pLights.insert(std::pair<t_id, PointLightWrapper>(pl.getId(),
+                                                                                     PointLightWrapper(plu, CubeShadowMapNode(this->_context, *this, sceneGraph, shadowShader, pl))))
+                                 .first->second;
 }
 
 void SceneContext::registerMaterial(const Material &m)
