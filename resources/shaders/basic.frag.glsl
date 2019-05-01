@@ -72,6 +72,39 @@ float computeShadow(float bias)
   return shadow;
 }
 
+vec3 sampleOffsetDirections[20] = vec3[]
+(
+   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+);
+
+float computePointLightShadow(float bias)
+{
+  // get vector between fragment position and light position
+  vec3 fragToLight = FragPos - lightPos0;
+  // use the light to fragment vector to sample from the depth map    
+  float currentDepth = length(fragToLight);
+
+  vec2 texelSize = 1.0 / textureSize(shadowCubeMap0, 0);
+  float offset  = 0.1;
+  float shadow = 0.0;
+  int samples  = 20;
+  float viewDistance = length(viewPos - FragPos);
+  float diskRadius = (1.0 + (viewDistance / far_plane)) / 100.0;
+  for(int i = 0; i < samples; ++i)
+  {
+    float closestDepth = texture(shadowCubeMap0, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+    closestDepth *= far_plane;   // Undo mapping [0;1]
+    if(currentDepth - bias > closestDepth)
+        shadow += 1.0;
+  }
+  shadow /= float(samples);
+  return shadow;
+}
+
 void main()
 {
   // Light Variables
@@ -88,6 +121,8 @@ void main()
   vec3 specular = vec3(0.0, 0.0, 0.0);
   vec3 ambient = ambientLight * material.diffuse_value * diffuse_sample;
 
+  float bias = 0.01;
+
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UPointLight iupl = upl[i];
 
@@ -98,16 +133,16 @@ void main()
     vec3 lightDir = normalize(iupl.position - FragPos);
     float diffuseFactor = max(dot(norm, lightDir), 0.0);
     vec3 diffuseContribution = attenuation * (iupl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample));
-    diffuse += max(vec3(0.0), diffuseContribution);  // TODO: remove max after attenuation fix
+    float shadow = (1 - computePointLightShadow(bias));
+    diffuse += shadow * (max(vec3(0.0), diffuseContribution));  // TODO: remove max after attenuation fix
     //vec3 reflectDir = normalize(reflect(-lightDir, norm));
     //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 halfwayVec = normalize(lightDir + viewDir);
     float spec = pow(max(dot(norm, halfwayVec), 0.0), material.shininess);
     vec3 specularContribution = attenuation * (iupl.specular * spec * (material.specular_value * specular_sample));
-    specular += max(vec3(0.0), specularContribution);  // TODO: remove max after attenuation fix
+    specular += shadow * (max(vec3(0.0), specularContribution));  // TODO: remove max after attenuation fix
   }
 
-  float bias = 0.005;
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UDirectionLight iudl = udl[i];
     vec3 lightDir = normalize(-iudl.direction);
@@ -139,12 +174,6 @@ void main()
   //color = vec4(texture(material.specular_texture, TexCoords).rgb, 1.0);
   //color = vec4(texture(material.reflection_map, TexCoords).rgb, 1.0);
 
-// get vector between fragment position and light position
-    vec3 fragToLight = FragPos - lightPos0;
-    // use the light to fragment vector to sample from the depth map    
-    float closestDepth = texture(shadowCubeMap0, fragToLight).r;
-    // it is currently in linear range between [0,1]. Re-transform back to original value
-
-  color = vec4(vec3(closestDepth), 1.0);
-  //color = vec4(result, 1.0);
+  //color = vec4(vec3(closestDepth), 1.0);
+  color = vec4(result, 1.0);
 }
