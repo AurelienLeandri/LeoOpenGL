@@ -163,7 +163,6 @@ void main()
     specular += shadow * (max(vec3(0.0), specularContribution));  // TODO: remove max after attenuation fix
   }
 
-/*
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UDirectionLight iudl = udl[i];
     vec3 lightDir = normalize(-iudl.direction);
@@ -176,7 +175,6 @@ void main()
     float spec = pow(max(dot(normal, halfwayVec), 0.0), material.shininess);
     specular += shadow * (iudl.specular * spec * (material.specular_value * specular_sample));
   }
-  */
 
   /*
   vec3 reflection = reflect(-viewDir, norm);

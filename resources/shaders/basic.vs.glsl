@@ -26,7 +26,13 @@ void main() {
     FragPosLightSpace = lightSpaceMatrix0 * vec4(FragPos, 1.0);
     Normal = normalize(mat3(transpose(inverse(model))) * normal);
     BiTangent = normalize(mat3(transpose(inverse(model))) * biTangent);
+
     vec3 in_tangent = normalize(mat3(transpose(inverse(model))) * tangent);
+
+    // Graham Schmidt (TODO: review)
+    in_tangent = normalize(in_tangent - dot(in_tangent, Normal) * Normal);
+    BiTangent = cross(Normal, in_tangent);
+
     if (dot(cross(in_tangent, BiTangent), Normal) < 0.0) {
         Tangent = -in_tangent;
     }
