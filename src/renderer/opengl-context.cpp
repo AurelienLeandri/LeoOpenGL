@@ -99,6 +99,10 @@ void OpenGLContext::generateBufferCollection(BufferCollection &bc, const Volume 
     glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (GLvoid *)offsetof(Vertex, tangent));
     glEnableVertexAttribArray(3);
+    // BiTangents
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, biTangent));
+    glEnableVertexAttribArray(4);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bc.EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),

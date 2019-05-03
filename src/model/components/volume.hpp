@@ -35,6 +35,9 @@ public:
   }
 
 protected:
+  void _computeTangents();
+
+protected:
   std::vector<Vertex> _vertices;
   std::vector<unsigned int> _indices;
 };

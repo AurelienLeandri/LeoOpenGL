@@ -3,6 +3,43 @@
 namespace leo
 {
 
+namespace
+{
+
+glm::vec3 computeTangent(const glm::vec3 E1, const glm::vec3 E2, const glm::vec2 dUV1, const glm::vec2 dUV2)
+{
+  float f = 1.0f / (dUV1.x * dUV2.y - dUV2.x * dUV1.y);
+
+  glm::vec3 tangent;
+  tangent.x = f * (dUV2.y * E1.x - dUV1.y * E2.x);
+  tangent.y = f * (dUV2.y * E1.y - dUV1.y * E2.y);
+  tangent.z = f * (dUV2.y * E1.z - dUV1.y * E2.z);
+  tangent = glm::normalize(tangent);
+
+  glm::vec3 bitangent;
+  bitangent.x = f * (-dUV2.x * E1.x + dUV1.x * E2.x);
+  bitangent.y = f * (-dUV2.x * E1.y + dUV1.x * E2.y);
+  bitangent.z = f * (-dUV2.x * E1.z + dUV1.x * E2.z);
+  bitangent = glm::normalize(bitangent);
+
+  return tangent;
+}
+
+glm::vec3 computeBiTangent(const glm::vec3 E1, const glm::vec3 E2, const glm::vec2 dUV1, const glm::vec2 dUV2)
+{
+  float f = 1.0f / (dUV1.x * dUV2.y - dUV2.x * dUV1.y);
+
+  glm::vec3 bitangent;
+  bitangent.x = f * (-dUV2.x * E1.x + dUV1.x * E2.x);
+  bitangent.y = f * (-dUV2.x * E1.y + dUV1.x * E2.y);
+  bitangent.z = f * (-dUV2.x * E1.z + dUV1.x * E2.z);
+  bitangent = glm::normalize(bitangent);
+
+  return bitangent;
+}
+
+} // namespace
+
 Volume::Volume(std::vector<Vertex> vertices, std::vector<unsigned int> indices) : _vertices(vertices),
                                                                                   _indices(indices)
 {
@@ -30,6 +67,29 @@ Volume Volume::createCustom(std::vector<Vertex> vertices, std::vector<unsigned i
 {
   Volume volume(vertices, indices);
   return volume;
+}
+
+void Volume::_computeTangents()
+{
+  for (int i = 0; i < this->_indices.size(); i += 3)
+  {
+    glm::vec3 &pos1 = this->_vertices[this->_indices[i]].position;
+    glm::vec3 &pos2 = this->_vertices[this->_indices[i + 1]].position;
+    glm::vec3 &pos3 = this->_vertices[this->_indices[i + 2]].position;
+    glm::vec2 &uv1 = this->_vertices[this->_indices[i]].texCoords;
+    glm::vec2 &uv2 = this->_vertices[this->_indices[i + 1]].texCoords;
+    glm::vec2 &uv3 = this->_vertices[this->_indices[i + 2]].texCoords;
+    glm::vec3 edge1 = pos2 - pos1;
+    glm::vec3 edge2 = pos3 - pos1;
+    glm::vec2 dUV1 = uv2 - uv1;
+    glm::vec2 dUV2 = uv3 - uv1;
+    glm::vec3 tangent = computeTangent(edge1, edge2, dUV1, dUV2);
+    for (int j = 0; j < 3; j++)
+      this->_vertices[this->_indices[i + j]].tangent = tangent;
+    glm::vec3 bitangent = computeBiTangent(edge1, edge2, dUV1, dUV2);
+    for (int j = 0; j < 3; j++)
+      this->_vertices[this->_indices[i + j]].biTangent = bitangent;
+  }
 }
 
 Volume Volume::createCube(float side)
@@ -200,6 +260,8 @@ Volume Volume::createCube(float side)
       20, 21, 23,
       21, 22, 23};
 
+  volume._computeTangents();
+
   return volume;
 }
 
@@ -266,6 +328,8 @@ Volume Volume::createPlane(float width, float height)
       2,
       1,
   };
+
+  volume._computeTangents();
 
   return volume;
 }

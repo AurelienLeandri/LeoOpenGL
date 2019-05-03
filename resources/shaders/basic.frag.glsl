@@ -40,6 +40,7 @@ layout (std140, binding = 1) uniform s1 {
 in vec2 TexCoords;
 in vec3 Normal;
 in vec3 Tangent;
+in vec3 BiTangent;
 in vec3 FragPos;
 in vec4 FragPosLightSpace;
 in mat3 TBN;
@@ -54,6 +55,10 @@ uniform sampler2D shadowMap0;
 uniform float far_plane;
 uniform vec3 lightPos0;
 uniform samplerCube shadowCubeMap0;
+
+
+
+
 
 float computeShadow(float bias)
 {
@@ -108,23 +113,29 @@ float computePointLightShadow(float bias)
   return shadow;
 }
 
+
+
+
+
 void main()
 {
   // Light Variables
   vec3 norm = normalize(Normal);
   vec3 tang = normalize(Tangent);
+  vec3 bita = normalize(BiTangent);
 
   vec4 diffuse_sample_rgba = texture(material.diffuse_texture, TexCoords);
   vec3 diffuse_sample = diffuse_sample_rgba.xyz;
 
   float specularStrength = 0.5;
-  vec3 viewDir = TBN * normalize(viewPos - FragPos);
+  vec3 viewDir = normalize(viewPos - FragPos);
   vec4 specular_sample_rgba = texture(material.specular_texture, TexCoords);
   vec3 specular_sample = specular_sample_rgba.xyz;
 
   vec4 normal_sample_rgba = texture(material.normal_map, TexCoords);
-  vec3 normal_sample = normal_sample_rgba.xyz;
+  vec3 normal_sample = normalize(normal_sample_rgba.xyz);
   vec3 normal = normalize(normal_sample * 2.0 - 1.0);
+  normal = TBN * normal;
 
   vec3 diffuse = vec3(0.0, 0.0, 0.0);
   vec3 specular = vec3(0.0, 0.0, 0.0);
@@ -139,7 +150,7 @@ void main()
     // Unstable because uninitialized lights yield negative values. SHoud fix itself once we generate shader code
     float attenuation = 1.0 / (iupl.constant + iupl.linear * distance + iupl.quadratic * (distance * distance));
 
-    vec3 lightDir = TBN * normalize(iupl.position - FragPos);
+    vec3 lightDir = normalize(iupl.position - FragPos);
     float diffuseFactor = max(dot(normal, lightDir), 0.0);
     vec3 diffuseContribution = attenuation * (iupl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample));
     float shadow = (1 - computePointLightShadow(bias));
@@ -152,9 +163,10 @@ void main()
     specular += shadow * (max(vec3(0.0), specularContribution));  // TODO: remove max after attenuation fix
   }
 
+/*
   for (int i = 0; i < MAX_NUM_LIGHTS; i++) {
     UDirectionLight iudl = udl[i];
-    vec3 lightDir = TBN * normalize(-iudl.direction);
+    vec3 lightDir = normalize(-iudl.direction);
     float diffuseFactor = max(dot(normal, lightDir), 0.0);
     float shadow = (1 - computeShadow(bias));
     diffuse += shadow * (iudl.diffuse * diffuseFactor * (material.diffuse_value * diffuse_sample));
@@ -164,6 +176,7 @@ void main()
     float spec = pow(max(dot(normal, halfwayVec), 0.0), material.shininess);
     specular += shadow * (iudl.specular * spec * (material.specular_value * specular_sample));
   }
+  */
 
   /*
   vec3 reflection = reflect(-viewDir, norm);

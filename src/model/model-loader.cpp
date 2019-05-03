@@ -80,7 +80,12 @@ Entity *ModelLoader::_processMesh(aiMesh *mesh, const aiScene *scene, const std:
         vector.x = mesh->mTangents[i].x;
         vector.y = mesh->mTangents[i].y;
         vector.z = mesh->mTangents[i].z;
-        vertex.tangent = vector; 
+        vertex.tangent = vector;
+        vector.x = mesh->mBitangents[i].x;
+        vector.y = mesh->mBitangents[i].y;
+        vector.z = mesh->mBitangents[i].z;
+        vertex.biTangent = vector;
+
         if (mesh->mTextureCoords[0])
         {
             glm::vec2 vec;
