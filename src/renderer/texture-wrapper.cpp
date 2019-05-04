@@ -58,8 +58,11 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
         format = GL_RGB;
         break;
     case (RGBA):
-    case (HDR):
         type = format = GL_RGBA;
+        break;
+    case (HDR):
+        type = GL_RGBA16F;
+        format = GL_RGBA;
         break;
     case (SRGBA):
         type = this->_gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
@@ -124,12 +127,12 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
     }
     else if (textureType == GL_TEXTURE_2D_MULTISAMPLE)
     {
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, format, width, height, GL_TRUE);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, this->_texture->mode == HDR ? GL_RGBA16F : format, width, height, GL_TRUE);
     }
     else
     {
         glTexImage2D(textureType, 0, type, width, height, 0, format,
-                     (this->_texture->mode == DEPTH || this->_texture->mode == HDR) ? GL_FLOAT : GL_UNSIGNED_BYTE, data ? data : 0);
+                     (this->_texture->mode == DEPTH) ? GL_FLOAT : GL_UNSIGNED_BYTE, data ? data : 0);
     }
 
     if (textureType != GL_TEXTURE_2D_MULTISAMPLE)
