@@ -11,9 +11,8 @@ void main()
     vec3 fbColor1 = texture(fb, TexCoords).xyz;
 
     // reinhard tone mapping
-    //float exposure = 1.0;
-    //vec3 mapped = vec3(1.0) - exp(-fbColor1 * exposure);
-    vec3 mapped = fbColor1 / (fbColor1 + vec3(1.0));
+    float exposure = 0.5;
+    vec3 mapped = vec3(1.0) - exp(-fbColor1 * exposure);
 
     FragColor = vec4(mapped, 1.0);
 }

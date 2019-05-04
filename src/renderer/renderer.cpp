@@ -38,7 +38,7 @@ Renderer::Renderer(GLFWwindow *window,
                                              _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl"),
                                              _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
                                              _main({false, 4, true}),
-                                             _multisampled({true, 4}),
+                                             _multisampled({true, 4, true}),
                                              _blitNode(this->_context),
                                              _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl"),
                                              _cubeShadowMapShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl"),
@@ -174,7 +174,7 @@ void Renderer::render(const SceneGraph *sceneGraph)
 
   this->_cubeMapNode->render();
 
-  // this->_blitNode.render();
+  this->_blitNode.render();
 
   this->_postProcessNode->render();
 
@@ -188,8 +188,7 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
   if (this->_mainNode == nullptr)
   {
     this->_mainNode = new MainNode(this->_context, this->_sceneContext, *sceneGraph, this->_shader, *this->_camera);
-    //this->_mainNode->getOutputs()["out"] = &this->_multisampled;
-    this->_mainNode->getOutputs()["out"] = &this->_main;
+    this->_mainNode->getOutputs()["out"] = &this->_multisampled;
   }
 }
 
@@ -213,8 +212,7 @@ void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
   if (this->_cubeMapNode == nullptr)
   {
     this->_cubeMapNode = new CubeMapNode(this->_context, this->_sceneContext, *sceneGraph, this->_cubeMapShader, *this->_camera);
-    //this->_cubeMapNode->getOutputs()["out"] = &this->_multisampled;
-    this->_cubeMapNode->getOutputs()["out"] = &this->_main;
+    this->_cubeMapNode->getOutputs()["out"] = &this->_multisampled;
   }
 }
 
