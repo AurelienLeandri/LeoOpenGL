@@ -116,8 +116,31 @@ float computePointLightShadow(float bias)
 
 vec2 parallaxMapping(vec2 texCoords, vec3 TSviewDir)
 {
-  return texCoords;
-  //return (TSviewDir * (texture(material.parallax_map, texCoords).r / length(TSviewDir))).xy + texCoords;
+  float height_scale = 0.05;
+  float height =  texture(material.parallax_map, texCoords).r;    
+  vec2 p = TSviewDir.xy / TSviewDir.z * (height * height_scale);
+  return texCoords - p; 
+}
+
+vec2 steepParallaxMapping(vec2 texCoords, vec3 TSviewDir)
+{
+  float height_scale = 0.2;
+  const float minLayers = 8.0;
+  const float maxLayers = 32.0;
+  float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), TSviewDir)));
+  float layerDepth = 1.0 / numLayers;
+  float currentLayerDepth = 0.0;
+  vec2 P = TSviewDir.xy * height_scale;
+  vec2 deltaTexCoords = P / numLayers;
+  vec2  currentTexCoords = texCoords;
+  float currentDepthMapValue = texture(material.parallax_map, currentTexCoords).r;
+  while(currentLayerDepth < currentDepthMapValue)
+  {
+    currentTexCoords -= deltaTexCoords;
+    currentDepthMapValue = texture(material.parallax_map, currentTexCoords).r;  
+    currentLayerDepth += layerDepth;  
+  }
+  return currentTexCoords;
 }
 
 
@@ -130,7 +153,11 @@ void main()
 
   vec3 viewDir = normalize(viewPos - FragPos);
 
-  vec2 pTexCoords = parallaxMapping(TexCoords, TBN * viewDir);
+  vec2 pTexCoords = steepParallaxMapping(TexCoords, TBN * viewDir);
+  /*
+  if(pTexCoords.x > 1.0 || pTexCoords.y > 1.0 || pTexCoords.x < 0.0 || pTexCoords.y < 0.0)
+    discard;
+  */
 
   vec4 diffuse_sample_rgba = texture(material.diffuse_texture, pTexCoords);
   vec3 diffuse_sample = diffuse_sample_rgba.xyz;

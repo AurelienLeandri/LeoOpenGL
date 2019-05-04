@@ -135,12 +135,11 @@ void cubeScene()
 
   Volume *cube = componentManager.createComponent<Volume>(Volume::createCube(1.f));
 
-  node1.addComponent(material);
   node1.addComponent(cube);
-  material->diffuse_value = glm::vec3(0.8, 0.6, 0.2);
-  material->specular_texture = textureManager.createTexture("resources/textures/drop_SpecularMap.jpg", RGB);
-  material->normal_map = textureManager.createTexture("resources/textures/drop_NormalMap.jpg", RGB);
-  material->parallax_map = textureManager.createTexture("resources/textures/drop_DisplacementMap.jpg", RGB);
+  material->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", RGBA);
+  material->specular_texture = textureManager.createTexture("resources/textures/wood.png", RGBA);
+  material->normal_map = textureManager.createTexture("resources/textures/toy_box_normal.png", RGBA);
+  material->parallax_map = textureManager.createTexture("resources/textures/toy_box_disp.png", RGBA);
   material->shininess = 32.f;
 
   Material *material2 = componentManager.createComponent<Material>();
@@ -149,6 +148,8 @@ void cubeScene()
   material2->normal_map = textureManager.createTexture("resources/textures/bricks2_normal.jpg", RGB);
   material2->parallax_map = textureManager.createTexture("resources/textures/bricks2_disp.jpg", RGB);
   material2->shininess = 32.f;
+  
+  node1.addComponent(material2);
 
   PointLight *pl = componentManager.createComponent<PointLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
@@ -178,7 +179,7 @@ void cubeScene()
   node3.addComponent(cube);
   node3.addComponent(t3);
   node3.addComponent(dl);
-  node3.addComponent(material2);
+  node3.addComponent(material);
 
   Material *groundMaterial = componentManager.createComponent<Material>();
   groundMaterial->diffuse_texture = textureManager.createTexture("resources/textures/brickwall.jpg", SRGB);
