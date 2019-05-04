@@ -29,6 +29,7 @@ public:
   Texture *specular_texture = TextureManager::white.get();
   Texture *reflection_map = TextureManager::black.get();
   Texture *normal_map = TextureManager::blue.get();
+  Texture *parallax_map = TextureManager::black.get();
   float shininess = 32.f;
   bool force = false;
 };

@@ -119,6 +119,9 @@ Entity *ModelLoader::_processMesh(aiMesh *mesh, const aiScene *scene, const std:
     std::vector<Texture *> normalMaps =
         this->_loadMaterialTextures(meshMaterial, aiTextureType_HEIGHT,
                                     "texture_normals", path);
+    std::vector<Texture *> parallaxMaps =
+        this->_loadMaterialTextures(meshMaterial, aiTextureType_DISPLACEMENT,
+                                    "texture_parallax", path);
     Material *material = this->_componentManager.createComponent<Material>();
     if (material)
     {
@@ -130,6 +133,8 @@ Entity *ModelLoader::_processMesh(aiMesh *mesh, const aiScene *scene, const std:
             material->reflection_map = ambientMaps[0];
         if (normalMaps.size())
             material->normal_map = normalMaps[0];
+        if (parallaxMaps.size())
+            material->parallax_map = parallaxMaps[0];
     }
 
     entity->addComponent(volume);

@@ -208,6 +208,8 @@ void MainNode::_setCurrentMaterial(const Material *material)
                                material->reflection_map ? *material->reflection_map : *TextureManager::black.get());
     this->_loadTextureToShader("material.normal_map", this->_materialTextureOffset + 3,
                                material->normal_map ? *material->normal_map : *TextureManager::blue.get());
+    this->_loadTextureToShader("material.parallax_map", this->_materialTextureOffset + 4,
+                               material->parallax_map ? *material->parallax_map : *TextureManager::black.get());
 }
 
 void MainNode::_loadShader()

@@ -137,10 +137,18 @@ void cubeScene()
 
   node1.addComponent(material);
   node1.addComponent(cube);
-  material->diffuse_texture = textureManager.createTexture("resources/textures/crate_diffuse.png", SRGBA);
-  material->specular_texture = textureManager.createTexture("resources/textures/crate_specular.png", RGBA);
-  material->reflection_map = textureManager.createTexture("resources/textures/specular.png", RGBA);
+  material->diffuse_value = glm::vec3(0.8, 0.6, 0.2);
+  material->specular_texture = textureManager.createTexture("resources/textures/drop_SpecularMap.jpg", RGB);
+  material->normal_map = textureManager.createTexture("resources/textures/drop_NormalMap.jpg", RGB);
+  material->parallax_map = textureManager.createTexture("resources/textures/drop_DisplacementMap.jpg", RGB);
   material->shininess = 32.f;
+
+  Material *material2 = componentManager.createComponent<Material>();
+  material2->diffuse_texture = textureManager.createTexture("resources/textures/bricks2.jpg", RGB);
+  material2->specular_texture = textureManager.createTexture("resources/textures/bricks2.jpg", RGB);
+  material2->normal_map = textureManager.createTexture("resources/textures/bricks2_normal.jpg", RGB);
+  material2->parallax_map = textureManager.createTexture("resources/textures/bricks2_disp.jpg", RGB);
+  material2->shininess = 32.f;
 
   PointLight *pl = componentManager.createComponent<PointLight>(
       glm::vec3(0.2f, 0.2f, 0.2f),
@@ -170,6 +178,7 @@ void cubeScene()
   node3.addComponent(cube);
   node3.addComponent(t3);
   node3.addComponent(dl);
+  node3.addComponent(material2);
 
   Material *groundMaterial = componentManager.createComponent<Material>();
   groundMaterial->diffuse_texture = textureManager.createTexture("resources/textures/brickwall.jpg", SRGB);

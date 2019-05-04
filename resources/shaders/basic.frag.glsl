@@ -29,6 +29,7 @@ struct Material {
   sampler2D specular_texture;
   sampler2D reflection_map;
   sampler2D normal_map;
+  sampler2D parallax_map;
   float shininess;
 };
 
@@ -113,8 +114,11 @@ float computePointLightShadow(float bias)
   return shadow;
 }
 
-
-
+vec2 parallaxMapping(vec2 texCoords, vec3 TSviewDir)
+{
+  return texCoords;
+  //return (TSviewDir * (texture(material.parallax_map, texCoords).r / length(TSviewDir))).xy + texCoords;
+}
 
 
 void main()
@@ -124,15 +128,18 @@ void main()
   vec3 tang = normalize(Tangent);
   vec3 bita = normalize(BiTangent);
 
-  vec4 diffuse_sample_rgba = texture(material.diffuse_texture, TexCoords);
+  vec3 viewDir = normalize(viewPos - FragPos);
+
+  vec2 pTexCoords = parallaxMapping(TexCoords, TBN * viewDir);
+
+  vec4 diffuse_sample_rgba = texture(material.diffuse_texture, pTexCoords);
   vec3 diffuse_sample = diffuse_sample_rgba.xyz;
 
   float specularStrength = 0.5;
-  vec3 viewDir = normalize(viewPos - FragPos);
-  vec4 specular_sample_rgba = texture(material.specular_texture, TexCoords);
+  vec4 specular_sample_rgba = texture(material.specular_texture, pTexCoords);
   vec3 specular_sample = specular_sample_rgba.xyz;
 
-  vec4 normal_sample_rgba = texture(material.normal_map, TexCoords);
+  vec4 normal_sample_rgba = texture(material.normal_map, pTexCoords);
   vec3 normal_sample = normalize(normal_sample_rgba.xyz);
   vec3 normal = normalize(normal_sample * 2.0 - 1.0);
   normal = TBN * normal;

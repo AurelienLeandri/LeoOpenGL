@@ -81,7 +81,7 @@ void SceneContext::registerPointLight(const PointLight &pl, const SceneGraph &sc
 
 void SceneContext::registerMaterial(const Material &m)
 {
-    for (const Texture *t : {m.diffuse_texture, m.specular_texture, m.reflection_map, m.normal_map})
+    for (const Texture *t : {m.diffuse_texture, m.specular_texture, m.reflection_map, m.normal_map, m.parallax_map})
         if (t)
             this->registerTexture(*t, {});
 }
