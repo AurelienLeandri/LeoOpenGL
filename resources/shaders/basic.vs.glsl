@@ -29,7 +29,7 @@ void main() {
 
     vec3 in_tangent = normalize(mat3(transpose(inverse(model))) * tangent);
 
-    // Graham Schmidt (TODO: review)
+    // Graham Schmitt
     in_tangent = normalize(in_tangent - dot(in_tangent, Normal) * Normal);
     BiTangent = cross(Normal, in_tangent);
 

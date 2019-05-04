@@ -140,7 +140,14 @@ vec2 steepParallaxMapping(vec2 texCoords, vec3 TSviewDir)
     currentDepthMapValue = texture(material.parallax_map, currentTexCoords).r;  
     currentLayerDepth += layerDepth;  
   }
-  return currentTexCoords;
+
+  vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+  float beforeDepth = texture(material.parallax_map, prevTexCoords).r - currentLayerDepth + layerDepth;
+  float afterDepth  = currentDepthMapValue - currentLayerDepth;
+  float weight = afterDepth / (afterDepth - beforeDepth);
+  vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+  return finalTexCoords;
 }
 
 
@@ -152,8 +159,9 @@ void main()
   vec3 bita = normalize(BiTangent);
 
   vec3 viewDir = normalize(viewPos - FragPos);
+  vec3 tangViewDir = normalize(TBN * viewPos - TBN * FragPos);
 
-  vec2 pTexCoords = steepParallaxMapping(TexCoords, TBN * viewDir);
+  vec2 pTexCoords = steepParallaxMapping(TexCoords, tangViewDir);
   /*
   if(pTexCoords.x > 1.0 || pTexCoords.y > 1.0 || pTexCoords.x < 0.0 || pTexCoords.y < 0.0)
     discard;
