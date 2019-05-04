@@ -255,4 +255,9 @@ void MainNode::notified(Subject *subject, Event event)
     }
 }
 
+void MainNode::setHdr(bool value)
+{
+    this->_hdr = value;
+}
+
 } // namespace leo

@@ -148,13 +148,13 @@ void cubeScene()
   material2->normal_map = textureManager.createTexture("resources/textures/bricks2_normal.jpg", RGB);
   material2->parallax_map = textureManager.createTexture("resources/textures/bricks2_disp.jpg", RGB);
   material2->shininess = 32.f;
-  
+
   node1.addComponent(material2);
 
   PointLight *pl = componentManager.createComponent<PointLight>(
-      glm::vec3(0.2f, 0.2f, 0.2f),
-      glm::vec3(0.6f, 0.6f, 0.6f),
-      glm::vec3(0.6f, 0.6f, 0.6f));
+      glm::vec3(9.2f, 9.2f, 9.2f),
+      glm::vec3(9.6f, 9.6f, 9.6f),
+      glm::vec3(9.6f, 9.6f, 9.6f));
 
   Transformation *t2 = componentManager.createComponent<Transformation>();
 

@@ -33,6 +33,9 @@ public:
   virtual void notified(Subject *subject, Event event);
   virtual void _loadInputFramebuffers() override;
 
+public:
+  void setHdr(bool value);
+
 protected:
   virtual void _loadShader() override;
 
@@ -51,6 +54,7 @@ private:
   GLuint _lightsUBO = 0;
   const SceneGraph &_sceneGraph;
   const Camera &_camera;
+  bool _hdr = true;
 };
 
 } // namespace leo

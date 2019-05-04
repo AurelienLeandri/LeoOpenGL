@@ -15,7 +15,7 @@ void Framebuffer::generate()
   {
     if (this->_options.type == FrameBufferType::DEFAULT)
     {
-      this->_renderedTexture = new Texture(this->_options.width, this->_options.height, RGBA);
+      this->_renderedTexture = new Texture(this->_options.width, this->_options.height, this->_options.hdr ? HDR : RGBA);
     }
     else
     {

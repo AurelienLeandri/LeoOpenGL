@@ -21,6 +21,7 @@ typedef struct FramebufferOptions
 {
   bool multiSampled = false;
   unsigned int nbSamples = 4;
+  bool hdr = false;
   FrameBufferType type = FrameBufferType::DEFAULT;
   unsigned int width = 1620;
   unsigned int height = 1080;

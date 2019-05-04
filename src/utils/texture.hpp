@@ -15,6 +15,7 @@ SRGB,
 RGBA,
 SRGBA,
 DEPTH,
+HDR,
 ERROR,
 };
 
