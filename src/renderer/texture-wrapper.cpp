@@ -1,14 +1,18 @@
 #include "texture-wrapper.hpp"
 
-#include <utils/texture.hpp>
-
 namespace leo
 {
 
 TextureWrapper::TextureWrapper(const Texture &texture, TextureOptions textureOptions)
     : _id(0), _texture(&texture), _options(textureOptions)
 {
-    init();
+    init(texture.data, texture.width, texture.height, texture.mode);
+}
+
+TextureWrapper::TextureWrapper(unsigned int width, unsigned int height, TextureMode mode, TextureOptions textureOptions)
+    : _id(0), _options(textureOptions)
+{
+    init(nullptr, width, height, mode);
 }
 
 TextureWrapper::TextureWrapper(const std::vector<std::shared_ptr<Texture>> &textures,
@@ -19,7 +23,7 @@ TextureWrapper::TextureWrapper(const std::vector<std::shared_ptr<Texture>> &text
     {
         this->_texture = textures[0].get();
     }
-    init(&textures);
+    init(textures[0]->data, textures[0]->width, textures[0]->height, textures[0]->mode, &textures);
 }
 
 TextureWrapper::TextureWrapper(const TextureWrapper &other)
@@ -39,7 +43,7 @@ TextureWrapper &TextureWrapper::operator=(const TextureWrapper &other)
     return *this;
 }
 
-void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
+void TextureWrapper::init(unsigned char *data, unsigned int width, unsigned int height, TextureMode mode, const std::vector<std::shared_ptr<Texture>> *textures)
 {
     glGenTextures(1, &this->_id);
 
@@ -48,7 +52,7 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
 
     GLuint type = 0;
     GLuint format = 0;
-    switch (this->_texture->mode)
+    switch (mode)
     {
     case (RGB):
         type = format = GL_RGB;
@@ -72,15 +76,12 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
         type = format = GL_DEPTH_COMPONENT;
         break;
     }
-    unsigned char *data = this->_texture->data;
-    int height = this->_texture->height;
-    int width = this->_texture->width;
 
     if (textureType != GL_TEXTURE_2D_MULTISAMPLE)
     { // The following is not applicable to multisampled textures
         GLuint wrapping = this->_options.wrapping;
 
-        if (this->_texture->mode == DEPTH)
+        if (mode == DEPTH)
         { // Over sampling
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -95,13 +96,13 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
 
         glTexParameteri(textureType, GL_TEXTURE_WRAP_R, wrapping);
 
-        glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, this->_texture->mode == DEPTH ? GL_NEAREST : GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, this->_texture->mode == DEPTH ? GL_NEAREST : GL_LINEAR);
+        glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, mode == DEPTH ? GL_NEAREST : GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, mode == DEPTH ? GL_NEAREST : GL_LINEAR);
     }
 
     if (textureType == GL_TEXTURE_CUBE_MAP)
     {
-        if (this->_texture->mode == DEPTH)
+        if (mode == DEPTH)
         {
             glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -127,12 +128,12 @@ void TextureWrapper::init(const std::vector<std::shared_ptr<Texture>> *textures)
     }
     else if (textureType == GL_TEXTURE_2D_MULTISAMPLE)
     {
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, this->_texture->mode == HDR ? GL_RGBA16F : format, width, height, GL_TRUE);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, mode == HDR ? GL_RGBA16F : format, width, height, GL_TRUE);
     }
     else
     {
         glTexImage2D(textureType, 0, type, width, height, 0, format,
-                     (this->_texture->mode == DEPTH) ? GL_FLOAT : GL_UNSIGNED_BYTE, data ? data : 0);
+                     (mode == DEPTH) ? GL_FLOAT : GL_UNSIGNED_BYTE, data ? data : 0);
     }
 
     if (textureType != GL_TEXTURE_2D_MULTISAMPLE)

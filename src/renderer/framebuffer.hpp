@@ -25,8 +25,7 @@ typedef struct FramebufferOptions
   FrameBufferType type = FrameBufferType::DEFAULT;
   unsigned int width = 1620;
   unsigned int height = 1080;
-}
-FramebufferOptions;
+} FramebufferOptions;
 
 class Framebuffer
 {
@@ -41,17 +40,25 @@ public:
 public:
   GLuint getId() const { return this->_id; }
   const std::vector<TextureWrapper> &getColorBuffers() const { return this->_colorBuffers; }
-  void loadFrameBuffer(GLuint bindingType=GL_FRAMEBUFFER) const;
+  void loadFrameBuffer(GLuint bindingType = GL_FRAMEBUFFER) const;
   void generate();
   const FramebufferOptions &getOptions() const;
+  bool isInitialized() const;
 
 private:
+  bool _checkInitialized() const;
+
+private:
+  bool _initialized = false;
   GLuint _id = 0;
   std::vector<TextureWrapper> _colorBuffers;
   std::vector<std::shared_ptr<Texture>> _cubeMapTextures;
   GLenum _drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
   Texture *_renderedTexture = nullptr;
   const FramebufferOptions _options;
+
+  private:
+  static GLenum _colorAttachmentNames[4];
 
 }; // class Framebuffer
 

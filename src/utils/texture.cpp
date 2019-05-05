@@ -4,7 +4,7 @@
 namespace leo
 {
 
-t_id Texture::_count = 0;
+t_id Texture::_count = 1;
 
 Texture::Texture(int width, int height, TextureMode textureMode)
     : RegisteredObject(_count++), width(width), height(height), mode(textureMode)

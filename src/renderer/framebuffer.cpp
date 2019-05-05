@@ -5,6 +5,8 @@
 namespace leo
 {
 
+GLenum Framebuffer::_colorAttachmentNames[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+
 Framebuffer::Framebuffer(FramebufferOptions options) : _id(0), _options(options)
 {
 }
@@ -22,25 +24,33 @@ void Framebuffer::generate()
       this->_renderedTexture = new Texture(this->_options.width, this->_options.height, DEPTH);
     }
   }
+  else if (this->_options.type == FrameBufferType::CUBE_MAP) // For depth cube map
+  {
+    for (int i = 0; i < 6; i++)
+    {
+      this->_cubeMapTextures.push_back(std::make_shared<Texture>(this->_options.width, this->_options.height, DEPTH));
+    }
+  }
 
   TextureOptions options;
-  if (this->_options.multiSampled)
+  if (this->_options.type == FrameBufferType::CUBE_MAP)
+  {
+    options.textureType = GL_TEXTURE_CUBE_MAP;
+  }
+  else if (this->_options.multiSampled)
   {
     options.textureType = GL_TEXTURE_2D_MULTISAMPLE;
     options.nbSamples = this->_options.nbSamples;
   }
 
+  glGenFramebuffers(1, &this->_id);
+  glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
+
   if (this->_options.type == FrameBufferType::CUBE_MAP) // For depth cube map
   {
-    options.textureType = GL_TEXTURE_CUBE_MAP;
-    for (int i = 0; i < 6; i++)
-    {
-      this->_cubeMapTextures.push_back(std::make_shared<Texture>(this->_options.width, this->_options.height, DEPTH));
-    }
     this->_colorBuffers.push_back(TextureWrapper(this->_cubeMapTextures, options));
     TextureWrapper &tw = this->_colorBuffers[this->_colorBuffers.size() - 1];
-    glGenFramebuffers(1, &this->_id);
-    glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
+
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tw.getId(), 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
@@ -49,13 +59,10 @@ void Framebuffer::generate()
   {
     this->_colorBuffers.push_back(TextureWrapper(*this->_renderedTexture, options));
     TextureWrapper &tw = this->_colorBuffers[this->_colorBuffers.size() - 1];
-    glGenFramebuffers(1, &this->_id);
-    glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
-
     if (this->_options.type == FrameBufferType::DEFAULT)
     {
       // Set "renderedTexture" as our colour attachement #0
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, options.textureType, tw.getId(), 0);
+      glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tw.getId(), 0);
 
       // The depth buffer
       GLuint depthrenderbuffer;
@@ -127,6 +134,20 @@ void Framebuffer::loadFrameBuffer(GLuint bindingType) const
 const FramebufferOptions &Framebuffer::getOptions() const
 {
   return this->_options;
+}
+
+bool Framebuffer::isInitialized() const
+{
+  return this->_initialized;
+}
+
+bool Framebuffer::_checkInitialized() const
+{
+  if (!this->_initialized)
+  {
+    std::cerr << "Framebuffer has not been initialized properly" << std::endl;
+  }
+  return this->_initialized;
 }
 
 } // namespace leo

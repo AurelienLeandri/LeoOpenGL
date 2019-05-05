@@ -5,7 +5,7 @@
 namespace leo
 {
 
-t_id IComponent::_count = 0;
+t_id IComponent::_count = 1;
 
 IComponent::IComponent()
     : RegisteredObject(_count++)

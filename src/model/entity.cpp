@@ -9,7 +9,7 @@
 namespace leo
 {
 
-t_id Entity::_count = 0;
+t_id Entity::_count = 1;
 
 Entity::Entity()
     : RegisteredObject(_count++)
