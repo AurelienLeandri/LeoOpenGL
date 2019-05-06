@@ -38,11 +38,7 @@ void Framebuffer::generate()
   TextureOptions options;
   GLTextureOptions glOptions;
 
-  if (this->_options.type == FrameBufferType::CUBE_MAP)
-  {
-    glOptions.textureType = GL_TEXTURE_CUBE_MAP;
-  }
-  else if (this->_options.multiSampled)
+  if (this->_options.multiSampled)
   {
     glOptions.textureType = GL_TEXTURE_2D_MULTISAMPLE;
     options.nbSamples = this->_options.nbSamples;
@@ -56,6 +52,7 @@ void Framebuffer::generate()
     glOptions.internalFormat = GL_DEPTH_COMPONENT;
     glOptions.format = GL_DEPTH_COMPONENT;
     glOptions.type = GL_FLOAT;
+    glOptions.wrapping = GL_CLAMP_TO_EDGE;
     glOptions.textureType = GL_TEXTURE_CUBE_MAP;
 
     this->_colorBuffers.push_back(TextureWrapper(this->_cubeMapTextures, glOptions, options));
@@ -72,6 +69,7 @@ void Framebuffer::generate()
       glOptions.internalFormat = GL_DEPTH_COMPONENT;
       glOptions.format = GL_DEPTH_COMPONENT;
       glOptions.type = GL_FLOAT;
+      glOptions.wrapping = GL_CLAMP_TO_BORDER;
     }
     else
     {

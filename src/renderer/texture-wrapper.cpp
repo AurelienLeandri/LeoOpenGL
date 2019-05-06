@@ -39,6 +39,7 @@ TextureWrapper &TextureWrapper::operator=(const TextureWrapper &other)
 {
     this->_id = other._id;
     this->_texture = other._texture;
+    this->_glOptions = other._glOptions;
     this->_options = other._options;
     return *this;
 }
@@ -52,87 +53,36 @@ void TextureWrapper::init(unsigned char *data, unsigned int width, unsigned int 
     GLuint internalFormat = this->_glOptions.internalFormat;
     GLuint format = this->_glOptions.format;
     GLuint type = this->_glOptions.type;
-    /*
-    switch (mode)
-    {
-    case (RGB):
-        type = format = GL_RGB;
-        break;
-    case (SRGB):
-        type = this->_gammaCorrection ? GL_SRGB : GL_RGB;
-        format = GL_RGB;
-        break;
-    case (RGBA):
-        type = format = GL_RGBA;
-        break;
-    case (HDR):
-        type = GL_RGBA16F;
-        format = GL_RGBA;
-        break;
-    case (SRGBA):
-        type = this->_gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
-        format = GL_RGBA;
-        break;
-    case (DEPTH):
-        type = format = GL_DEPTH_COMPONENT;
-        break;
-    }
-    */
 
     if (textureType != GL_TEXTURE_2D_MULTISAMPLE)
     { // The following is not applicable to multisampled textures
         GLuint wrapping = this->_glOptions.wrapping;
-
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_S, wrapping);
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_T, wrapping);
+        glTexParameteri(textureType, GL_TEXTURE_WRAP_R, wrapping);
         if (internalFormat == GL_DEPTH_COMPONENT)
-        { // Over sampling
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-            float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+        {
+            float borderColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
             glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
         }
-        else
-        {
-            glTexParameteri(textureType, GL_TEXTURE_WRAP_S, wrapping);
-            glTexParameteri(textureType, GL_TEXTURE_WRAP_T, wrapping);
-        }
-
-        glTexParameteri(textureType, GL_TEXTURE_WRAP_R, wrapping);
-
         glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, internalFormat == GL_DEPTH_COMPONENT ? GL_NEAREST : GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, internalFormat == GL_DEPTH_COMPONENT ? GL_NEAREST : GL_LINEAR);
     }
 
     if (textureType == GL_TEXTURE_CUBE_MAP)
     {
-        if (internalFormat == GL_DEPTH_COMPONENT)
+        for (int i = 0; i < 6; ++i)
         {
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-            for (int i = 0; i < 6; ++i)
-            {
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                             0, internalFormat, width, height, 0, format, GL_FLOAT,
-                             NULL);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 6; ++i)
-            {
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                             0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE,
-                             textures ? (*textures)[i]->data : data);
-            }
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0, internalFormat, width, height, 0, format, type,
+                         textures ? (*textures)[i]->data : data);
         }
     }
     else if (textureType == GL_TEXTURE_2D_MULTISAMPLE)
     {
         glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, format, width, height, GL_TRUE);
     }
-    else
+    else  // GL_TEXTURE_2D
     {
         glTexImage2D(textureType, 0, internalFormat, width, height, 0, format,
                      type, data ? data : 0);
