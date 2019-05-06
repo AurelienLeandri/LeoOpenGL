@@ -5,7 +5,7 @@
 namespace leo
 {
 
-GLenum Framebuffer::_colorAttachmentNames[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+GLenum Framebuffer::_colorAttachmentNames[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
 
 Framebuffer::Framebuffer(FramebufferOptions options) : _id(0), _options(options)
 {
@@ -17,10 +17,12 @@ void Framebuffer::generate()
   {
     if (this->_options.type == FrameBufferType::DEFAULT)
     {
+      // put GL_RGBA16F as HDR
       this->_renderedTexture = new Texture(this->_options.width, this->_options.height, this->_options.hdr ? HDR : RGBA);
     }
     else
     {
+      // Put GL_FLOAT as texture type
       this->_renderedTexture = new Texture(this->_options.width, this->_options.height, DEPTH);
     }
   }
@@ -28,18 +30,21 @@ void Framebuffer::generate()
   {
     for (int i = 0; i < 6; i++)
     {
+      // Put GL_FLOAT as texture type
       this->_cubeMapTextures.push_back(std::make_shared<Texture>(this->_options.width, this->_options.height, DEPTH));
     }
   }
 
   TextureOptions options;
+  GLTextureOptions glOptions;
+
   if (this->_options.type == FrameBufferType::CUBE_MAP)
   {
-    options.textureType = GL_TEXTURE_CUBE_MAP;
+    glOptions.textureType = GL_TEXTURE_CUBE_MAP;
   }
   else if (this->_options.multiSampled)
   {
-    options.textureType = GL_TEXTURE_2D_MULTISAMPLE;
+    glOptions.textureType = GL_TEXTURE_2D_MULTISAMPLE;
     options.nbSamples = this->_options.nbSamples;
   }
 
@@ -48,7 +53,12 @@ void Framebuffer::generate()
 
   if (this->_options.type == FrameBufferType::CUBE_MAP) // For depth cube map
   {
-    this->_colorBuffers.push_back(TextureWrapper(this->_cubeMapTextures, options));
+    glOptions.internalFormat = GL_DEPTH_COMPONENT;
+    glOptions.format = GL_DEPTH_COMPONENT;
+    glOptions.type = GL_FLOAT;
+    glOptions.textureType = GL_TEXTURE_CUBE_MAP;
+
+    this->_colorBuffers.push_back(TextureWrapper(this->_cubeMapTextures, glOptions, options));
     TextureWrapper &tw = this->_colorBuffers[this->_colorBuffers.size() - 1];
 
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tw.getId(), 0);
@@ -57,7 +67,29 @@ void Framebuffer::generate()
   }
   else
   {
-    this->_colorBuffers.push_back(TextureWrapper(*this->_renderedTexture, options));
+    if (this->_options.type == FrameBufferType::DEPTH_MAP)
+    {
+      glOptions.internalFormat = GL_DEPTH_COMPONENT;
+      glOptions.format = GL_DEPTH_COMPONENT;
+      glOptions.type = GL_FLOAT;
+    }
+    else
+    {
+      if (this->_options.hdr)
+      {
+        glOptions.internalFormat = GL_RGBA16F;
+        glOptions.format = GL_RGBA;
+      }
+      else
+      {
+        glOptions.internalFormat = GL_RGBA;
+        glOptions.format = GL_RGBA;
+      }
+      glOptions.type = GL_UNSIGNED_BYTE;
+    }
+    glOptions.textureType = GL_TEXTURE_2D;
+
+    this->_colorBuffers.push_back(TextureWrapper(*this->_renderedTexture, glOptions, options));
     TextureWrapper &tw = this->_colorBuffers[this->_colorBuffers.size() - 1];
     if (this->_options.type == FrameBufferType::DEFAULT)
     {

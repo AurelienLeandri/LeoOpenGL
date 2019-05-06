@@ -3,27 +3,27 @@
 namespace leo
 {
 
-TextureWrapper::TextureWrapper(const Texture &texture, TextureOptions textureOptions)
-    : _id(0), _texture(&texture), _options(textureOptions)
+TextureWrapper::TextureWrapper(const Texture &texture, GLTextureOptions glOptions, TextureOptions textureOptions)
+    : _id(0), _texture(&texture), _glOptions(glOptions), _options(textureOptions)
 {
-    init(texture.data, texture.width, texture.height, texture.mode);
+    init(texture.data, texture.width, texture.height);
 }
 
-TextureWrapper::TextureWrapper(unsigned int width, unsigned int height, TextureMode mode, TextureOptions textureOptions)
-    : _id(0), _options(textureOptions)
+TextureWrapper::TextureWrapper(unsigned int width, unsigned int height, GLTextureOptions glOptions, TextureOptions textureOptions)
+    : _id(0), _glOptions(glOptions), _options(textureOptions)
 {
-    init(nullptr, width, height, mode);
+    init(nullptr, width, height);
 }
 
-TextureWrapper::TextureWrapper(const std::vector<std::shared_ptr<Texture>> &textures,
+TextureWrapper::TextureWrapper(const std::vector<std::shared_ptr<Texture>> &textures, GLTextureOptions glOptions,
                                TextureOptions textureOptions)
-    : _id(0), _options(textureOptions)
+    : _id(0), _glOptions(glOptions), _options(textureOptions)
 {
     if (textures.size() > 0)
     {
         this->_texture = textures[0].get();
     }
-    init(textures[0]->data, textures[0]->width, textures[0]->height, textures[0]->mode, &textures);
+    init(textures[0]->data, textures[0]->width, textures[0]->height, &textures);
 }
 
 TextureWrapper::TextureWrapper(const TextureWrapper &other)
@@ -43,15 +43,16 @@ TextureWrapper &TextureWrapper::operator=(const TextureWrapper &other)
     return *this;
 }
 
-void TextureWrapper::init(unsigned char *data, unsigned int width, unsigned int height, TextureMode mode, const std::vector<std::shared_ptr<Texture>> *textures)
+void TextureWrapper::init(unsigned char *data, unsigned int width, unsigned int height, const std::vector<std::shared_ptr<Texture>> *textures)
 {
     glGenTextures(1, &this->_id);
 
-    GLuint textureType = this->_options.textureType;
+    GLuint textureType = this->_glOptions.textureType;
     glBindTexture(textureType, this->_id);
-
-    GLuint type = 0;
-    GLuint format = 0;
+    GLuint internalFormat = this->_glOptions.internalFormat;
+    GLuint format = this->_glOptions.format;
+    GLuint type = this->_glOptions.type;
+    /*
     switch (mode)
     {
     case (RGB):
@@ -76,12 +77,13 @@ void TextureWrapper::init(unsigned char *data, unsigned int width, unsigned int 
         type = format = GL_DEPTH_COMPONENT;
         break;
     }
+    */
 
     if (textureType != GL_TEXTURE_2D_MULTISAMPLE)
     { // The following is not applicable to multisampled textures
-        GLuint wrapping = this->_options.wrapping;
+        GLuint wrapping = this->_glOptions.wrapping;
 
-        if (mode == DEPTH)
+        if (internalFormat == GL_DEPTH_COMPONENT)
         { // Over sampling
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -96,13 +98,13 @@ void TextureWrapper::init(unsigned char *data, unsigned int width, unsigned int 
 
         glTexParameteri(textureType, GL_TEXTURE_WRAP_R, wrapping);
 
-        glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, mode == DEPTH ? GL_NEAREST : GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, mode == DEPTH ? GL_NEAREST : GL_LINEAR);
+        glTexParameteri(textureType, GL_TEXTURE_MIN_FILTER, internalFormat == GL_DEPTH_COMPONENT ? GL_NEAREST : GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(textureType, GL_TEXTURE_MAG_FILTER, internalFormat == GL_DEPTH_COMPONENT ? GL_NEAREST : GL_LINEAR);
     }
 
     if (textureType == GL_TEXTURE_CUBE_MAP)
     {
-        if (mode == DEPTH)
+        if (internalFormat == GL_DEPTH_COMPONENT)
         {
             glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -112,7 +114,7 @@ void TextureWrapper::init(unsigned char *data, unsigned int width, unsigned int 
             for (int i = 0; i < 6; ++i)
             {
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                             0, type, width, height, 0, format, GL_FLOAT,
+                             0, internalFormat, width, height, 0, format, GL_FLOAT,
                              NULL);
             }
         }
@@ -121,19 +123,19 @@ void TextureWrapper::init(unsigned char *data, unsigned int width, unsigned int 
             for (int i = 0; i < 6; ++i)
             {
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                             0, type, width, height, 0, format, GL_UNSIGNED_BYTE,
+                             0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE,
                              textures ? (*textures)[i]->data : data);
             }
         }
     }
     else if (textureType == GL_TEXTURE_2D_MULTISAMPLE)
     {
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, mode == HDR ? GL_RGBA16F : format, width, height, GL_TRUE);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, format, width, height, GL_TRUE);
     }
     else
     {
-        glTexImage2D(textureType, 0, type, width, height, 0, format,
-                     (mode == DEPTH) ? GL_FLOAT : GL_UNSIGNED_BYTE, data ? data : 0);
+        glTexImage2D(textureType, 0, internalFormat, width, height, 0, format,
+                     type, data ? data : 0);
     }
 
     if (textureType != GL_TEXTURE_2D_MULTISAMPLE)

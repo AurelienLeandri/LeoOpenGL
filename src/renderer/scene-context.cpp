@@ -81,14 +81,26 @@ void SceneContext::registerPointLight(const PointLight &pl, const SceneGraph &sc
 
 void SceneContext::registerMaterial(const Material &m)
 {
+    GLTextureOptions options;
     for (const Texture *t : {m.diffuse_texture, m.specular_texture, m.reflection_map, m.normal_map, m.parallax_map})
         if (t)
-            this->registerTexture(*t, {});
+        {
+            if (t->mode == RGBA || t->mode == SRGBA)
+            {
+                options.format = options.internalFormat = GL_RGBA;
+            }
+            else
+            {
+                options.format = options.internalFormat = GL_RGB;
+            }
+            options.type = GL_UNSIGNED_BYTE;
+            this->registerTexture(*t, options, {});
+        }
 }
 
-void SceneContext::registerTexture(const Texture &tex, TextureOptions textureOptions = {})
+void SceneContext::registerTexture(const Texture &tex, GLTextureOptions glOptions = {}, TextureOptions textureOptions = {})
 {
-    this->textures.insert(std::pair<t_id, TextureWrapper>(tex.getId(), TextureWrapper(tex, textureOptions)));
+    this->textures.insert(std::pair<t_id, TextureWrapper>(tex.getId(), TextureWrapper(tex, glOptions, textureOptions)));
 }
 
 void SceneContext::registerVolume(const Volume &volume)

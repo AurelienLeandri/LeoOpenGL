@@ -14,6 +14,7 @@ class BufferCollection;
 class TextureWrapper;
 class Texture;
 class TextureOptions;
+class GLTextureOptions;
 class DirectionLightWrapper;
 class PointLightWrapper;
 class SceneGraph;
@@ -39,7 +40,7 @@ public:
     void registerInstancedVolume(const Volume &volume);
 
 private:
-    void registerTexture(const Texture &tex, TextureOptions textureOptions);
+    void registerTexture(const Texture &tex, GLTextureOptions glOptionss, TextureOptions textureOptions);
 
 public:
     // SceneGraph data

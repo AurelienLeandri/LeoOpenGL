@@ -182,10 +182,11 @@ GLuint OpenGLContext::loadCubeMap(const CubeMap &cubeMap)
     if (it == this->_textures.end())
     {
         TextureOptions options;
-        options.textureType = GL_TEXTURE_CUBE_MAP;
-        options.wrapping = GL_CLAMP_TO_EDGE;
+        GLTextureOptions glOptions;
+        glOptions.textureType = GL_TEXTURE_CUBE_MAP;
+        glOptions.wrapping = GL_CLAMP_TO_EDGE;
         TextureWrapper &tw = this->_textures.insert(
-                                                std::pair<t_id, TextureWrapper>(texture.getId(), TextureWrapper(cubeMap.getTextures(), options)))
+                                                std::pair<t_id, TextureWrapper>(texture.getId(), TextureWrapper(cubeMap.getTextures(), glOptions, options)))
                                  .first->second;
     }
 
