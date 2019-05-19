@@ -27,12 +27,11 @@ void RenderNode::_loadInputFramebuffers()
     for (auto &p : this->_inputs)
     {
         Framebuffer *input = p.second;
-        const std::vector<TextureWrapper> &cb = input->getColorBuffers();
-        for (GLuint i = 0; i < cb.size(); i++)
+        for (const TextureWrapper &tw : input->getColorBuffers())
         {
             glUniform1i(glGetUniformLocation(this->_shader.getProgram(), p.first.c_str()), inputNumber);
             glActiveTexture(GL_TEXTURE0 + inputNumber);
-            glBindTexture(GL_TEXTURE_2D, cb[i].getId());
+            glBindTexture(GL_TEXTURE_2D, tw.getId());
             inputNumber++;
         }
     }

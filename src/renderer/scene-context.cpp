@@ -48,18 +48,18 @@ void SceneContext::registerDirectionLight(const DirectionLight &dl, const SceneG
                                       up);
     glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
-    FramebufferOptions options;
+    DepthBufferOptions options;
     options.width = 1620 * 2;
     options.height = 1080 * 2;
-    options.type = FrameBufferType::DEPTH_MAP;
+    options.type = DepthBufferType::DEPTH_MAP;
 
     DirectionLightWrapper &wrapper = this->dLights.insert(std::pair<t_id, DirectionLightWrapper>(
                                                               dl.getId(),
-                                                              DirectionLightWrapper(Framebuffer(options), lightSpaceMatrix, DirectionLightUniform(dl),
+                                                              DirectionLightWrapper(Framebuffer(), lightSpaceMatrix, DirectionLightUniform(dl),
                                                                                     ShadowMappingNode(this->_context, *this, sceneGraph, shadowShader, dl))))
                                          .first->second;
 
-    wrapper.map.generate();
+    wrapper.map.setDepthBuffer(options);
     wrapper.renderNode.getOutputs()["out"] = &wrapper.map;
     wrapper.renderNode.setLightSpaceMatrix(wrapper.projection);
 }

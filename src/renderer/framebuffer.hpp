@@ -4,33 +4,45 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 
 namespace leo
 {
 
 class Texture;
 
-enum FrameBufferType
+enum DepthBufferType
 {
-  DEFAULT,
   DEPTH_MAP,
-  CUBE_MAP // TODO: cleaner solution
+  CUBE_MAP
 };
 
-typedef struct FramebufferOptions
+typedef struct ColorBufferOptions
 {
-  bool multiSampled = false;
-  unsigned int nbSamples = 4;
   bool hdr = false;
-  FrameBufferType type = FrameBufferType::DEFAULT;
+  unsigned int nbSamples = 1;
   unsigned int width = 1620;
   unsigned int height = 1080;
-} FramebufferOptions;
+} ColorBufferOptions;
+
+typedef struct DepthBufferOptions
+{
+  DepthBufferType type = DepthBufferType::DEPTH_MAP;
+  unsigned int width = 1620;
+  unsigned int height = 1080;
+} DepthBufferOptions;
+
+typedef struct RenderBufferOptions
+{
+  unsigned int nbSamples = 1;
+  unsigned int width = 1620;
+  unsigned int height = 1080;
+} RenderBufferOptions;
 
 class Framebuffer
 {
 public:
-  Framebuffer(FramebufferOptions options = {});
+  Framebuffer();
   Framebuffer(const Framebuffer &other);
   virtual ~Framebuffer();
 
@@ -40,24 +52,18 @@ public:
 public:
   GLuint getId() const { return this->_id; }
   const std::vector<TextureWrapper> &getColorBuffers() const { return this->_colorBuffers; }
+  const TextureWrapper &getDepthBuffer() const { return *this->_depthBuffer.get(); }
   void loadFrameBuffer(GLuint bindingType = GL_FRAMEBUFFER) const;
-  void generate();
-  const FramebufferOptions &getOptions() const;
-  bool isInitialized() const;
+  void addColorBuffer(ColorBufferOptions options = {});
+  void setDepthBuffer(DepthBufferOptions options = {});
+  void useRenderBuffer(RenderBufferOptions options = {});
 
 private:
-  bool _checkInitialized() const;
-
-private:
-  bool _initialized = false;
   GLuint _id = 0;
   std::vector<TextureWrapper> _colorBuffers;
-  std::vector<std::shared_ptr<Texture>> _cubeMapTextures;
-  GLenum _drawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-  Texture *_renderedTexture = nullptr;
-  const FramebufferOptions _options;
+  std::unique_ptr<TextureWrapper> _depthBuffer = nullptr;
 
-  private:
+private:
   static GLenum _colorAttachmentNames[4];
 
 }; // class Framebuffer

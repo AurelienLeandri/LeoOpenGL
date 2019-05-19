@@ -37,8 +37,6 @@ Renderer::Renderer(GLFWwindow *window,
                                              _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
                                              _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl"),
                                              _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
-                                             _main({false, 4, true}),
-                                             _multisampled({true, 4, true}),
                                              _blitNode(this->_context),
                                              _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl"),
                                              _cubeShadowMapShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl"),
@@ -66,9 +64,12 @@ void Renderer::_init()
 
 void Renderer::_initFramebuffers()
 {
-  this->_main.generate();
-  this->_multisampled.generate();
-  this->_postProcess.generate();
+  this->_main.addColorBuffer({true});
+  this->_main.useRenderBuffer();
+  this->_multisampled.addColorBuffer({true, 4});
+  this->_multisampled.useRenderBuffer({4});
+  this->_postProcess.addColorBuffer();
+  this->_postProcess.useRenderBuffer();
   this->_blitNode.getOutputs()["out"] = &this->_main;
   this->_blitNode.getInputs().insert(std::pair<std::string, Framebuffer *>("in", &this->_multisampled));
 }

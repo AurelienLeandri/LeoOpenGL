@@ -80,7 +80,7 @@ void TextureWrapper::init(unsigned char *data, unsigned int width, unsigned int 
     }
     else if (textureType == GL_TEXTURE_2D_MULTISAMPLE)
     {
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, format, width, height, GL_TRUE);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, internalFormat, width, height, GL_TRUE);
     }
     else  // GL_TEXTURE_2D
     {

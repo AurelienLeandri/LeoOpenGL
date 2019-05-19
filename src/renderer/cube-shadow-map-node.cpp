@@ -23,12 +23,12 @@ namespace leo
 CubeShadowMapNode::CubeShadowMapNode(OpenGLContext &context, SceneContext &sceneContext, const SceneGraph &sceneGraph, Shader &shader, const PointLight &light)
     : RenderNode(context, sceneContext, shader), _sceneGraph(sceneGraph), _light(light)
 {
-    FramebufferOptions options;
+    DepthBufferOptions options;
     options.width = 1024;
     options.height = 1024;
-    options.type = FrameBufferType::CUBE_MAP;
-    this->_outputs["out"] = new Framebuffer(options);
-    this->_outputs["out"]->generate();
+    options.type = DepthBufferType::CUBE_MAP;
+    this->_outputs["out"] = new Framebuffer();
+    this->_outputs["out"]->setDepthBuffer(options);
 }
 
 void CubeShadowMapNode::render()

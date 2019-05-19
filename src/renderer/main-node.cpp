@@ -73,34 +73,30 @@ void MainNode::_loadInputFramebuffers()
     for (auto &p : this->_sceneContext.dLights)
     {
         Framebuffer &input = p.second.map;
-        const std::vector<TextureWrapper> &cb = input.getColorBuffers();
         std::stringstream ss;
         ss << inputNumber - this->_materialTextureOffset;
-        for (GLuint i = 0; i < cb.size(); i++)
-        {
-            glUniform1i(glGetUniformLocation(this->_shader.getProgram(), ("shadowMap" + ss.str()).c_str()), inputNumber);
-            glActiveTexture(GL_TEXTURE0 + inputNumber);
-            glBindTexture(GL_TEXTURE_2D, cb[i].getId());
-            inputNumber++;
-        }
+        const TextureWrapper &tw = input.getDepthBuffer();
+        glUniform1i(glGetUniformLocation(this->_shader.getProgram(), ("shadowMap" + ss.str()).c_str()), inputNumber);
+        glActiveTexture(GL_TEXTURE0 + inputNumber);
+        glBindTexture(GL_TEXTURE_2D, tw.getId());
+        inputNumber++;
     }
     int cubeMapNb = 0;
     for (auto &p : this->_sceneContext.pLights)
     {
         Framebuffer &input = p.second.map;
-        const std::vector<TextureWrapper> &cb = input.getColorBuffers();
         std::stringstream ss;
         ss << cubeMapNb;
-        for (GLuint i = 0; i < cb.size(); i++)
-        {
-            GLuint ul = glGetUniformLocation(this->_shader.getProgram(), ("shadowCubeMap" + ss.str()).c_str());
-            glUniform1i(ul, inputNumber);
-            glActiveTexture(GL_TEXTURE0 + inputNumber);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, cb[i].getId());
-            this->_shader.setVector3(("lightPos" + std::to_string(i)).c_str(), p.second.uniform.position);
-            inputNumber++;
-            cubeMapNb++;
-        }
+        int i = 0;
+        const TextureWrapper &tw = input.getDepthBuffer();
+        GLuint ul = glGetUniformLocation(this->_shader.getProgram(), ("shadowCubeMap" + ss.str()).c_str());
+        glUniform1i(ul, inputNumber);
+        glActiveTexture(GL_TEXTURE0 + inputNumber);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, tw.getId());
+        this->_shader.setVector3(("lightPos" + std::to_string(i)).c_str(), p.second.uniform.position);
+        inputNumber++;
+        cubeMapNb++;
+        i++;
     }
     this->_materialTextureOffset = inputNumber;
 }

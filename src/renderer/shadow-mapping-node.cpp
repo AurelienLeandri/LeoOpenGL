@@ -34,7 +34,7 @@ void ShadowMappingNode::render()
     glEnable(GL_DEPTH_TEST);
 
     // 1. first render to depth map
-    glViewport(0, 0, this->_outputs["out"]->getOptions().width, this->_outputs["out"]->getOptions().height);
+    glViewport(0, 0, 1620 * 2, 1080 * 2);
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
