@@ -11,6 +11,7 @@ namespace leo
 
 class Framebuffer;
 class OpenGLContext;
+class TextureWrapper;
 
 class RenderGraphNode
 {
@@ -21,12 +22,12 @@ class RenderGraphNode
     virtual void render() = 0;
 
   public:
-    std::map<std::string, Framebuffer *> &getInputs();
-    std::map<std::string, Framebuffer *> &getOutputs();
+    std::map<std::string, const TextureWrapper &> &getInputs();
+    Framebuffer *&getOutput();
     
   protected:
-    std::map<std::string, Framebuffer *> _inputs;
-    std::map<std::string, Framebuffer *> _outputs;
+    std::map<std::string, const TextureWrapper &> _inputs;
+    Framebuffer * _output = nullptr;
     OpenGLContext &_context;
 };
 

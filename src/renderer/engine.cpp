@@ -57,6 +57,7 @@ void Engine::_initRenderer(Shader shader)
         shader,
         *this->_scene);
     this->_renderer->createMainNode(this->_scene);
+    this->_renderer->createBlitNode();
     this->_renderer->createCubeMapNode(this->_scene);
     this->_renderer->createPostProcessNode(this->_scene);
     this->_renderer->createGammaCorrectionNode(this->_scene);

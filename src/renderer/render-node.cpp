@@ -24,23 +24,20 @@ void RenderNode::_loadShader()
 void RenderNode::_loadInputFramebuffers()
 {
     int inputNumber = 0;
-    for (auto &p : this->_inputs)
+    for (const auto &p : this->_inputs)
     {
-        Framebuffer *input = p.second;
-        for (const TextureWrapper &tw : input->getColorBuffers())
-        {
-            glUniform1i(glGetUniformLocation(this->_shader.getProgram(), p.first.c_str()), inputNumber);
-            glActiveTexture(GL_TEXTURE0 + inputNumber);
-            glBindTexture(GL_TEXTURE_2D, tw.getId());
-            inputNumber++;
-        }
+        const TextureWrapper &input = p.second;
+        glUniform1i(glGetUniformLocation(this->_shader.getProgram(), p.first.c_str()), inputNumber);
+        glActiveTexture(GL_TEXTURE0 + inputNumber);
+        glBindTexture(GL_TEXTURE_2D, input.getId());
+        inputNumber++;
     }
     this->_materialTextureOffset = inputNumber;
 }
 
 void RenderNode::_loadOutputFramebuffer()
 {
-    this->_context.loadFramebuffer(this->_outputs.size() ? this->_outputs["out"] : nullptr);
+    this->_context.loadFramebuffer(this->_output);
 }
 
 void RenderNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)

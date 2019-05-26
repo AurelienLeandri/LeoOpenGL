@@ -27,13 +27,13 @@ CubeShadowMapNode::CubeShadowMapNode(OpenGLContext &context, SceneContext &scene
     options.width = 1024;
     options.height = 1024;
     options.type = DepthBufferType::CUBE_MAP;
-    this->_outputs["out"] = new Framebuffer();
-    this->_outputs["out"]->setDepthBuffer(options);
+    this->_output = new Framebuffer();
+    this->_output->setDepthBuffer(options);
 }
 
 void CubeShadowMapNode::render()
 {
-    if (!this->_outputs.size())
+    if (!this->_output)
         return;
 
     glClearColor(1.0, 1.0, 1.0, 1);

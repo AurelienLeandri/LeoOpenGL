@@ -60,7 +60,7 @@ void SceneContext::registerDirectionLight(const DirectionLight &dl, const SceneG
                                          .first->second;
 
     wrapper.map.setDepthBuffer(options);
-    wrapper.renderNode.getOutputs()["out"] = &wrapper.map;
+    wrapper.renderNode.getOutput() = &wrapper.map;
     wrapper.renderNode.setLightSpaceMatrix(wrapper.projection);
 }
 

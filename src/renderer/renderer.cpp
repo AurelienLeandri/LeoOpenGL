@@ -37,7 +37,6 @@ Renderer::Renderer(GLFWwindow *window,
                                              _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
                                              _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl"),
                                              _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
-                                             _blitNode(this->_context),
                                              _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl"),
                                              _cubeShadowMapShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl"),
                                              _sceneContext(this->_context)
@@ -70,8 +69,6 @@ void Renderer::_initFramebuffers()
   this->_multisampled.useRenderBuffer({4});
   this->_postProcess.addColorBuffer();
   this->_postProcess.useRenderBuffer();
-  this->_blitNode.getOutputs()["out"] = &this->_main;
-  this->_blitNode.getInputs().insert(std::pair<std::string, Framebuffer *>("in", &this->_multisampled));
 }
 
 void Renderer::_setWindowContext(GLFWwindow *window, InputManager *inputManager)
@@ -164,7 +161,7 @@ void Renderer::render(const SceneGraph *sceneGraph)
   for (auto &p : this->_sceneContext.pLights)
   {
     p.second.renderNode.render();
-  } 
+  }
 
   this->_mainNode->render();
 
@@ -175,7 +172,7 @@ void Renderer::render(const SceneGraph *sceneGraph)
 
   this->_cubeMapNode->render();
 
-  this->_blitNode.render();
+  this->_blitNode->render();
 
   this->_postProcessNode->render();
 
@@ -189,7 +186,16 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
   if (this->_mainNode == nullptr)
   {
     this->_mainNode = new MainNode(this->_context, this->_sceneContext, *sceneGraph, this->_shader, *this->_camera);
-    this->_mainNode->getOutputs()["out"] = &this->_multisampled;
+    this->_mainNode->getOutput() = &this->_multisampled;
+  }
+}
+
+void Renderer::createBlitNode()
+{
+  if (this->_blitNode == nullptr)
+  {
+    this->_blitNode = new BlitNode(this->_context, this->_multisampled);
+    this->_blitNode->getOutput() = &this->_main;
   }
 }
 
@@ -204,7 +210,7 @@ void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm
   {
     this->_sceneContext.setInstancingVBO(transformations);
     this->_instancedNode = new InstancedNode(this->_context, this->_sceneContext, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
-    this->_instancedNode->getOutputs()["out"] = &this->_multisampled;
+    this->_instancedNode->getOutput() = &this->_multisampled;
   }
 }
 
@@ -213,7 +219,7 @@ void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
   if (this->_cubeMapNode == nullptr)
   {
     this->_cubeMapNode = new CubeMapNode(this->_context, this->_sceneContext, *sceneGraph, this->_cubeMapShader, *this->_camera);
-    this->_cubeMapNode->getOutputs()["out"] = &this->_multisampled;
+    this->_cubeMapNode->getOutput() = &this->_multisampled;
   }
 }
 
@@ -222,8 +228,8 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
   if (this->_postProcessNode == nullptr)
   {
     this->_postProcessNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_postProcessShader);
-    this->_postProcessNode->getInputs().insert(std::pair<std::string, Framebuffer *>("fb", &this->_main));
-    this->_postProcessNode->getOutputs()["out"] = &this->_postProcess;
+    this->_postProcessNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_main.getColorBuffers()[0]));
+    this->_postProcessNode->getOutput() = &this->_postProcess;
   }
 }
 
@@ -232,7 +238,7 @@ void Renderer::createGammaCorrectionNode(SceneGraph *sceneGraph)
   if (this->_gammaCorrectionNode == nullptr)
   {
     this->_gammaCorrectionNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_gammaCorrectionShader);
-    this->_gammaCorrectionNode->getInputs().insert(std::pair<std::string, Framebuffer *>("fb", &this->_postProcess));
+    this->_gammaCorrectionNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_postProcess.getColorBuffers()[0]));
   }
 }
 

@@ -61,6 +61,7 @@ public:
   void createCubeMapNode(SceneGraph *sceneGraph);
   void createPostProcessNode(SceneGraph *sceneGraph);
   void createGammaCorrectionNode(SceneGraph *sceneGraph);
+  void createBlitNode();
   void createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm::mat4> &transformations);
 
 private:
@@ -103,7 +104,7 @@ private:
   PostProcessNode *_postProcessNode = nullptr;
   PostProcessNode *_gammaCorrectionNode = nullptr;
   InstancedNode *_instancedNode = nullptr;
-  BlitNode _blitNode;
+  BlitNode *_blitNode = nullptr;
 
   SceneGraph &_sceneGraph;
 };

@@ -7,9 +7,12 @@ namespace leo
     class BlitNode : public RenderGraphNode
     {
         public:
-        BlitNode(OpenGLContext &context);
+        BlitNode(OpenGLContext &context, Framebuffer &input);
         
         public:
         virtual void render();
+
+        private:
+        Framebuffer &_input;
     };
 }

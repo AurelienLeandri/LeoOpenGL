@@ -20,7 +20,7 @@ ShadowMappingNode::ShadowMappingNode(OpenGLContext &context, SceneContext &scene
 
 void ShadowMappingNode::render()
 {
-    if (!this->_outputs.size())
+    if (!this->_output)
         return;
 
     glClearColor(1.0, 1.0, 1.0, 1);
