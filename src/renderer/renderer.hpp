@@ -30,6 +30,7 @@ class Camera;
 class MainNode;
 class CubeMapNode;
 class PostProcessNode;
+class GaussianBlurNode;
 class InstancedNode;
 class BlitNode;
 class ShadowMappingNode;
@@ -106,7 +107,6 @@ private:
   // Shaders for bloom effect
   Shader _extractCapedBrightnessShader;
   Shader _hdrCorrectionShader;
-  Shader _blurShader;
   Shader _bloomEffectShader;
 
   OpenGLContext _context;
@@ -121,7 +121,7 @@ private:
 
   // RenderGraphNodes for bloom effect
   PostProcessNode *_extractCapedBrightnessNode = nullptr;
-  PostProcessNode *_blurNode = nullptr;
+  GaussianBlurNode *_blurNode = nullptr;
   PostProcessNode *_hdrCorrectionNode = nullptr;
   PostProcessNode *_bloomEffectNode = nullptr;
 

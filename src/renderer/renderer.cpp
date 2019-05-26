@@ -8,6 +8,7 @@
 #include <renderer/main-node.hpp>
 #include <renderer/cube-map-node.hpp>
 #include <renderer/post-process-node.hpp>
+#include <renderer/gaussian-blur-node.hpp>
 #include <renderer/instanced-node.hpp>
 #include <renderer/shadow-mapping-node.hpp>
 #include <renderer/light-wrapper.hpp>
@@ -42,7 +43,6 @@ Renderer::Renderer(GLFWwindow *window,
                                              _sceneContext(this->_context),
                                              _extractCapedBrightnessShader("resources/shaders/post-process.vs.glsl", "resources/shaders/extract-caped-brightness.frag.glsl"),
                                              _hdrCorrectionShader("resources/shaders/post-process.vs.glsl", "resources/shaders/hdr-correction.frag.glsl"),
-                                             _blurShader("resources/shaders/post-process.vs.glsl", "resources/shaders/blur.frag.glsl"),
                                              _bloomEffectShader("resources/shaders/post-process.vs.glsl", "resources/shaders/bloom-effect.frag.glsl")
 
 {
@@ -258,7 +258,7 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
     this->_extractCapedBrightnessNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_main.getColorBuffers()[0]));
     this->_extractCapedBrightnessNode->getOutput() = &this->_extractCapedBrightnessFB;
 
-    this->_blurNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_blurShader);
+    this->_blurNode = new GaussianBlurNode(this->_context, this->_sceneContext, *sceneGraph);
     this->_blurNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_extractCapedBrightnessFB.getColorBuffers()[1]));
     this->_blurNode->getOutput() = &this->_blurFB;
 

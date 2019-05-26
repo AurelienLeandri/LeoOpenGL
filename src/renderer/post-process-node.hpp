@@ -27,10 +27,10 @@ class PostProcessNode : public RenderNode
     void _load();
     void _unload();
 
-  private:
+  protected:
     void _loadPostProcessQuad();
 
-  private:
+  protected:
     const SceneGraph &_sceneGraph;
     const Volume *_postProcessGeometry;
 };

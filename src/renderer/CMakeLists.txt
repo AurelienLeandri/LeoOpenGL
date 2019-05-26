@@ -21,6 +21,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/cube-shadow-map-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/post-process-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/post-process-node.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/gaussian-blur-node.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/gaussian-blur-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/light-uniforms.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/light-uniforms.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/light-wrapper.cpp
