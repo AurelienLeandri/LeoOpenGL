@@ -33,13 +33,17 @@ Renderer::Renderer(GLFWwindow *window,
                    Camera *camera,
                    Shader shader,
                    SceneGraph &sceneGraph) : _shader(shader), _sceneGraph(sceneGraph),
-                                             _postProcessShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl"),
+                                             _postProcessShader("resources/shaders/post-process.vs.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl"),
                                              _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
                                              _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl"),
-                                             _gammaCorrectionShader("resources/shaders/post-process.vertex.glsl", "resources/shaders/gamma-correction.frag.glsl"),
+                                             _gammaCorrectionShader("resources/shaders/post-process.vs.glsl", "resources/shaders/gamma-correction.frag.glsl"),
                                              _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl"),
                                              _cubeShadowMapShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl"),
-                                             _sceneContext(this->_context)
+                                             _sceneContext(this->_context),
+                                             _extractCapedBrightnessShader("resources/shaders/post-process.vs.glsl", "resources/shaders/extract-caped-brightness.frag.glsl"),
+                                             _hdrCorrectionShader("resources/shaders/post-process.vs.glsl", "resources/shaders/hdr-correction.frag.glsl"),
+                                             _blurShader("resources/shaders/post-process.vs.glsl", "resources/shaders/blur.frag.glsl"),
+                                             _bloomEffectShader("resources/shaders/post-process.vs.glsl", "resources/shaders/bloom-effect.frag.glsl")
 
 {
   this->_sceneGraph.watch(this);
@@ -65,10 +69,25 @@ void Renderer::_initFramebuffers()
 {
   this->_main.addColorBuffer({true});
   this->_main.useRenderBuffer();
+
   this->_multisampled.addColorBuffer({true, 4});
   this->_multisampled.useRenderBuffer({4});
+
   this->_postProcess.addColorBuffer();
   this->_postProcess.useRenderBuffer();
+
+  this->_extractCapedBrightnessFB.addColorBuffer({true});
+  this->_extractCapedBrightnessFB.addColorBuffer();
+  this->_extractCapedBrightnessFB.useRenderBuffer();
+
+  this->_hdrCorrectionFB.addColorBuffer({true});
+  this->_hdrCorrectionFB.useRenderBuffer();
+
+  this->_blurFB.addColorBuffer();
+  this->_blurFB.useRenderBuffer();
+
+  this->_bloomEffectFB.addColorBuffer({true});
+  this->_bloomEffectFB.useRenderBuffer();
 }
 
 void Renderer::_setWindowContext(GLFWwindow *window, InputManager *inputManager)
@@ -174,6 +193,14 @@ void Renderer::render(const SceneGraph *sceneGraph)
 
   this->_blitNode->render();
 
+  this->_extractCapedBrightnessNode->render();
+
+  this->_hdrCorrectionNode->render();
+
+  this->_blurNode->render();
+
+  this->_bloomEffectNode->render();
+
   this->_postProcessNode->render();
 
   this->_gammaCorrectionNode->render();
@@ -227,8 +254,25 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
 {
   if (this->_postProcessNode == nullptr)
   {
+    this->_extractCapedBrightnessNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_extractCapedBrightnessShader);
+    this->_extractCapedBrightnessNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_main.getColorBuffers()[0]));
+    this->_extractCapedBrightnessNode->getOutput() = &this->_extractCapedBrightnessFB;
+
+    this->_blurNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_blurShader);
+    this->_blurNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_extractCapedBrightnessFB.getColorBuffers()[1]));
+    this->_blurNode->getOutput() = &this->_blurFB;
+
+    this->_hdrCorrectionNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_hdrCorrectionShader);
+    this->_hdrCorrectionNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_extractCapedBrightnessFB.getColorBuffers()[0]));
+    this->_hdrCorrectionNode->getOutput() = &this->_hdrCorrectionFB;
+
+    this->_bloomEffectNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_bloomEffectShader);
+    this->_bloomEffectNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb0", this->_hdrCorrectionFB.getColorBuffers()[0]));
+    this->_bloomEffectNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb1", this->_blurFB.getColorBuffers()[0]));
+    this->_bloomEffectNode->getOutput() = &this->_bloomEffectFB;
+
     this->_postProcessNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_postProcessShader);
-    this->_postProcessNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_main.getColorBuffers()[0]));
+    this->_postProcessNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_bloomEffectFB.getColorBuffers()[0]));
     this->_postProcessNode->getOutput() = &this->_postProcess;
   }
 }

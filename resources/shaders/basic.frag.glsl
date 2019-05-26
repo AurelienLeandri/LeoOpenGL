@@ -58,9 +58,6 @@ uniform vec3 lightPos0;
 uniform samplerCube shadowCubeMap0;
 
 
-
-
-
 float computeShadow(float bias)
 {
   vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;

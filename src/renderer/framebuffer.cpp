@@ -37,7 +37,7 @@ void Framebuffer::addColorBuffer(ColorBufferOptions options)
   TextureWrapper &tw = this->_colorBuffers.back();
 
   // Set "renderedTexture" as our colour attachement #0
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tw.getId(), 0);
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + this->_colorBuffers.size() - 1, tw.getId(), 0);
 
   // Set the list of draw buffers.
   glDrawBuffers(this->_colorBuffers.size(), this->_colorAttachmentNames); // "1" is the size of DrawBuffers

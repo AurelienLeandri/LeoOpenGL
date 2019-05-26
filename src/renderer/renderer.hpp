@@ -84,6 +84,13 @@ private:
   std::map<t_id, Framebuffer> _directionalShadowMaps;
   std::map<t_id, ShadowMappingNode> _directionalShadowNodes;
 
+  // Framebuffers for bloom effect
+  Framebuffer _extractCapedBrightnessFB;
+  Framebuffer _hdrCorrectionFB;
+  Framebuffer _blurFB;
+  Framebuffer _bloomEffectFB;
+
+
   Camera *_camera = nullptr;
   GLFWwindow *_window = nullptr;
   InputManager *_inputManager = nullptr;
@@ -96,6 +103,12 @@ private:
   Shader _shadowMappingShader;
   Shader _cubeShadowMapShader;
 
+  // Shaders for bloom effect
+  Shader _extractCapedBrightnessShader;
+  Shader _hdrCorrectionShader;
+  Shader _blurShader;
+  Shader _bloomEffectShader;
+
   OpenGLContext _context;
   SceneContext _sceneContext;
 
@@ -105,6 +118,12 @@ private:
   PostProcessNode *_gammaCorrectionNode = nullptr;
   InstancedNode *_instancedNode = nullptr;
   BlitNode *_blitNode = nullptr;
+
+  // RenderGraphNodes for bloom effect
+  PostProcessNode *_extractCapedBrightnessNode = nullptr;
+  PostProcessNode *_blurNode = nullptr;
+  PostProcessNode *_hdrCorrectionNode = nullptr;
+  PostProcessNode *_bloomEffectNode = nullptr;
 
   SceneGraph &_sceneGraph;
 };
