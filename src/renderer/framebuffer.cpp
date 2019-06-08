@@ -29,9 +29,9 @@ void Framebuffer::addColorBuffer(ColorBufferOptions options)
   }
 
   // Formats
-  glOptions.internalFormat = options.hdr ? GL_RGBA16F : GL_RGBA;
-  glOptions.format = GL_RGBA;
-  glOptions.type = options.hdr ? GL_FLOAT : GL_UNSIGNED_BYTE;
+  glOptions.internalFormat = options.hdr ? GL_RGBA16F : options.dataFormat;
+  glOptions.format = options.pixelFormat;
+  glOptions.type = options.hdr ? GL_FLOAT : options.dataType;
 
   this->_colorBuffers.push_back(TextureWrapper(options.width, options.height, glOptions, textureOptions));
   TextureWrapper &tw = this->_colorBuffers.back();

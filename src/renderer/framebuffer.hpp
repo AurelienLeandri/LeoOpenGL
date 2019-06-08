@@ -23,6 +23,9 @@ typedef struct ColorBufferOptions
   unsigned int nbSamples = 1;
   unsigned int width = 1620;
   unsigned int height = 1080;
+  GLuint dataFormat = GL_RGBA;
+  GLuint pixelFormat = GL_RGBA;
+  GLuint dataType = GL_UNSIGNED_BYTE;
 } ColorBufferOptions;
 
 typedef struct DepthBufferOptions

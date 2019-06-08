@@ -34,6 +34,8 @@ Renderer::Renderer(GLFWwindow *window,
                    Camera *camera,
                    Shader shader,
                    SceneGraph &sceneGraph) : _shader(shader), _sceneGraph(sceneGraph),
+                                             _gBufferShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer.frag.glsl"),
+                                             _deferredLightingShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting.frag.glsl"),
                                              _postProcessShader("resources/shaders/post-process.vs.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl"),
                                              _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
                                              _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl"),
@@ -69,6 +71,16 @@ void Renderer::_initFramebuffers()
 {
   this->_main.addColorBuffer({true});
   this->_main.useRenderBuffer();
+
+  ColorBufferOptions normalPositionBufferOptions;
+  normalPositionBufferOptions.pixelFormat = GL_RGB;
+  normalPositionBufferOptions.dataFormat = GL_RGB16F;
+  normalPositionBufferOptions.dataType = GL_FLOAT;
+  this->_gBuffer.addColorBuffer(normalPositionBufferOptions); // position buffer
+  this->_gBuffer.addColorBuffer(normalPositionBufferOptions); // position buffer
+  this->_gBuffer.addColorBuffer();                            // albedo buffer
+  this->_gBuffer.addColorBuffer();                            // spec buffer
+  this->_gBuffer.useRenderBuffer();                           // depth as usual
 
   this->_multisampled.addColorBuffer({true, 4});
   this->_multisampled.useRenderBuffer({4});
@@ -182,6 +194,11 @@ void Renderer::render(const SceneGraph *sceneGraph)
     p.second.renderNode.render();
   }
 
+  this->_gBufferNode->render();
+  this->_deferredLightingNode->render();
+
+  /*
+
   this->_mainNode->render();
 
   if (this->_instancedNode)
@@ -204,8 +221,9 @@ void Renderer::render(const SceneGraph *sceneGraph)
   this->_postProcessNode->render();
 
   this->_gammaCorrectionNode->render();
+  */
 
-  glfwSwapBuffers(this->_window);
+      glfwSwapBuffers(this->_window);
 }
 
 void Renderer::createMainNode(SceneGraph *sceneGraph)
@@ -214,6 +232,8 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
   {
     this->_mainNode = new MainNode(this->_context, this->_sceneContext, *sceneGraph, this->_shader, *this->_camera);
     this->_mainNode->getOutput() = &this->_multisampled;
+    this->_gBufferNode = new MainNode(this->_context, this->_sceneContext, *sceneGraph, this->_gBufferShader, *this->_camera);
+    this->_gBufferNode->getOutput() = &this->_gBuffer;
   }
 }
 
@@ -274,6 +294,12 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
     this->_postProcessNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_postProcessShader);
     this->_postProcessNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_bloomEffectFB.getColorBuffers()[0]));
     this->_postProcessNode->getOutput() = &this->_postProcess;
+
+    this->_deferredLightingNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_deferredLightingShader);
+    this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb0", this->_gBuffer.getColorBuffers()[0]));
+    this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb1", this->_gBuffer.getColorBuffers()[1]));
+    this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb2", this->_gBuffer.getColorBuffers()[2]));
+    this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb3", this->_gBuffer.getColorBuffers()[3]));
   }
 }
 

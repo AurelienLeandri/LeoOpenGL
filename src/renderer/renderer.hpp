@@ -81,6 +81,7 @@ private:
 private:
   Framebuffer _main;
   Framebuffer _multisampled;
+  Framebuffer _gBuffer;
   Framebuffer _postProcess;
   std::map<t_id, Framebuffer> _directionalShadowMaps;
   std::map<t_id, ShadowMappingNode> _directionalShadowNodes;
@@ -97,6 +98,8 @@ private:
   InputManager *_inputManager = nullptr;
 
   Shader _shader;
+  Shader _gBufferShader;
+  Shader _deferredLightingShader;
   Shader _postProcessShader;
   Shader _cubeMapShader;
   Shader _instancingShader;
@@ -113,9 +116,11 @@ private:
   SceneContext _sceneContext;
 
   MainNode *_mainNode = nullptr;
+  MainNode *_gBufferNode = nullptr;
   CubeMapNode *_cubeMapNode = nullptr;
   PostProcessNode *_postProcessNode = nullptr;
   PostProcessNode *_gammaCorrectionNode = nullptr;
+  PostProcessNode *_deferredLightingNode = nullptr;
   InstancedNode *_instancedNode = nullptr;
   BlitNode *_blitNode = nullptr;
 
