@@ -8,6 +8,7 @@
 #include <renderer/main-node.hpp>
 #include <renderer/cube-map-node.hpp>
 #include <renderer/post-process-node.hpp>
+#include <renderer/deferred-lighting-node.hpp>
 #include <renderer/gaussian-blur-node.hpp>
 #include <renderer/instanced-node.hpp>
 #include <renderer/shadow-mapping-node.hpp>
@@ -295,7 +296,7 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
     this->_postProcessNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_bloomEffectFB.getColorBuffers()[0]));
     this->_postProcessNode->getOutput() = &this->_postProcess;
 
-    this->_deferredLightingNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_deferredLightingShader);
+    this->_deferredLightingNode = new DeferredLightingNode(this->_context, this->_sceneContext, *sceneGraph, this->_deferredLightingShader, *this->_camera);
     this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb0", this->_gBuffer.getColorBuffers()[0]));
     this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb1", this->_gBuffer.getColorBuffers()[1]));
     this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb2", this->_gBuffer.getColorBuffers()[2]));

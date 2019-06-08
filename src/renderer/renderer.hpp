@@ -36,6 +36,7 @@ class BlitNode;
 class ShadowMappingNode;
 class PointLightWrapper;
 class DirectionLightWrapper;
+class DeferredLightingNode;
 
 class Renderer : public Observer
 {
@@ -120,7 +121,7 @@ private:
   CubeMapNode *_cubeMapNode = nullptr;
   PostProcessNode *_postProcessNode = nullptr;
   PostProcessNode *_gammaCorrectionNode = nullptr;
-  PostProcessNode *_deferredLightingNode = nullptr;
+  DeferredLightingNode *_deferredLightingNode = nullptr;
   InstancedNode *_instancedNode = nullptr;
   BlitNode *_blitNode = nullptr;
 

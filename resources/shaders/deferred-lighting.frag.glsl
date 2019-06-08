@@ -48,14 +48,10 @@ layout (std140, binding = 1) uniform s1 {
   UDirectionLight udl[MAX_NUM_LIGHTS];
 };
 
-in vec3 Normal;
 in vec3 Tangent;
 in vec3 BiTangent;
-in vec3 FragPos;
 in vec4 FragPosLightSpace;
 in mat3 TBN;
-
-out vec4 color;
 
 uniform Material material;
 uniform vec3 viewPos;
@@ -65,7 +61,6 @@ uniform sampler2D shadowMap0;
 uniform float far_plane;
 uniform vec3 lightPos0;
 uniform samplerCube shadowCubeMap0;
-
 
 float computeShadow(float bias)
 {
@@ -96,7 +91,7 @@ vec3 sampleOffsetDirections[20] = vec3[]
    vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
 );
 
-float computePointLightShadow(float bias)
+float computePointLightShadow(float bias, vec3 FragPos)
 {
   // get vector between fragment position and light position
   vec3 fragToLight = FragPos - lightPos0;
@@ -171,4 +166,5 @@ void main()
     vec3 color = (fbColor3).rgb;
 
     FragColor = vec4(color, 1.0);
+
 }
