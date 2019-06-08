@@ -86,5 +86,5 @@ void main()
   Positions = vec4(FragPos, 1.0);
   Normals = vec4(normal, 1.0);
   Albedo = vec4(material.diffuse_value * diffuse_sample, 1.0);
-  Spec = vec4(material.specular_value * specular_sample, 1.0);
+  Spec = vec4(material.specular_value * specular_sample, material.shininess / 100.f);  // TODO: remove ugly /100
 }
