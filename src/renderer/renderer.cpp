@@ -185,14 +185,15 @@ void Renderer::_registerComponent(const IComponent &component)
 
 void Renderer::render(const SceneGraph *sceneGraph)
 {
-  if (this->_cubeMapNode->getDependencies().size() == 0)
-    this->_cubeMapNode->addDependency(this->_mainNode);
-  if (this->_blitNode->getDependencies().size() == 0)
+  if (this->_cubeMapNode->getInNodes().size() == 0)
+    this->_cubeMapNode->addInNode(*this->_mainNode);
+  if (this->_blitNode->getInNodes().size() == 0)
   {
-    this->_blitNode->addDependency(this->_mainNode);
-    this->_blitNode->addDependency(this->_cubeMapNode);
+    this->_blitNode->addInNode(*this->_mainNode);
+    this->_blitNode->addInNode(*this->_cubeMapNode);
   }
 
+  /*
   this->_renderGraph.push_back(this->_mainNode);
   this->_renderGraph.push_back(this->_cubeMapNode);
   this->_renderGraph.push_back(this->_postProcessNode);
@@ -207,9 +208,10 @@ void Renderer::render(const SceneGraph *sceneGraph)
   std::map<RenderGraphNode *, bool> hasRan;
   for (RenderGraphNode *node : this->_renderGraph)
   {
-    incompleteInputs[node] = node->getInputs().size() + node->getDependencies().size();
+    incompleteInputs[node] = node->getInNodes().size();
     hasRan[node] = false;
   }
+  */
 
   for (auto &p : this->_sceneContext.dLights)
   {
@@ -221,12 +223,14 @@ void Renderer::render(const SceneGraph *sceneGraph)
     p.second.renderNode.render();
   }
 
-  this->_executeRenderGraph(incompleteInputs, hasRan);
+  //this->_executeRenderGraph(incompleteInputs, hasRan);
 
   //this->_gBufferNode->render();
   //this->_deferredLightingNode->render();
 
-  /*
+  this->_renderGraph.execute();
+
+/*
   this->_mainNode->render();
 
   if (this->_instancedNode)
@@ -254,6 +258,7 @@ void Renderer::render(const SceneGraph *sceneGraph)
   glfwSwapBuffers(this->_window);
 }
 
+/*
 void Renderer::_executeRenderGraph(std::map<RenderGraphNode *, int> &incompleteInputs, std::map<RenderGraphNode *, bool> &hasRan)
 {
   bool change = false;
@@ -272,7 +277,7 @@ void Renderer::_executeRenderGraph(std::map<RenderGraphNode *, int> &incompleteI
           change = true;
           hasRan[p.first] = true;
           std::vector<const TextureWrapper *> buffers;
-          const Framebuffer *output = p.first->getOutput();
+          const Framebuffer *output = p.first->getFramebuffer();
           if (output)
           {
             for (auto &tw : output->getColorBuffers())
@@ -289,9 +294,9 @@ void Renderer::_executeRenderGraph(std::map<RenderGraphNode *, int> &incompleteI
                   p2.second--;
                 }
               }
-              for (RenderGraphNode *dependency : p2.first->getDependencies())
+              for (t_RGNodeId dependency : p2.first->getInNodes())
               {
-                if (dependency == p.first)
+                if (dependency == p.first->getId())
                 {
                   p2.second--;
                 }
@@ -312,15 +317,16 @@ void Renderer::_executeRenderGraph(std::map<RenderGraphNode *, int> &incompleteI
     }
   }
 }
+*/
 
 void Renderer::createMainNode(SceneGraph *sceneGraph)
 {
   if (this->_mainNode == nullptr)
   {
-    this->_mainNode = new MainNode(this->_context, this->_sceneContext, *sceneGraph, this->_shader, *this->_camera);
-    this->_mainNode->getOutput() = &this->_multisampled;
-    this->_gBufferNode = new MainNode(this->_context, this->_sceneContext, *sceneGraph, this->_gBufferShader, *this->_camera);
-    this->_gBufferNode->getOutput() = &this->_gBuffer;
+    this->_mainNode = this->_renderGraph.createNode<MainNode>(this->_context, this->_sceneContext, *sceneGraph, this->_shader, *this->_camera);
+    this->_mainNode->setFramebuffer(&this->_multisampled);
+    this->_gBufferNode = this->_renderGraph.createNode<MainNode>(this->_context, this->_sceneContext, *sceneGraph, this->_gBufferShader, *this->_camera);
+    this->_gBufferNode->setFramebuffer(&this->_gBuffer);
   }
 }
 
@@ -328,8 +334,8 @@ void Renderer::createBlitNode()
 {
   if (this->_blitNode == nullptr)
   {
-    this->_blitNode = new BlitNode(this->_context, this->_multisampled);
-    this->_blitNode->getOutput() = &this->_main;
+    this->_blitNode = this->_renderGraph.createNode<BlitNode>(this->_context, this->_multisampled);
+    this->_blitNode->setFramebuffer(&this->_main);
   }
 }
 
@@ -343,8 +349,8 @@ void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm
   if (this->_instancedNode == nullptr)
   {
     this->_sceneContext.setInstancingVBO(transformations);
-    this->_instancedNode = new InstancedNode(this->_context, this->_sceneContext, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
-    this->_instancedNode->getOutput() = &this->_multisampled;
+    this->_instancedNode = this->_renderGraph.createNode<InstancedNode>(this->_context, this->_sceneContext, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
+    this->_instancedNode->setFramebuffer(&this->_multisampled);
   }
 }
 
@@ -352,8 +358,8 @@ void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
 {
   if (this->_cubeMapNode == nullptr)
   {
-    this->_cubeMapNode = new CubeMapNode(this->_context, this->_sceneContext, *sceneGraph, this->_cubeMapShader, *this->_camera);
-    this->_cubeMapNode->getOutput() = &this->_multisampled;
+    this->_cubeMapNode = this->_renderGraph.createNode<CubeMapNode>(this->_context, this->_sceneContext, *sceneGraph, this->_cubeMapShader, *this->_camera);
+    this->_cubeMapNode->setFramebuffer(&this->_multisampled);
   }
 }
 
@@ -361,32 +367,32 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
 {
   if (this->_postProcessNode == nullptr)
   {
-    this->_extractCapedBrightnessNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_extractCapedBrightnessShader);
-    this->_extractCapedBrightnessNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_main.getColorBuffers()[0]));
-    this->_extractCapedBrightnessNode->getOutput() = &this->_extractCapedBrightnessFB;
+    this->_extractCapedBrightnessNode = this->_renderGraph.createNode<PostProcessNode>(this->_context, this->_sceneContext, *sceneGraph, this->_extractCapedBrightnessShader);
+    this->_extractCapedBrightnessNode->addInput(*this->_blitNode, "fb", 0);
+    this->_extractCapedBrightnessNode->setFramebuffer(&this->_extractCapedBrightnessFB);
 
-    this->_blurNode = new GaussianBlurNode(this->_context, this->_sceneContext, *sceneGraph);
-    this->_blurNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_extractCapedBrightnessFB.getColorBuffers()[1]));
-    this->_blurNode->getOutput() = &this->_blurFB;
+    this->_blurNode = this->_renderGraph.createNode<GaussianBlurNode>(this->_context, this->_sceneContext, *sceneGraph);
+    this->_blurNode->addInput(*this->_extractCapedBrightnessNode, "fb", 1);
+    this->_blurNode->setFramebuffer(&this->_blurFB);
 
-    this->_hdrCorrectionNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_hdrCorrectionShader);
-    this->_hdrCorrectionNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_extractCapedBrightnessFB.getColorBuffers()[0]));
-    this->_hdrCorrectionNode->getOutput() = &this->_hdrCorrectionFB;
+    this->_hdrCorrectionNode = this->_renderGraph.createNode<PostProcessNode>(this->_context, this->_sceneContext, *sceneGraph, this->_hdrCorrectionShader);
+    this->_hdrCorrectionNode->addInput(*this->_extractCapedBrightnessNode, "fb", 0);
+    this->_hdrCorrectionNode->setFramebuffer(&this->_hdrCorrectionFB);
 
-    this->_bloomEffectNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_bloomEffectShader);
-    this->_bloomEffectNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb0", this->_hdrCorrectionFB.getColorBuffers()[0]));
-    this->_bloomEffectNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb1", this->_blurFB.getColorBuffers()[0]));
-    this->_bloomEffectNode->getOutput() = &this->_bloomEffectFB;
+    this->_bloomEffectNode = this->_renderGraph.createNode<PostProcessNode>(this->_context, this->_sceneContext, *sceneGraph, this->_bloomEffectShader);
+    this->_bloomEffectNode->addInput(*this->_hdrCorrectionNode, "fb0", 0);
+    this->_bloomEffectNode->addInput(*this->_blurNode, "fb1", 0);
+    this->_bloomEffectNode->setFramebuffer(&this->_bloomEffectFB);
 
-    this->_postProcessNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_postProcessShader);
-    this->_postProcessNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_bloomEffectFB.getColorBuffers()[0]));
-    this->_postProcessNode->getOutput() = &this->_postProcess;
+    this->_postProcessNode = this->_renderGraph.createNode<PostProcessNode>(this->_context, this->_sceneContext, *sceneGraph, this->_postProcessShader);
+    this->_postProcessNode->addInput(*this->_bloomEffectNode, "fb", 0);
+    this->_postProcessNode->setFramebuffer(&this->_postProcess);
 
-    this->_deferredLightingNode = new DeferredLightingNode(this->_context, this->_sceneContext, *sceneGraph, this->_deferredLightingShader, *this->_camera);
-    this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb0", this->_gBuffer.getColorBuffers()[0]));
-    this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb1", this->_gBuffer.getColorBuffers()[1]));
-    this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb2", this->_gBuffer.getColorBuffers()[2]));
-    this->_deferredLightingNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb3", this->_gBuffer.getColorBuffers()[3]));
+    this->_deferredLightingNode = this->_renderGraph.createNode<DeferredLightingNode>(this->_context, this->_sceneContext, *sceneGraph, this->_deferredLightingShader, *this->_camera);
+    this->_deferredLightingNode->addInput(*this->_gBufferNode, "fb0", 0);
+    this->_deferredLightingNode->addInput(*this->_gBufferNode, "fb1", 1);
+    this->_deferredLightingNode->addInput(*this->_gBufferNode, "fb2", 2);
+    this->_deferredLightingNode->addInput(*this->_gBufferNode, "fb3", 3);
   }
 }
 
@@ -394,8 +400,8 @@ void Renderer::createGammaCorrectionNode(SceneGraph *sceneGraph)
 {
   if (this->_gammaCorrectionNode == nullptr)
   {
-    this->_gammaCorrectionNode = new PostProcessNode(this->_context, this->_sceneContext, *sceneGraph, this->_gammaCorrectionShader);
-    this->_gammaCorrectionNode->getInputs().insert(std::pair<std::string, const TextureWrapper &>("fb", this->_postProcess.getColorBuffers()[0]));
+    this->_gammaCorrectionNode = this->_renderGraph.createNode<PostProcessNode>(this->_context, this->_sceneContext, *sceneGraph, this->_gammaCorrectionShader);
+    this->_gammaCorrectionNode->addInput(*this->_postProcessNode, "fb", 0);
   }
 }
 

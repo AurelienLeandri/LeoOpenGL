@@ -6,28 +6,69 @@
 namespace leo
 {
 
-RenderGraphNode::RenderGraphNode(OpenGLContext &context) : _context(context)
+t_RGNodeId RenderGraphNode::_nbNodes = 0;
+
+RenderGraphNode::RenderGraphNode(OpenGLContext &context) : _context(context), _id(RenderGraphNode::_nbNodes++)
 {
 }
 
-std::map<std::string, const TextureWrapper &> &RenderGraphNode::getInputs()
+const std::map<std::string, const TextureWrapper &> &RenderGraphNode::getInputs() const
 {
     return this->_inputs;
 }
 
-Framebuffer *&RenderGraphNode::getOutput()
+void RenderGraphNode::addInput(RenderGraphNode &in, std::string uniformName, int bufferId)
+{
+    // TODO: Stencil and Depth buffer case
+    this->_inputs.insert(std::pair<std::string, const TextureWrapper &>(uniformName, in.getFramebuffer()->getColorBuffers()[bufferId]));
+    in.addOutNode(*this);
+}
+
+Framebuffer *RenderGraphNode::getFramebuffer()
 {
     return this->_output;
 }
 
-void RenderGraphNode::addDependency(RenderGraphNode *dependency)
+void RenderGraphNode::setFramebuffer(Framebuffer *fb)
 {
-    this->_dependencies.push_back(dependency);
+    this->_output = fb;
 }
 
-std::vector<RenderGraphNode *> &RenderGraphNode::getDependencies()
+void RenderGraphNode::addInNode(RenderGraphNode &in)
 {
-    return this->_dependencies;
+    in._addOutNode(*this);
+    this->_addInNode(in);
+}
+
+void RenderGraphNode::_addInNode(RenderGraphNode &in)
+{
+    this->_inNodes.insert(in.getId());
+}
+
+std::set<t_RGNodeId> &RenderGraphNode::getInNodes()
+{
+    return this->_inNodes;
+}
+
+void RenderGraphNode::addOutNode(RenderGraphNode &out)
+{
+    out._addInNode(*this);
+    this->_addOutNode(out);
+}
+
+void RenderGraphNode::_addOutNode(RenderGraphNode &out)
+{
+    this->_outNodes.insert(out.getId());
+}
+
+std::set<t_RGNodeId> &RenderGraphNode::getOutNodes()
+{
+    return this->_outNodes;
+}
+
+t_RGNodeId RenderGraphNode::getId() const
+{
+    return this->_id;
 }
 
 } // namespace leo

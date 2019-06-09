@@ -16,6 +16,7 @@ enum Event
   BASE_DELETED = 1 << 7,
   BASE_ADDED = 1 << 8,
   BASE_REMOVED = 1 << 9,
-  CUBE_MAP_UPDATED = 1 << 10
+  CUBE_MAP_UPDATED = 1 << 10,
+  RG_INPUT_ADDED = 1 << 11,
 };
 }

@@ -7,6 +7,8 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/renderer.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/render-graph-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/render-graph-node.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/render-graph.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/render-graph.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/render-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/render-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/blit-node.cpp

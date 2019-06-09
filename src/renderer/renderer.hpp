@@ -7,6 +7,7 @@
 #include <renderer/opengl-context.hpp>
 #include <renderer/blit-node.hpp>
 #include <renderer/scene-context.hpp>
+#include <renderer/render-graph.hpp>
 
 #include <controller/observer.hpp>
 
@@ -75,7 +76,7 @@ private:
   void _visitSceneGraphRec(const Entity &root);
   void _registerComponent(const IComponent &component);
   void _registerDirectionLight(const DirectionLight &dl);
-  void _executeRenderGraph(std::map<RenderGraphNode *, int> &incompleteInputs, std::map<RenderGraphNode *, bool> &hasRan);
+  //void _executeRenderGraph(std::map<RenderGraphNode *, int> &incompleteInputs, std::map<RenderGraphNode *, bool> &hasRan);
 
 private:
   void _init();
@@ -133,7 +134,7 @@ private:
   PostProcessNode *_bloomEffectNode = nullptr;
 
   SceneGraph &_sceneGraph;
-  std::vector<RenderGraphNode *> _renderGraph;
+  RenderGraph _renderGraph;
 };
 
 } // namespace leo

@@ -7,7 +7,7 @@ const float PointLightWrapper::near = 0.01f;
 const float PointLightWrapper::far = 25.f;
 
 PointLightWrapper::PointLightWrapper(PointLightUniform uniform, CubeShadowMapNode renderNode)
-    : map(*renderNode.getOutput()), uniform(uniform), renderNode(renderNode)
+    : map(*renderNode.getFramebuffer()), uniform(uniform), renderNode(renderNode)
 {
     float aspect = 1024.f / 1024.f;
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
