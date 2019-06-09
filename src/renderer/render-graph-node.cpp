@@ -20,4 +20,14 @@ Framebuffer *&RenderGraphNode::getOutput()
     return this->_output;
 }
 
+void RenderGraphNode::addDependency(RenderGraphNode *dependency)
+{
+    this->_dependencies.push_back(dependency);
+}
+
+std::vector<RenderGraphNode *> &RenderGraphNode::getDependencies()
+{
+    return this->_dependencies;
+}
+
 } // namespace leo

@@ -26,6 +26,7 @@
 #include <model/component-manager.hpp>
 
 #include <sstream>
+#include <algorithm>
 
 namespace leo
 {
@@ -184,6 +185,31 @@ void Renderer::_registerComponent(const IComponent &component)
 
 void Renderer::render(const SceneGraph *sceneGraph)
 {
+  if (this->_cubeMapNode->getDependencies().size() == 0)
+    this->_cubeMapNode->addDependency(this->_mainNode);
+  if (this->_blitNode->getDependencies().size() == 0)
+  {
+    this->_blitNode->addDependency(this->_mainNode);
+    this->_blitNode->addDependency(this->_cubeMapNode);
+  }
+
+  this->_renderGraph.push_back(this->_mainNode);
+  this->_renderGraph.push_back(this->_cubeMapNode);
+  this->_renderGraph.push_back(this->_postProcessNode);
+  this->_renderGraph.push_back(this->_gammaCorrectionNode);
+  this->_renderGraph.push_back(this->_blitNode);
+  this->_renderGraph.push_back(this->_extractCapedBrightnessNode);
+  this->_renderGraph.push_back(this->_blurNode);
+  this->_renderGraph.push_back(this->_hdrCorrectionNode);
+  this->_renderGraph.push_back(this->_bloomEffectNode);
+
+  std::map<RenderGraphNode *, int> incompleteInputs;
+  std::map<RenderGraphNode *, bool> hasRan;
+  for (RenderGraphNode *node : this->_renderGraph)
+  {
+    incompleteInputs[node] = node->getInputs().size() + node->getDependencies().size();
+    hasRan[node] = false;
+  }
 
   for (auto &p : this->_sceneContext.dLights)
   {
@@ -195,11 +221,12 @@ void Renderer::render(const SceneGraph *sceneGraph)
     p.second.renderNode.render();
   }
 
-  this->_gBufferNode->render();
-  this->_deferredLightingNode->render();
+  this->_executeRenderGraph(incompleteInputs, hasRan);
+
+  //this->_gBufferNode->render();
+  //this->_deferredLightingNode->render();
 
   /*
-
   this->_mainNode->render();
 
   if (this->_instancedNode)
@@ -224,7 +251,66 @@ void Renderer::render(const SceneGraph *sceneGraph)
   this->_gammaCorrectionNode->render();
   */
 
-      glfwSwapBuffers(this->_window);
+  glfwSwapBuffers(this->_window);
+}
+
+void Renderer::_executeRenderGraph(std::map<RenderGraphNode *, int> &incompleteInputs, std::map<RenderGraphNode *, bool> &hasRan)
+{
+  bool change = false;
+  bool finished = false;
+  while (!finished)
+  {
+    finished = true;
+    change = false;
+    for (auto &p : incompleteInputs)
+    {
+      if (!hasRan[p.first])
+      {
+        if (p.second == 0)
+        {
+          p.first->render();
+          change = true;
+          hasRan[p.first] = true;
+          std::vector<const TextureWrapper *> buffers;
+          const Framebuffer *output = p.first->getOutput();
+          if (output)
+          {
+            for (auto &tw : output->getColorBuffers())
+            {
+              const TextureWrapper *p_tw = &tw;
+              buffers.push_back(p_tw);
+            }
+            for (auto &p2 : incompleteInputs)
+            {
+              for (auto &input : p2.first->getInputs())
+              {
+                if (std::find(buffers.begin(), buffers.end(), &input.second) != buffers.end())
+                {
+                  p2.second--;
+                }
+              }
+              for (RenderGraphNode *dependency : p2.first->getDependencies())
+              {
+                if (dependency == p.first)
+                {
+                  p2.second--;
+                }
+              }
+            }
+          }
+        }
+        else
+        {
+          finished = false;
+        }
+      }
+    }
+    if (!finished && !change)
+    {
+      std::cerr << "Incomplete RenderGraph!" << std::endl;
+      exit(1);
+    }
+  }
 }
 
 void Renderer::createMainNode(SceneGraph *sceneGraph)
