@@ -35,6 +35,7 @@ public:
   void setScene(SceneGraph *scene);
   void setInstancedScene(SceneGraph *instancedScene, const std::vector<glm::mat4> &transformations);
   void gameLoop();
+  Renderer *getRenderer() { return this->_renderer; }
 
 public: // Control attributes
   InputManager *inputManager;

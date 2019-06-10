@@ -7,16 +7,16 @@ namespace leo
 
 GLenum Framebuffer::_colorAttachmentNames[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
 
-Framebuffer::Framebuffer() : _id(0)
+Framebuffer::Framebuffer() : RegisteredObject(), _glId(0)
 {
 }
 
 void Framebuffer::addColorBuffer(ColorBufferOptions options)
 {
-  if (!this->_id)
-    glGenFramebuffers(1, &this->_id);
+  if (!this->_glId)
+    glGenFramebuffers(1, &this->_glId);
 
-  glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
+  glBindFramebuffer(GL_FRAMEBUFFER, this->_glId);
 
   TextureOptions textureOptions;
   GLTextureOptions glOptions;
@@ -54,7 +54,7 @@ void Framebuffer::addColorBuffer(ColorBufferOptions options)
 
 void Framebuffer::useRenderBuffer(RenderBufferOptions options)
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
+  glBindFramebuffer(GL_FRAMEBUFFER, this->_glId);
 
   // The depth buffer
   GLuint depthrenderbuffer;
@@ -84,10 +84,10 @@ void Framebuffer::useRenderBuffer(RenderBufferOptions options)
 
 void Framebuffer::setDepthBuffer(DepthBufferOptions options)
 {
-  if (!this->_id)
-    glGenFramebuffers(1, &this->_id);
+  if (!this->_glId)
+    glGenFramebuffers(1, &this->_glId);
 
-  glBindFramebuffer(GL_FRAMEBUFFER, this->_id);
+  glBindFramebuffer(GL_FRAMEBUFFER, this->_glId);
 
   TextureOptions textureOptions;
   GLTextureOptions glOptions;
@@ -127,26 +127,26 @@ void Framebuffer::setDepthBuffer(DepthBufferOptions options)
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-Framebuffer::Framebuffer(const Framebuffer &other) : _id(other._id), _colorBuffers(other._colorBuffers)
+Framebuffer::Framebuffer(const Framebuffer &other) : _glId(other._glId), _colorBuffers(other._colorBuffers)
 {
   this->_depthBuffer = other._depthBuffer.get() ? std::unique_ptr<TextureWrapper>(new TextureWrapper(*other._depthBuffer.get())) : nullptr;
 }
 
 Framebuffer::~Framebuffer()
 {
-  glDeleteFramebuffers(1, &this->_id);
+  glDeleteFramebuffers(1, &this->_glId);
 }
 
 Framebuffer &Framebuffer::operator=(const Framebuffer &other)
 {
-  this->_id = other._id;
+  this->_glId = other._glId;
   this->_colorBuffers = other._colorBuffers;
   return *this;
 }
 
 void Framebuffer::loadFrameBuffer(GLuint bindingType) const
 {
-  glBindFramebuffer(bindingType, this->_id);
+  glBindFramebuffer(bindingType, this->_glId);
 }
 
 } // namespace leo

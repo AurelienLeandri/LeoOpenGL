@@ -41,7 +41,6 @@ public:
 
 private:
   void _setSceneGraphRec(SceneGraph *sceneGraph);
-  static t_id _count;
 
 private:
   std::map<t_typeId, IComponent *> _components;

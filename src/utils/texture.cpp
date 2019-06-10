@@ -4,15 +4,13 @@
 namespace leo
 {
 
-t_id Texture::_count = 1;
-
 Texture::Texture(int width, int height, TextureMode textureMode)
-    : RegisteredObject(_count++), width(width), height(height), mode(textureMode)
+    : RegisteredObject(), width(width), height(height), mode(textureMode)
 {
 }
 
 Texture::Texture(const char *path, TextureMode mode)
-    : RegisteredObject(_count++), path(path),
+    : RegisteredObject(), path(path),
       mode(mode)
 {
   this->data = SOIL_load_image(path,

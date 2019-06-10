@@ -5,10 +5,8 @@
 namespace leo
 {
 
-t_id IComponent::_count = 1;
-
 IComponent::IComponent()
-    : RegisteredObject(_count++)
+    : RegisteredObject()
 {
   this->_notify(Event::COMPONENT_CREATED);
 }

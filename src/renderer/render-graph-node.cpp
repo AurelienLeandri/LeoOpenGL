@@ -6,9 +6,7 @@
 namespace leo
 {
 
-t_RGNodeId RenderGraphNode::_nbNodes = 0;
-
-RenderGraphNode::RenderGraphNode(OpenGLContext &context) : _context(context), _id(RenderGraphNode::_nbNodes++)
+RenderGraphNode::RenderGraphNode(OpenGLContext &context) : RegisteredObject(), _context(context)
 {
 }
 
@@ -45,7 +43,7 @@ void RenderGraphNode::_addInNode(RenderGraphNode &in)
     this->_inNodes.insert(in.getId());
 }
 
-std::set<t_RGNodeId> &RenderGraphNode::getInNodes()
+std::set<t_id> &RenderGraphNode::getInNodes()
 {
     return this->_inNodes;
 }
@@ -61,14 +59,9 @@ void RenderGraphNode::_addOutNode(RenderGraphNode &out)
     this->_outNodes.insert(out.getId());
 }
 
-std::set<t_RGNodeId> &RenderGraphNode::getOutNodes()
+std::set<t_id> &RenderGraphNode::getOutNodes()
 {
     return this->_outNodes;
-}
-
-t_RGNodeId RenderGraphNode::getId() const
-{
-    return this->_id;
 }
 
 } // namespace leo

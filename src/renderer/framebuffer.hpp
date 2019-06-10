@@ -1,5 +1,6 @@
 #pragma once
 
+#include <model/registered-object.hpp>
 #include <renderer/texture-wrapper.hpp>
 
 #include <iostream>
@@ -42,7 +43,7 @@ typedef struct RenderBufferOptions
   unsigned int height = 1080;
 } RenderBufferOptions;
 
-class Framebuffer
+class Framebuffer : public RegisteredObject
 {
 public:
   Framebuffer();
@@ -53,7 +54,7 @@ public:
   Framebuffer &operator=(const Framebuffer &other);
 
 public:
-  GLuint getId() const { return this->_id; }
+  GLuint getGLId() const { return this->_glId; }
   const std::vector<TextureWrapper> &getColorBuffers() const { return this->_colorBuffers; }
   const TextureWrapper &getDepthBuffer() const { return *this->_depthBuffer.get(); }
   void loadFrameBuffer(GLuint bindingType = GL_FRAMEBUFFER) const;
@@ -62,7 +63,7 @@ public:
   void useRenderBuffer(RenderBufferOptions options = {});
 
 private:
-  GLuint _id = 0;
+  GLuint _glId = 0;
   std::vector<TextureWrapper> _colorBuffers;
   std::unique_ptr<TextureWrapper> _depthBuffer = nullptr;
 

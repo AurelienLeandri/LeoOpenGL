@@ -9,10 +9,8 @@
 namespace leo
 {
 
-t_id Entity::_count = 1;
-
 Entity::Entity()
-    : RegisteredObject(_count++)
+    : RegisteredObject()
 {
   this->_notify(Event::BASE_CREATED);
 }

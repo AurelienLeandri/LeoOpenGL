@@ -1,5 +1,7 @@
 #pragma once
 
+#include <model/registered-object.hpp>
+
 #include <renderer/global.hpp>
 
 #include <string>
@@ -9,7 +11,7 @@ namespace leo
 
 class Texture;
 
-class Shader
+class Shader : public RegisteredObject
 {
 public:
   Shader();
@@ -47,6 +49,7 @@ protected:
   GLuint _program = 0;
   GLuint _textureOffset = 0;
   bool _initialized = false;
+
 };
 
 } // namespace leo

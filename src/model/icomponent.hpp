@@ -32,9 +32,6 @@ public:
 protected:
   const Entity *_entity = nullptr;
 
-private:
-  static t_id _count;
-
 }; // class Component
 
 } // namespace leo

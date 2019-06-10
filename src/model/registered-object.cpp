@@ -3,7 +3,9 @@
 namespace leo
 {
 
-RegisteredObject::RegisteredObject(t_id id) : _id(id)
+t_id RegisteredObject::current_id = 0;
+
+RegisteredObject::RegisteredObject() : _id(current_id++)
 {
 }
 

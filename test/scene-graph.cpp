@@ -15,6 +15,16 @@
 #include <model/component-manager.hpp>
 #include <model/texture-manager.hpp>
 #include <model/entity-manager.hpp>
+#include <renderer/engine.hpp>
+
+#include <renderer/blit-node.hpp>
+#include <renderer/main-node.hpp>
+#include <renderer/cube-map-node.hpp>
+#include <renderer/post-process-node.hpp>
+#include <renderer/deferred-lighting-node.hpp>
+#include <renderer/gaussian-blur-node.hpp>
+#include <renderer/instanced-node.hpp>
+#include <renderer/renderer.hpp>
 
 using namespace leo;
 
@@ -26,6 +36,103 @@ void print_matrix(const glm::mat4x4 &mat)
       std::cout << mat[i][j] << " ";
     std::cout << std::endl;
   }
+}
+
+leo::RenderGraph *createRenderGraph(Engine &engine, SceneGraph *sceneGraph)
+{
+  leo::Renderer *graph = engine->getRenderer();
+
+  // Shaders
+  Shader *shader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/basic.frag.glsl");
+  Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer.frag.glsl");
+  Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting.frag.glsl");
+  Shader *postProcessShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl");
+  Shader *cubeMapShader = graph->createShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
+  Shader *instancingShader = graph->createShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl");
+  Shader *gammaCorrectionShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/gamma-correction.frag.glsl");
+  Shader *shadowMappingShader = graph->createShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl");
+  Shader *cubeShadowMapShader = graph->createShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl");
+  Shader *extractCapedBrightnessShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/extract-caped-brightness.frag.glsl");
+  Shader *hdrCorrectionShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/hdr-correction.frag.glsl");
+  Shader *bloomEffectShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/bloom-effect.frag.glsl");
+
+  // Framebuffers
+  Framebuffer *main = graph->createFramebuffer();
+  Framebuffer *multisampled = graph->createFramebuffer();
+  Framebuffer *gBuffer = graph->createFramebuffer();
+  Framebuffer *postProcess = graph->createFramebuffer();
+  Framebuffer *extractCapedBrightnessFB = graph->createFramebuffer();
+  Framebuffer *hdrCorrectionFB = graph->createFramebuffer();
+  Framebuffer *blurFB = graph->createFramebuffer();
+  Framebuffer *bloomEffectFB = graph->createFramebuffer();
+  main->addColorBuffer({true});
+  main->useRenderBuffer();
+  ColorBufferOptions normalPositionBufferOptions;
+  normalPositionBufferOptions.pixelFormat = GL_RGB;
+  normalPositionBufferOptions.dataFormat = GL_RGB16F;
+  normalPositionBufferOptions.dataType = GL_FLOAT;
+  gBuffer->addColorBuffer(normalPositionBufferOptions); // position buffer
+  gBuffer->addColorBuffer(normalPositionBufferOptions); // position buffer
+  gBuffer->addColorBuffer();                            // albedo buffer
+  gBuffer->addColorBuffer();                            // spec buffer
+  gBuffer->useRenderBuffer();                           // depth as usual
+  multisampled->addColorBuffer({true, 4});
+  multisampled->useRenderBuffer({4});
+  postProcess->addColorBuffer();
+  postProcess->useRenderBuffer();
+  extractCapedBrightnessFB->addColorBuffer({true});
+  extractCapedBrightnessFB->addColorBuffer();
+  extractCapedBrightnessFB->useRenderBuffer();
+  hdrCorrectionFB->addColorBuffer({true});
+  hdrCorrectionFB->useRenderBuffer();
+  blurFB->addColorBuffer();
+  blurFB->useRenderBuffer();
+  bloomEffectFB->addColorBuffer({true});
+  bloomEffectFB->useRenderBuffer();
+
+  SceneContext &sceneContext = engine.getRenderer()->getSceneContext();
+  OpenGLContext &context = engine.getRenderer()->getOpenGLContext();
+  Camera *camera = engine.getCamera();
+
+  MainNode *mainNode = graph->createNode<MainNode>(context, sceneContext, *sceneGraph, *shader, *camera);
+  mainNode->setFramebuffer(multisampled);
+  /*
+  gBufferNode = graph->createNode<MainNode>(context, sceneContext, *sceneGraph, *gBufferShader, *camera);
+  gBufferNode->setFramebuffer(gBuffer);
+  */
+  BlitNode *blitNode = graph->createNode<BlitNode>(context, *multisampled);
+  blitNode->setFramebuffer(main);
+  CubeMapNode *cubeMapNode = graph->createNode<CubeMapNode>(context, sceneContext, *sceneGraph, *cubeMapShader, *camera);
+  cubeMapNode->setFramebuffer(multisampled);
+  PostProcessNode *extractCapedBrightnessNode = graph->createNode<PostProcessNode>(context, sceneContext, *sceneGraph, *extractCapedBrightnessShader);
+  extractCapedBrightnessNode->addInput(*blitNode, "fb", 0);
+  extractCapedBrightnessNode->setFramebuffer(extractCapedBrightnessFB);
+
+  GaussianBlurNode *blurNode = graph->createNode<GaussianBlurNode>(context, sceneContext, *sceneGraph);
+  blurNode->addInput(*extractCapedBrightnessNode, "fb", 1);
+  blurNode->setFramebuffer(blurFB);
+
+  PostProcessNode *hdrCorrectionNode = graph->createNode<PostProcessNode>(context, sceneContext, *sceneGraph, *hdrCorrectionShader);
+  hdrCorrectionNode->addInput(*extractCapedBrightnessNode, "fb", 0);
+  hdrCorrectionNode->setFramebuffer(hdrCorrectionFB);
+
+  PostProcessNode *bloomEffectNode = graph->createNode<PostProcessNode>(context, sceneContext, *sceneGraph, *bloomEffectShader);
+  bloomEffectNode->addInput(*hdrCorrectionNode, "fb0", 0);
+  bloomEffectNode->addInput(*blurNode, "fb1", 0);
+  bloomEffectNode->setFramebuffer(bloomEffectFB);
+
+  PostProcessNode *postProcessNode = graph->createNode<PostProcessNode>(context, sceneContext, *sceneGraph, *postProcessShader);
+  postProcessNode->addInput(*bloomEffectNode, "fb", 0);
+  postProcessNode->setFramebuffer(postProcess);
+  /*
+  deferredLightingNode = graph->createNode<DeferredLightingNode>(context, sceneContext, *sceneGraph, *deferredLightingShader, *camera);
+  deferredLightingNode->addInput(*gBufferNode, "fb0", 0);
+  deferredLightingNode->addInput(*gBufferNode, "fb1", 1);
+  deferredLightingNode->addInput(*gBufferNode, "fb2", 2);
+  deferredLightingNode->addInput(*gBufferNode, "fb3", 3);
+  */
+  PostProcessNode *gammaCorrectionNode = graph->createNode<PostProcessNode>(context, sceneContext, *sceneGraph, *gammaCorrectionShader);
+  gammaCorrectionNode->addInput(*postProcessNode, "fb", 0);
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
@@ -106,6 +213,7 @@ void testInstanced()
 
   // Render
   Engine engine;
+  createRenderGraph(engine, &scene);
 
   engine.setScene(&scene);
   engine.setInstancedScene(&instancedScene, transformations);
@@ -252,6 +360,7 @@ void cubeScene()
 
   // Render
   Engine engine;
+  createRenderGraph(engine, &scene);
 
   engine.setScene(&scene);
 
@@ -365,6 +474,7 @@ void blinnPhong()
       "resources/shaders/basic.frag.glsl");
 
   Engine engine;
+  createRenderGraph(engine, &scene);
 
   engine.setScene(&scene);
   engine.gameLoop();
