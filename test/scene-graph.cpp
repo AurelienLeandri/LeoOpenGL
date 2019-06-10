@@ -2,6 +2,8 @@
 
 #include <renderer/engine.hpp>
 #include <renderer/shader.hpp>
+#include <renderer/renderer.hpp>
+#include <renderer/opengl-context.hpp>
 #include <model/components/material.hpp>
 #include <model/components/volume.hpp>
 #include <model/components/point-light.hpp>
@@ -45,6 +47,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
   glViewport(0, 0, width, height);
 }
 
+/*
 void testInstanced()
 {
   ComponentManager componentManager;
@@ -296,70 +299,6 @@ void blinnPhong()
   m1->specular_value = glm::vec3(1.f, 1.f, 1.f);
   m1->shininess = 0.5f;
 
-  /*
-  Entity node2;
-  Material *m2 = componentManager.cloneComponent<Material>(m1);
-  m2->shininess = 4.0f;
-  root.addChild(&node2);
-  node2.addComponent(m2);
-  node2.addComponent(cube);
-  Transformation *t2 = componentManager.cloneComponent<Transformation>(t1);
-  node2.addComponent(t2);
-  t2->translate(glm::vec3(2.f, 0.f, 0.f));
-  
-
-
-  Entity node3;
-  Material *m3 = componentManager.cloneComponent<Material>(m1);
-  m3->shininess = 8.0f;
-  root.addChild(&node3);
-  node3.addComponent(m3);
-  node3.addComponent(cube);
-  Transformation *t3 = componentManager.cloneComponent<Transformation>(t2);
-  node3.addComponent(t3);
-  t3->translate(glm::vec3(2.f, 0.f, 0.f));
-
-  Entity node4;
-  Material *m4 = componentManager.cloneComponent<Material>(m1);
-  m4->shininess = 16.0f;
-  root.addChild(&node4);
-  node4.addComponent(m4);
-  node4.addComponent(cube);
-  Transformation *t4 = componentManager.cloneComponent<Transformation>(t3);
-  node4.addComponent(t4);
-  t4->translate(glm::vec3(2.f, 0.f, 0.f));
-
-  Entity node5;
-  Material *m5 = componentManager.cloneComponent<Material>(m1);
-  m5->shininess = 32.0f;
-  root.addChild(&node5);
-  node5.addComponent(m5);
-  node5.addComponent(cube);
-  Transformation *t5 = componentManager.cloneComponent<Transformation>(t4);
-  node5.addComponent(t5);
-  t5->translate(glm::vec3(2.f, 0.f, 0.f));
-
-  Entity node6;
-  Material *m6 = componentManager.cloneComponent<Material>(m1);
-  m6->shininess = 64.0f;
-  root.addChild(&node6);
-  node6.addComponent(m6);
-  node6.addComponent(cube);
-  Transformation *t6 = componentManager.cloneComponent<Transformation>(t5);
-  node6.addComponent(t6);
-  t6->translate(glm::vec3(2.f, 0.f, 0.f));
-
-  Entity node7;
-  Material *m7 = componentManager.cloneComponent<Material>(m1);
-  m7->shininess = 128.0f;
-  root.addChild(&node7);
-  node7.addComponent(m7);
-  node7.addComponent(cube);
-  Transformation *t7 = componentManager.cloneComponent<Transformation>(t6);
-  node7.addComponent(t7);
-  t7->translate(glm::vec3(2.f, 0.f, 0.f));
-  */
-
   Shader shader(
       "resources/shaders/basic.vs.glsl",
       "resources/shaders/basic.frag.glsl");
@@ -369,10 +308,175 @@ void blinnPhong()
   engine.setScene(&scene);
   engine.gameLoop();
 }
+*/
+
+
+
+
+
+void decoupling()
+{
+  // Scene model
+  ComponentManager componentManager;
+  TextureManager textureManager;
+  EntityManager entityManager;
+  ModelLoader modelLoader(entityManager, componentManager, textureManager);
+
+  Entity root;
+
+  Entity *m = modelLoader.loadModel("resources/models/nanosuit/", "nanosuit.obj");
+  root.addChild(m);
+  SceneGraph scene;
+  CubeMap cubeMap("skybox", "resources/textures");
+  scene.setCubeMap(&cubeMap);
+  scene.setRoot(&root);
+
+  Entity node1;
+  root.addChild(&node1);
+
+  Material *material = componentManager.createComponent<Material>();
+
+  Volume *cube = componentManager.createComponent<Volume>(Volume::createCube(1.f));
+
+  node1.addComponent(cube);
+  material->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", RGBA);
+  material->specular_texture = textureManager.createTexture("resources/textures/wood.png", RGBA);
+  material->normal_map = textureManager.createTexture("resources/textures/toy_box_normal.png", RGBA);
+  material->parallax_map = textureManager.createTexture("resources/textures/toy_box_disp.png", RGBA);
+  material->shininess = 32.f;
+
+  Material *material2 = componentManager.createComponent<Material>();
+  material2->diffuse_texture = textureManager.createTexture("resources/textures/bricks2.jpg", RGB);
+  material2->specular_texture = textureManager.createTexture("resources/textures/bricks2.jpg", RGB);
+  material2->normal_map = textureManager.createTexture("resources/textures/bricks2_normal.jpg", RGB);
+  material2->parallax_map = textureManager.createTexture("resources/textures/bricks2_disp.jpg", RGB);
+  material2->shininess = 32.f;
+
+  node1.addComponent(material2);
+
+  PointLight *pl = componentManager.createComponent<PointLight>(
+      glm::vec3(9.2f, 9.2f, 9.2f),
+      glm::vec3(9.6f, 9.6f, 9.6f),
+      glm::vec3(9.6f, 9.6f, 9.6f));
+
+  Transformation *t2 = componentManager.createComponent<Transformation>();
+
+  t2->setRelativeTranslation(glm::vec3(0.f, 2.f, 0.f));
+  t2->setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
+  t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
+  Entity node2;
+  node2.addComponent(t2);
+  node2.addComponent(pl);
+
+  Transformation *t3 = componentManager.createComponent<Transformation>();
+
+  DirectionLight *dl = componentManager.createComponent<DirectionLight>(
+      glm::vec3(0.2f, 0.2f, 0.2f),
+      glm::vec3(0.6f, 0.6f, 0.6f),
+      glm::vec3(0.6f, 0.6f, 0.6f));
+
+  t3->setRelativeTranslation(glm::vec3(4.f, 2.f, 0.f));
+  t3->setRelativeRotation(glm::vec3(45.f, 0.f, 0.f));
+  t3->setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
+  Entity node3;
+  node3.addComponent(cube);
+  node3.addComponent(t3);
+  node3.addComponent(dl);
+  node3.addComponent(material);
+
+  Material *groundMaterial = componentManager.createComponent<Material>();
+  groundMaterial->diffuse_texture = textureManager.createTexture("resources/textures/brickwall.jpg", SRGB);
+  groundMaterial->specular_texture = textureManager.createTexture("resources/textures/brickwall.jpg", SRGB);
+  groundMaterial->normal_map = textureManager.createTexture("resources/textures/brickwall_normal.jpg", RGB);
+  groundMaterial->shininess = 32.f;
+
+  Material *wallMat = componentManager.createComponent<Material>();
+  wallMat->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", SRGBA);
+  wallMat->specular_texture = wallMat->diffuse_texture;
+  wallMat->shininess = 1.0f;
+
+  Entity node4;
+  root.addChild(&node4);
+  Volume *ground = componentManager.createComponent<Volume>(Volume::createPlane(10.f, 10.f));
+  node4.addComponent(groundMaterial);
+
+  Entity node40;
+  node4.addChild(&node40);
+  node40.addComponent(ground);
+  node40.addComponent(wallMat);
+
+  Entity node41;
+  Transformation *t41 = componentManager.createComponent<Transformation>();
+  t41->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
+  t41->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, 0.f));
+  t41->setRelativeTranslation(glm::vec3(0.f, 10.f, -5.f));
+  node4.addChild(&node41);
+  node41.addComponent(ground);
+  node41.addComponent(t41);
+
+  Entity node42;
+  Transformation *t42 = componentManager.createComponent<Transformation>();
+  t42->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
+  t42->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, 3.14f));
+  t42->setRelativeTranslation(glm::vec3(0.f, 10.f, 5.f));
+  node4.addChild(&node42);
+  node42.addComponent(ground);
+  node42.addComponent(t42);
+
+  Entity node43;
+  Transformation *t43 = componentManager.createComponent<Transformation>();
+  t43->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
+  t43->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, 3.14f / 2.f));
+  t43->setRelativeTranslation(glm::vec3(5.f, 10.f, 0.f));
+  node4.addChild(&node43);
+  node43.addComponent(ground);
+  node43.addComponent(t43);
+
+  Entity node44;
+  Transformation *t44 = componentManager.createComponent<Transformation>();
+  t44->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
+  t44->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, -3.14f / 2.f));
+  t44->setRelativeTranslation(glm::vec3(-5.f, 10.f, 0.f));
+  node4.addChild(&node44);
+  node44.addComponent(ground);
+  node44.addComponent(t44);
+
+  Entity node45;
+  Transformation *t45 = componentManager.createComponent<Transformation>();
+  t45->setRelativeRotation(glm::vec3(0.f, 0.f, 3.14f));
+  t45->setRelativeTranslation(glm::vec3(0.f, 20.f, 0.f));
+  node4.addChild(&node45);
+  node45.addComponent(ground);
+  node45.addComponent(t45);
+
+
+  // Engine creating camera, windows and input manager (do Getters)
+  Engine engine;
+  Camera &camera = engine.getCamera();
+  GLFWwindow &window = engine.getWindow();
+  InputManager &inputManager = engine.getInputManager();
+
+  // OpenGLContext(+ SceneData inside)
+  OpenGLContext context;
+  context.setWindowContext(window, inputManager);
+
+  // Renderer
+  Renderer renderer;
+  renderer.createSceneContext(context);
+  renderer.setSceneGraph(scene);
+
+  // Create nodes
+  
+  // Engine->SetRenderer
+  engine.setRenderer(renderer);
+  engine.gameLoop();
+  // Engine->GameLoop
+}
 
 int main()
 {
-  cubeScene();
+  decoupling();
+  //cubeScene();
   //testInstanced();
   //blinnPhong();
   return 0;

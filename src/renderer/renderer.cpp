@@ -31,28 +31,8 @@
 namespace leo
 {
 
-Renderer::Renderer(GLFWwindow *window,
-                   InputManager *inputManager,
-                   Camera *camera,
-                   Shader shader,
-                   SceneGraph &sceneGraph) : _shader(shader), _sceneGraph(sceneGraph),
-                                             _gBufferShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer.frag.glsl"),
-                                             _deferredLightingShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting.frag.glsl"),
-                                             _postProcessShader("resources/shaders/post-process.vs.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl"),
-                                             _cubeMapShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl"),
-                                             _instancingShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl"),
-                                             _gammaCorrectionShader("resources/shaders/post-process.vs.glsl", "resources/shaders/gamma-correction.frag.glsl"),
-                                             _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl"),
-                                             _cubeShadowMapShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl"),
-                                             _sceneContext(this->_context),
-                                             _extractCapedBrightnessShader("resources/shaders/post-process.vs.glsl", "resources/shaders/extract-caped-brightness.frag.glsl"),
-                                             _hdrCorrectionShader("resources/shaders/post-process.vs.glsl", "resources/shaders/hdr-correction.frag.glsl"),
-                                             _bloomEffectShader("resources/shaders/post-process.vs.glsl", "resources/shaders/bloom-effect.frag.glsl")
-
+Renderer::Renderer()
 {
-  this->_sceneGraph.watch(this);
-  this->_setWindowContext(window, inputManager);
-  this->_setCamera(camera);
   this->_init();
 }
 
@@ -64,13 +44,13 @@ Renderer::~Renderer()
 
 void Renderer::_init()
 {
-  this->_context.init();
   this->_initFramebuffers();
-  this->_visitSceneGraph();
+  //this->_visitSceneGraph();
 }
 
 void Renderer::_initFramebuffers()
 {
+  /*
   this->_main.addColorBuffer({true});
   this->_main.useRenderBuffer();
 
@@ -102,13 +82,14 @@ void Renderer::_initFramebuffers()
 
   this->_bloomEffectFB.addColorBuffer({true});
   this->_bloomEffectFB.useRenderBuffer();
+  */
 }
 
 void Renderer::_setWindowContext(GLFWwindow *window, InputManager *inputManager)
 {
   this->_inputManager = inputManager;
   this->_window = window;
-  this->_context.setWindowContext(*window, *inputManager);
+  //this->_context.setWindowContext(*window, *inputManager);
 }
 
 void Renderer::_setCamera(Camera *camera)
@@ -118,7 +99,7 @@ void Renderer::_setCamera(Camera *camera)
 
 void Renderer::_visitSceneGraph()
 {
-  const Entity *root = this->_sceneGraph.getRoot();
+  const Entity *root = this->_sceneGraph->getRoot();
   if (root)
     this->_visitSceneGraphRec(*root);
 }
@@ -150,14 +131,14 @@ void Renderer::_registerComponent(const IComponent &component)
   {
   case ComponentType::DIRECTION_LIGHT:
   {
-    this->_sceneContext.registerDirectionLight(*static_cast<const DirectionLight *>(&component),
-                                               this->_sceneGraph, this->_shadowMappingShader);
+    this->_sceneContext->registerDirectionLight(*static_cast<const DirectionLight *>(&component),
+                                                *this->_sceneGraph, this->_shadowMappingShader);
   }
   break;
   case ComponentType::POINT_LIGHT:
   {
-    this->_sceneContext.registerPointLight(*static_cast<const PointLight *>(&component),
-                                           this->_sceneGraph, this->_cubeShadowMapShader);
+    this->_sceneContext->registerPointLight(*static_cast<const PointLight *>(&component),
+                                            *this->_sceneGraph, this->_cubeShadowMapShader);
   }
   break;
   case ComponentType::INSTANCED:
@@ -166,7 +147,7 @@ void Renderer::_registerComponent(const IComponent &component)
   break;
   case ComponentType::MATERIAL:
   {
-    this->_sceneContext.registerMaterial(*static_cast<const Material *>(&component));
+    this->_sceneContext->registerMaterial(*static_cast<const Material *>(&component));
   }
   break;
   case ComponentType::TRANSFORMATION:
@@ -175,12 +156,24 @@ void Renderer::_registerComponent(const IComponent &component)
   break;
   case ComponentType::VOLUME:
   {
-    this->_sceneContext.registerVolume(*static_cast<const Volume *>(&component));
+    this->_sceneContext->registerVolume(*static_cast<const Volume *>(&component));
   }
   break;
   default:
     break;
   }
+}
+
+void Renderer::createSceneContext(OpenGLContext &context) // TODO: Remove, create a separate class to manage observation
+{
+  this->_sceneContext = new SceneContext(context);
+}
+
+void Renderer::setSceneGraph(SceneGraph &sceneGraph) // TODO: Remove, create a separate class to manage observation
+{
+  this->_sceneGraph = &sceneGraph;
+  this->_sceneGraph->watch(this);
+  this->_visitSceneGraph();
 }
 
 void Renderer::render(const SceneGraph *sceneGraph)
@@ -213,6 +206,7 @@ void Renderer::render(const SceneGraph *sceneGraph)
   }
   */
 
+  /*
   for (auto &p : this->_sceneContext.dLights)
   {
     p.second.renderNode.render();
@@ -222,6 +216,7 @@ void Renderer::render(const SceneGraph *sceneGraph)
   {
     p.second.renderNode.render();
   }
+*/
 
   //this->_executeRenderGraph(incompleteInputs, hasRan);
 
@@ -230,7 +225,7 @@ void Renderer::render(const SceneGraph *sceneGraph)
 
   this->_renderGraph.execute();
 
-/*
+  /*
   this->_mainNode->render();
 
   if (this->_instancedNode)
@@ -323,10 +318,13 @@ void Renderer::createMainNode(SceneGraph *sceneGraph)
 {
   if (this->_mainNode == nullptr)
   {
+    /*
     this->_mainNode = this->_renderGraph.createNode<MainNode>(this->_context, this->_sceneContext, *sceneGraph, this->_shader, *this->_camera);
     this->_mainNode->setFramebuffer(&this->_multisampled);
     this->_gBufferNode = this->_renderGraph.createNode<MainNode>(this->_context, this->_sceneContext, *sceneGraph, this->_gBufferShader, *this->_camera);
-    this->_gBufferNode->setFramebuffer(&this->_gBuffer);
+    this->_gBufferNode->setFramebuffer(&this->_gBuffer)
+    */
+    ;
   }
 }
 
@@ -334,14 +332,17 @@ void Renderer::createBlitNode()
 {
   if (this->_blitNode == nullptr)
   {
+    /*
     this->_blitNode = this->_renderGraph.createNode<BlitNode>(this->_context, this->_multisampled);
     this->_blitNode->setFramebuffer(&this->_main);
+    */
   }
 }
 
 void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm::mat4> &transformations)
 {
   // Load instanced scene graph as well
+  /*
   const Entity *root = sceneGraph->getRoot();
   if (root)
     this->_visitSceneGraphRec(*root);
@@ -352,19 +353,23 @@ void Renderer::createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm
     this->_instancedNode = this->_renderGraph.createNode<InstancedNode>(this->_context, this->_sceneContext, *sceneGraph, this->_instancingShader, *this->_camera, transformations);
     this->_instancedNode->setFramebuffer(&this->_multisampled);
   }
+  */
 }
 
 void Renderer::createCubeMapNode(SceneGraph *sceneGraph)
 {
+  /*
   if (this->_cubeMapNode == nullptr)
   {
     this->_cubeMapNode = this->_renderGraph.createNode<CubeMapNode>(this->_context, this->_sceneContext, *sceneGraph, this->_cubeMapShader, *this->_camera);
     this->_cubeMapNode->setFramebuffer(&this->_multisampled);
   }
+  */
 }
 
 void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
 {
+  /*
   if (this->_postProcessNode == nullptr)
   {
     this->_extractCapedBrightnessNode = this->_renderGraph.createNode<PostProcessNode>(this->_context, this->_sceneContext, *sceneGraph, this->_extractCapedBrightnessShader);
@@ -394,15 +399,18 @@ void Renderer::createPostProcessNode(SceneGraph *sceneGraph)
     this->_deferredLightingNode->addInput(*this->_gBufferNode, "fb2", 2);
     this->_deferredLightingNode->addInput(*this->_gBufferNode, "fb3", 3);
   }
+  */
 }
 
 void Renderer::createGammaCorrectionNode(SceneGraph *sceneGraph)
 {
+  /*
   if (this->_gammaCorrectionNode == nullptr)
   {
     this->_gammaCorrectionNode = this->_renderGraph.createNode<PostProcessNode>(this->_context, this->_sceneContext, *sceneGraph, this->_gammaCorrectionShader);
     this->_gammaCorrectionNode->addInput(*this->_postProcessNode, "fb", 0);
   }
+  */
 }
 
 void Renderer::notified(Subject *subject, Event event)

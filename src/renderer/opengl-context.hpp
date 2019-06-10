@@ -30,8 +30,6 @@ public:
   OpenGLContext();
 
 public:
-  void init();
-  void init(const OpenGLContextOptions &options);
   void setWindowContext(GLFWwindow &window, InputManager &inputManager);
   t_id getTextureWrapperId(const Texture &texture);
   void loadFramebuffer(const Framebuffer *fb = nullptr, GLuint bindingType = GL_FRAMEBUFFER);
@@ -47,6 +45,7 @@ public:
   void operator=(OpenGLContext const &) = delete;
 
 private:
+  void _init(const OpenGLContextOptions &options = {});
   void _loadBuffers(const BufferCollection &bc);
 
 private:

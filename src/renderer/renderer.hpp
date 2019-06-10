@@ -42,11 +42,7 @@ class DeferredLightingNode;
 class Renderer : public Observer
 {
 public:
-  Renderer(GLFWwindow *window,
-           InputManager *inputManager,
-           Camera *camera,
-           Shader shader,
-           SceneGraph &sceneGraph);
+  Renderer();
   virtual ~Renderer();
   Renderer(const Renderer &other) = delete;
 
@@ -60,6 +56,8 @@ public:
   void render(const SceneGraph *sceneGraph);
 
 public:
+  void createSceneContext(OpenGLContext &context);  // TODO: Remove, create a separate class to manage observation
+  void setSceneGraph(SceneGraph &sceneGraph);  // TODO: Remove, create a separate class to manage observation
   void createMainNode(SceneGraph *sceneGraph);
   void createCubeMapNode(SceneGraph *sceneGraph);
   void createPostProcessNode(SceneGraph *sceneGraph);
@@ -115,8 +113,7 @@ private:
   Shader _hdrCorrectionShader;
   Shader _bloomEffectShader;
 
-  OpenGLContext _context;
-  SceneContext _sceneContext;
+  SceneContext *_sceneContext = nullptr;
 
   MainNode *_mainNode = nullptr;
   MainNode *_gBufferNode = nullptr;
@@ -133,7 +130,7 @@ private:
   PostProcessNode *_hdrCorrectionNode = nullptr;
   PostProcessNode *_bloomEffectNode = nullptr;
 
-  SceneGraph &_sceneGraph;
+  SceneGraph *_sceneGraph;
   RenderGraph _renderGraph;
 };
 

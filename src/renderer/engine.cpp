@@ -16,8 +16,6 @@ Engine::Engine()
 Engine::~Engine()
 {
   delete this->_camera;
-  if (this->_renderer)
-    delete this->_renderer;
 }
 
 void Engine::_init()
@@ -46,39 +44,24 @@ void Engine::_init()
   this->inputManager = InputManager::getInstance();
 }
 
-void Engine::_initRenderer(Shader shader)
+void Engine::setRenderer(Renderer &renderer)
 {
-  if (this->_scene)
-  {
-    this->_renderer = new Renderer(
-        this->_window,
-        this->inputManager,
-        this->_camera,
-        shader,
-        *this->_scene);
-    this->_renderer->createMainNode(this->_scene);
-    this->_renderer->createBlitNode();
-    this->_renderer->createCubeMapNode(this->_scene);
-    this->_renderer->createPostProcessNode(this->_scene);
-    this->_renderer->createGammaCorrectionNode(this->_scene);
-  }
+  this->_renderer = &renderer;
 }
 
-void Engine::setScene(SceneGraph *scene)
+Camera &Engine::getCamera()
 {
-  this->_scene = scene;
-  if (!this->_renderer)
-  {
-    Shader shader(
-        "resources/shaders/basic.vs.glsl",
-        "resources/shaders/basic.frag.glsl");
-    this->_initRenderer(shader);
-  }
+  return *this->_camera;
 }
 
-void Engine::setInstancedScene(SceneGraph *scene, const std::vector<glm::mat4> &transformations)
+GLFWwindow &Engine::getWindow()
 {
-  this->_renderer->createInstancedNode(scene, transformations);
+  return *this->_window;
+}
+
+InputManager &Engine::getInputManager()
+{
+  return *this->inputManager;
 }
 
 void Engine::gameLoop()
@@ -96,9 +79,9 @@ void Engine::gameLoop()
 
     this->doMovement(deltaTime);
 
-    if (this->_scene)
+    if (this->_renderer)
     {
-      this->_renderer->render(this->_scene);
+      //this->_renderer->render(this->_scene);
     }
 
     // Check and call events

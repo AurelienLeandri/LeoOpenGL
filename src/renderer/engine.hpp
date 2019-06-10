@@ -29,12 +29,13 @@ public:
 private:
   void _init();
   void doMovement(float deltaTime);
-  void _initRenderer(Shader shader);
 
 public:
-  void setScene(SceneGraph *scene);
-  void setInstancedScene(SceneGraph *instancedScene, const std::vector<glm::mat4> &transformations);
+  void setRenderer(Renderer &renderer);
   void gameLoop();
+  Camera &getCamera();
+  GLFWwindow &getWindow();
+  InputManager &getInputManager();
 
 public: // Control attributes
   InputManager *inputManager;
@@ -43,7 +44,6 @@ private:
   Camera *_camera = nullptr;
   Renderer *_renderer = nullptr;
   GLFWwindow *_window = nullptr;
-  SceneGraph *_scene = nullptr;
   GLuint screenWidth = 1620;
   GLuint screenHeight = 1080;
 };

@@ -16,14 +16,10 @@ namespace leo
 
 OpenGLContext::OpenGLContext()
 {
+    this->_init();
 }
 
-void OpenGLContext::init()
-{
-    this->init({});
-}
-
-void OpenGLContext::init(const OpenGLContextOptions &options)
+void OpenGLContext::_init(const OpenGLContextOptions &options)
 {
     // Initialize GLEW to setup the OpenGL Function pointers
     glewExperimental = GL_TRUE;
