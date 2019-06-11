@@ -81,7 +81,8 @@ void Engine::gameLoop()
 
     if (this->_renderer)
     {
-      //this->_renderer->render(this->_scene);
+      this->_renderer->execute();
+      glfwSwapBuffers(this->_window);
     }
 
     // Check and call events

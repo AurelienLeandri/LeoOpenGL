@@ -9,7 +9,7 @@ RenderGraph::~RenderGraph()
 {
 }
 
-RenderGraphNode *RenderGraph::getNode(t_RGNodeId id)
+RenderGraphNode *RenderGraph::getNode(t_id id)
 {
     auto it = this->_nodes.find(id);
     if (it == this->_nodes.end())
@@ -21,11 +21,11 @@ RenderGraphNode *RenderGraph::getNode(t_RGNodeId id)
 
 void RenderGraph::execute()
 {
-    std::map<t_RGNodeId, int> incompleteInputs;
-    std::map<t_RGNodeId, bool> hasRan;
+    std::map<t_id, int> incompleteInputs;
+    std::map<t_id, bool> hasRan;
     for (auto &pair : this->_nodes) {
-        incompleteInputs.insert(std::pair<t_RGNodeId, int>(pair.first, pair.second->getInNodes().size()));
-        hasRan.insert(std::pair<t_RGNodeId, int>(pair.first, false));
+        incompleteInputs.insert(std::pair<t_id, int>(pair.first, pair.second->getInNodes().size()));
+        hasRan.insert(std::pair<t_id, int>(pair.first, false));
     }
     bool change = false;
     bool finished = false;

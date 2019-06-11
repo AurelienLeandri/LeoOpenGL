@@ -53,85 +53,58 @@ public:
   const Renderer &operator=(const Renderer &other) = delete;
 
 public:
-  void render(const SceneGraph *sceneGraph);
-
-public:
-  void createSceneContext(OpenGLContext &context);  // TODO: Remove, create a separate class to manage observation
-  void setSceneGraph(SceneGraph &sceneGraph);  // TODO: Remove, create a separate class to manage observation
-  void createMainNode(SceneGraph *sceneGraph);
-  void createCubeMapNode(SceneGraph *sceneGraph);
-  void createPostProcessNode(SceneGraph *sceneGraph);
-  void createGammaCorrectionNode(SceneGraph *sceneGraph);
-  void createBlitNode();
-  void createInstancedNode(SceneGraph *sceneGraph, const std::vector<glm::mat4> &transformations);
+  void createSceneContext(OpenGLContext &context); // TODO: Remove, create a separate class to manage observation
+  SceneContext &getSceneContext(); // TODO: Remove, create a separate class to manage observation
+  void setSceneGraph(SceneGraph &sceneGraph);      // TODO: Remove, create a separate class to manage observation
 
 private:
-  void _loadShader(Shader *shader, std::vector<const Framebuffer *> inputs, Framebuffer *output);
-  void _setWindowContext(GLFWwindow *window, InputManager *inputManager);
-  void _setCamera(Camera *camera);
-  void _initFramebuffers();
   void _visitSceneGraph();
   void _visitSceneGraphRec(const Entity &root);
   void _registerComponent(const IComponent &component);
   void _registerDirectionLight(const DirectionLight &dl);
-  //void _executeRenderGraph(std::map<RenderGraphNode *, int> &incompleteInputs, std::map<RenderGraphNode *, bool> &hasRan);
 
 private:
-  void _init();
-
-private:
-  Framebuffer _main;
-  Framebuffer _multisampled;
-  Framebuffer _gBuffer;
-  Framebuffer _postProcess;
   std::map<t_id, Framebuffer> _directionalShadowMaps;
   std::map<t_id, ShadowMappingNode> _directionalShadowNodes;
+  SceneContext *_sceneContext = nullptr;
+  SceneGraph *_sceneGraph = nullptr;
 
-  // Framebuffers for bloom effect
-  Framebuffer _extractCapedBrightnessFB;
-  Framebuffer _hdrCorrectionFB;
-  Framebuffer _blurFB;
-  Framebuffer _bloomEffectFB;
+public:
+  template <typename T, typename... ARGS>
+  T *createNode(ARGS &&... args)
+  {
+    T *node = new T(std::forward<ARGS>(args)...);
+    this->_nodes.insert(std::pair<t_id, std::unique_ptr<T>>(node->getId(), node));
+    return node;
+  }
 
+  template <typename... ARGS>
+  Framebuffer *createFramebuffer(ARGS &&... args)
+  {
+    Framebuffer *fb = new Framebuffer(std::forward<ARGS>(args)...);
+    this->_framebuffers.insert(std::pair<t_id, std::unique_ptr<Framebuffer>>(fb->getId(), fb));
+    return fb;
+  }
 
-  Camera *_camera = nullptr;
-  GLFWwindow *_window = nullptr;
-  InputManager *_inputManager = nullptr;
+  template <typename... ARGS>
+  Shader *createShader(ARGS &&... args)
+  {
+    Shader *shader = new Shader(std::forward<ARGS>(args)...);
+    this->_shaders.insert(std::pair<t_id, std::unique_ptr<Shader>>(shader->getId(), shader));
+    return shader;
+  }
 
-  Shader _shader;
-  Shader _gBufferShader;
-  Shader _deferredLightingShader;
-  Shader _postProcessShader;
-  Shader _cubeMapShader;
-  Shader _instancingShader;
-  Shader _gammaCorrectionShader;
+  RenderGraphNode *getNode(t_id id);
+  Shader *getShader(t_id id);
+  Framebuffer *getFramebuffer(t_id id);
+  void execute();
+
+private:
+  std::map<t_id, std::unique_ptr<RenderGraphNode>> _nodes;
+  std::map<t_id, std::unique_ptr<Framebuffer>> _framebuffers;
+  std::map<t_id, std::unique_ptr<Shader>> _shaders;
   Shader _shadowMappingShader;
   Shader _cubeShadowMapShader;
-
-  // Shaders for bloom effect
-  Shader _extractCapedBrightnessShader;
-  Shader _hdrCorrectionShader;
-  Shader _bloomEffectShader;
-
-  SceneContext *_sceneContext = nullptr;
-
-  MainNode *_mainNode = nullptr;
-  MainNode *_gBufferNode = nullptr;
-  CubeMapNode *_cubeMapNode = nullptr;
-  PostProcessNode *_postProcessNode = nullptr;
-  PostProcessNode *_gammaCorrectionNode = nullptr;
-  DeferredLightingNode *_deferredLightingNode = nullptr;
-  InstancedNode *_instancedNode = nullptr;
-  BlitNode *_blitNode = nullptr;
-
-  // RenderGraphNodes for bloom effect
-  PostProcessNode *_extractCapedBrightnessNode = nullptr;
-  GaussianBlurNode *_blurNode = nullptr;
-  PostProcessNode *_hdrCorrectionNode = nullptr;
-  PostProcessNode *_bloomEffectNode = nullptr;
-
-  SceneGraph *_sceneGraph;
-  RenderGraph _renderGraph;
 };
 
 } // namespace leo

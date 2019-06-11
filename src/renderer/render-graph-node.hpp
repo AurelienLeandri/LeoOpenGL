@@ -11,7 +11,7 @@
 namespace leo
 {
 
-using t_RGNodeId = unsigned int;
+using t_id = unsigned int;
 
 class Framebuffer;
 class OpenGLContext;
@@ -33,9 +33,9 @@ public:
   void setFramebuffer(Framebuffer *fb);
   void addInNode(RenderGraphNode &in);
   void addOutNode(RenderGraphNode &out);
-  std::set<t_RGNodeId> &getInNodes();
-  std::set<t_RGNodeId> &getOutNodes();
-  t_RGNodeId getId() const;
+  std::set<t_id> &getInNodes();
+  std::set<t_id> &getOutNodes();
+  t_id getId() const;
 
 private:
   void _addInNode(RenderGraphNode &in);
@@ -43,14 +43,14 @@ private:
 
 protected:
   std::map<std::string, const TextureWrapper &> _inputs;
-  std::set<t_RGNodeId> _inNodes;
-  std::set<t_RGNodeId> _outNodes;
+  std::set<t_id> _inNodes;
+  std::set<t_id> _outNodes;
   Framebuffer *_output = nullptr;
   OpenGLContext &_context;
-  t_RGNodeId _id;
+  t_id _id;
 
 private:
-  static t_RGNodeId _nbNodes;
+  static t_id _nbNodes;
 };
 
 } // namespace leo

@@ -19,14 +19,16 @@ Shader::Shader(const GLchar *vertexSourcePath,
 {
 }
 
-Shader::Shader(const Shader &other) : _vertexCode(other._vertexCode),
+Shader::Shader(const Shader &other) : RegisteredObject(),
+                                      _vertexCode(other._vertexCode),
                                       _fragmentCode(other._fragmentCode),
                                       _geometryCode(other._geometryCode)
 {
 }
 
 Shader::Shader(const GLchar *vertexSourcePath, const GLchar *fragmentSourcePath,
-               const GLchar *geometrySourcePath) : _vertexCode(FileReader::readFile(vertexSourcePath)),
+               const GLchar *geometrySourcePath) : RegisteredObject(),
+                                                   _vertexCode(FileReader::readFile(vertexSourcePath)),
                                                    _fragmentCode(FileReader::readFile(fragmentSourcePath))
 {
   if (geometrySourcePath)

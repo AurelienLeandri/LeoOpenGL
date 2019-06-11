@@ -4,6 +4,14 @@
 #include <renderer/shader.hpp>
 #include <renderer/renderer.hpp>
 #include <renderer/opengl-context.hpp>
+#include <renderer/blit-node.hpp>
+#include <renderer/main-node.hpp>
+#include <renderer/cube-map-node.hpp>
+#include <renderer/post-process-node.hpp>
+#include <renderer/deferred-lighting-node.hpp>
+#include <renderer/gaussian-blur-node.hpp>
+#include <renderer/instanced-node.hpp>
+
 #include <model/components/material.hpp>
 #include <model/components/volume.hpp>
 #include <model/components/point-light.hpp>
@@ -47,7 +55,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
   glViewport(0, 0, width, height);
 }
 
-/*
 void testInstanced()
 {
   ComponentManager componentManager;
@@ -115,205 +122,6 @@ void testInstanced()
   engine.gameLoop();
 }
 
-void cubeScene()
-{
-  ComponentManager componentManager;
-  TextureManager textureManager;
-  EntityManager entityManager;
-  ModelLoader modelLoader(entityManager, componentManager, textureManager);
-
-  Entity root;
-
-  Entity *m = modelLoader.loadModel("resources/models/nanosuit/", "nanosuit.obj");
-  root.addChild(m);
-  SceneGraph scene;
-  CubeMap cubeMap("skybox", "resources/textures");
-  scene.setCubeMap(&cubeMap);
-  scene.setRoot(&root);
-
-  Entity node1;
-  root.addChild(&node1);
-
-  Material *material = componentManager.createComponent<Material>();
-
-  Volume *cube = componentManager.createComponent<Volume>(Volume::createCube(1.f));
-
-  node1.addComponent(cube);
-  material->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", RGBA);
-  material->specular_texture = textureManager.createTexture("resources/textures/wood.png", RGBA);
-  material->normal_map = textureManager.createTexture("resources/textures/toy_box_normal.png", RGBA);
-  material->parallax_map = textureManager.createTexture("resources/textures/toy_box_disp.png", RGBA);
-  material->shininess = 32.f;
-
-  Material *material2 = componentManager.createComponent<Material>();
-  material2->diffuse_texture = textureManager.createTexture("resources/textures/bricks2.jpg", RGB);
-  material2->specular_texture = textureManager.createTexture("resources/textures/bricks2.jpg", RGB);
-  material2->normal_map = textureManager.createTexture("resources/textures/bricks2_normal.jpg", RGB);
-  material2->parallax_map = textureManager.createTexture("resources/textures/bricks2_disp.jpg", RGB);
-  material2->shininess = 32.f;
-
-  node1.addComponent(material2);
-
-  PointLight *pl = componentManager.createComponent<PointLight>(
-      glm::vec3(9.2f, 9.2f, 9.2f),
-      glm::vec3(9.6f, 9.6f, 9.6f),
-      glm::vec3(9.6f, 9.6f, 9.6f));
-
-  Transformation *t2 = componentManager.createComponent<Transformation>();
-
-  t2->setRelativeTranslation(glm::vec3(0.f, 2.f, 0.f));
-  t2->setRelativeRotation(glm::vec3(0.f, 45.f, 0.f));
-  t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
-  Entity node2;
-  node2.addComponent(t2);
-  node2.addComponent(pl);
-
-  Transformation *t3 = componentManager.createComponent<Transformation>();
-
-  DirectionLight *dl = componentManager.createComponent<DirectionLight>(
-      glm::vec3(0.2f, 0.2f, 0.2f),
-      glm::vec3(0.6f, 0.6f, 0.6f),
-      glm::vec3(0.6f, 0.6f, 0.6f));
-
-  t3->setRelativeTranslation(glm::vec3(4.f, 2.f, 0.f));
-  t3->setRelativeRotation(glm::vec3(45.f, 0.f, 0.f));
-  t3->setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
-  Entity node3;
-  node3.addComponent(cube);
-  node3.addComponent(t3);
-  node3.addComponent(dl);
-  node3.addComponent(material);
-
-  Material *groundMaterial = componentManager.createComponent<Material>();
-  groundMaterial->diffuse_texture = textureManager.createTexture("resources/textures/brickwall.jpg", SRGB);
-  groundMaterial->specular_texture = textureManager.createTexture("resources/textures/brickwall.jpg", SRGB);
-  groundMaterial->normal_map = textureManager.createTexture("resources/textures/brickwall_normal.jpg", RGB);
-  groundMaterial->shininess = 32.f;
-
-  Material *wallMat = componentManager.createComponent<Material>();
-  wallMat->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", SRGBA);
-  wallMat->specular_texture = wallMat->diffuse_texture;
-  wallMat->shininess = 1.0f;
-
-  Entity node4;
-  root.addChild(&node4);
-  Volume *ground = componentManager.createComponent<Volume>(Volume::createPlane(10.f, 10.f));
-  node4.addComponent(groundMaterial);
-
-  Entity node40;
-  node4.addChild(&node40);
-  node40.addComponent(ground);
-  node40.addComponent(wallMat);
-
-  Entity node41;
-  Transformation *t41 = componentManager.createComponent<Transformation>();
-  t41->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
-  t41->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, 0.f));
-  t41->setRelativeTranslation(glm::vec3(0.f, 10.f, -5.f));
-  node4.addChild(&node41);
-  node41.addComponent(ground);
-  node41.addComponent(t41);
-
-  Entity node42;
-  Transformation *t42 = componentManager.createComponent<Transformation>();
-  t42->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
-  t42->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, 3.14f));
-  t42->setRelativeTranslation(glm::vec3(0.f, 10.f, 5.f));
-  node4.addChild(&node42);
-  node42.addComponent(ground);
-  node42.addComponent(t42);
-
-  Entity node43;
-  Transformation *t43 = componentManager.createComponent<Transformation>();
-  t43->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
-  t43->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, 3.14f / 2.f));
-  t43->setRelativeTranslation(glm::vec3(5.f, 10.f, 0.f));
-  node4.addChild(&node43);
-  node43.addComponent(ground);
-  node43.addComponent(t43);
-
-  Entity node44;
-  Transformation *t44 = componentManager.createComponent<Transformation>();
-  t44->setRelativeScaling(glm::vec3(1.f, 1.f, 2.f));
-  t44->setRelativeRotation(glm::vec3(3.14 / 2.0, 0.f, -3.14f / 2.f));
-  t44->setRelativeTranslation(glm::vec3(-5.f, 10.f, 0.f));
-  node4.addChild(&node44);
-  node44.addComponent(ground);
-  node44.addComponent(t44);
-
-  Entity node45;
-  Transformation *t45 = componentManager.createComponent<Transformation>();
-  t45->setRelativeRotation(glm::vec3(0.f, 0.f, 3.14f));
-  t45->setRelativeTranslation(glm::vec3(0.f, 20.f, 0.f));
-  node4.addChild(&node45);
-  node45.addComponent(ground);
-  node45.addComponent(t45);
-
-  Shader shader(
-      "resources/shaders/basic.vs.glsl",
-      "resources/shaders/basic.frag.glsl");
-
-  // Render
-  Engine engine;
-
-  engine.setScene(&scene);
-
-  // Test oberver mode
-  node1.addChild(&node3);
-  node1.addChild(&node2);
-
-  engine.gameLoop();
-}
-
-void blinnPhong()
-{
-  ComponentManager componentManager;
-  TextureManager textureManager;
-  EntityManager entityManager;
-  ModelLoader modelLoader(entityManager, componentManager, textureManager);
-
-  DirectionLight *dl = componentManager.createComponent<DirectionLight>(
-      glm::vec3(0.2f, 0.2f, 0.2f),
-      glm::vec3(0.6f, 0.6f, 0.6f),
-      glm::vec3(0.6f, 0.6f, 0.6f));
-
-  Entity root;
-  SceneGraph scene;
-  CubeMap cubeMap("skybox", "resources/textures");
-  scene.setCubeMap(&cubeMap);
-  scene.setRoot(&root);
-
-  root.addComponent(dl);
-
-  Material *m1 = componentManager.createComponent<Material>();
-  Volume *cube = componentManager.createComponent<Volume>(Volume::createCube(1.f));
-
-  Entity node1;
-  root.addChild(&node1);
-  node1.addComponent(m1);
-  node1.addComponent(cube);
-  Transformation *t1 = componentManager.createComponent<Transformation>();
-  node1.addComponent(t1);
-  t1->rotate(glm::vec3(0.f, 45.f, 0.f));
-  m1->diffuse_value = glm::vec3(0.8f, 0.4f, 0.2f);
-  m1->specular_value = glm::vec3(1.f, 1.f, 1.f);
-  m1->shininess = 0.5f;
-
-  Shader shader(
-      "resources/shaders/basic.vs.glsl",
-      "resources/shaders/basic.frag.glsl");
-
-  Engine engine;
-
-  engine.setScene(&scene);
-  engine.gameLoop();
-}
-*/
-
-
-
-
-
 void decoupling()
 {
   // Scene model
@@ -326,10 +134,10 @@ void decoupling()
 
   Entity *m = modelLoader.loadModel("resources/models/nanosuit/", "nanosuit.obj");
   root.addChild(m);
-  SceneGraph scene;
+  SceneGraph sceneGraph;
   CubeMap cubeMap("skybox", "resources/textures");
-  scene.setCubeMap(&cubeMap);
-  scene.setRoot(&root);
+  sceneGraph.setCubeMap(&cubeMap);
+  sceneGraph.setRoot(&root);
 
   Entity node1;
   root.addChild(&node1);
@@ -452,7 +260,7 @@ void decoupling()
 
   // Engine creating camera, windows and input manager (do Getters)
   Engine engine;
-  Camera &camera = engine.getCamera();
+  Camera *camera = &engine.getCamera();
   GLFWwindow &window = engine.getWindow();
   InputManager &inputManager = engine.getInputManager();
 
@@ -463,21 +271,117 @@ void decoupling()
   // Renderer
   Renderer renderer;
   renderer.createSceneContext(context);
-  renderer.setSceneGraph(scene);
+  renderer.setSceneGraph(sceneGraph);
+  node1.addChild(&node3);
+  node1.addChild(&node2);
+  SceneContext &sceneContext = renderer.getSceneContext();
 
   // Create nodes
+  leo::Renderer *graph = &renderer;
+
+  // Shaders
+  Shader *shader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/basic.frag.glsl");
+  Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer.frag.glsl");
+  Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting.frag.glsl");
+  Shader *postProcessShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl");
+  Shader *cubeMapShader = graph->createShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
+  Shader *instancingShader = graph->createShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl");
+  Shader *gammaCorrectionShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/gamma-correction.frag.glsl");
+  Shader *shadowMappingShader = graph->createShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl");
+  Shader *cubeShadowMapShader = graph->createShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl");
+  Shader *extractCapedBrightnessShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/extract-caped-brightness.frag.glsl");
+  Shader *hdrCorrectionShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/hdr-correction.frag.glsl");
+  Shader *bloomEffectShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/bloom-effect.frag.glsl");
+
+  // Framebuffers
+  /*
+  Framebuffer *main = graph->createFramebuffer();
+  Framebuffer *multisampled = graph->createFramebuffer();
+  Framebuffer *postProcess = graph->createFramebuffer();
+  Framebuffer *extractCapedBrightnessFB = graph->createFramebuffer();
+  Framebuffer *hdrCorrectionFB = graph->createFramebuffer();
+  Framebuffer *blurFB = graph->createFramebuffer();
+  Framebuffer *bloomEffectFB = graph->createFramebuffer();
+  main->addColorBuffer({true});
+  main->useRenderBuffer();
+  multisampled->addColorBuffer({true, 4});
+  multisampled->useRenderBuffer({4});
+  postProcess->addColorBuffer();
+  postProcess->useRenderBuffer();
+  extractCapedBrightnessFB->addColorBuffer({true});
+  extractCapedBrightnessFB->addColorBuffer();
+  extractCapedBrightnessFB->useRenderBuffer();
+  hdrCorrectionFB->addColorBuffer({true});
+  hdrCorrectionFB->useRenderBuffer();
+  blurFB->addColorBuffer();
+  blurFB->useRenderBuffer();
+  bloomEffectFB->addColorBuffer({true});
+  bloomEffectFB->useRenderBuffer();
+  */
+
+  Framebuffer *gBuffer = graph->createFramebuffer();
+  ColorBufferOptions normalPositionBufferOptions;
+  normalPositionBufferOptions.pixelFormat = GL_RGB;
+  normalPositionBufferOptions.dataFormat = GL_RGB16F;
+  normalPositionBufferOptions.dataType = GL_FLOAT;
+  gBuffer->addColorBuffer(normalPositionBufferOptions); // position buffer
+  gBuffer->addColorBuffer(normalPositionBufferOptions); // position buffer
+  gBuffer->addColorBuffer();                            // albedo buffer
+  gBuffer->addColorBuffer();                            // spec buffer
+  gBuffer->useRenderBuffer();                           // depth as usual
+
+/*
+  MainNode *mainNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *shader, *camera);
+  BlitNode *blitNode = graph->createNode<BlitNode>(context, *multisampled);
+  GaussianBlurNode *blurNode = graph->createNode<GaussianBlurNode>(context, sceneContext, sceneGraph);
+  CubeMapNode *cubeMapNode = graph->createNode<CubeMapNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
+  PostProcessNode *extractCapedBrightnessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *extractCapedBrightnessShader);
+  PostProcessNode *hdrCorrectionNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *hdrCorrectionShader);
+  PostProcessNode *bloomEffectNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *bloomEffectShader);
+  PostProcessNode *postProcessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *postProcessShader);
+  PostProcessNode *gammaCorrectionNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *gammaCorrectionShader);
+
+  mainNode->setFramebuffer(multisampled);
+  cubeMapNode->setFramebuffer(multisampled);
+  cubeMapNode->addInNode(*mainNode);
+  blitNode->setFramebuffer(main);
+  blitNode->addInNode(*cubeMapNode);
+  blitNode->addInNode(*mainNode);
+  extractCapedBrightnessNode->addInput(*blitNode, "fb", 0);
+  extractCapedBrightnessNode->setFramebuffer(extractCapedBrightnessFB);
+
+  blurNode->addInput(*extractCapedBrightnessNode, "fb", 1);
+  blurNode->setFramebuffer(blurFB);
+
+  hdrCorrectionNode->addInput(*extractCapedBrightnessNode, "fb", 0);
+  hdrCorrectionNode->setFramebuffer(hdrCorrectionFB);
+
+  bloomEffectNode->addInput(*hdrCorrectionNode, "fb0", 0);
+  bloomEffectNode->addInput(*blurNode, "fb1", 0);
+  bloomEffectNode->setFramebuffer(bloomEffectFB);
+
+  postProcessNode->addInput(*bloomEffectNode, "fb", 0);
+  postProcessNode->setFramebuffer(postProcess);
   
-  // Engine->SetRenderer
+  gammaCorrectionNode->addInput(*postProcessNode, "fb", 0);
+  */
+
+  MainNode *gBufferNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *gBufferShader, *camera);
+  gBufferNode->setFramebuffer(gBuffer);
+  DeferredLightingNode *deferredLightingNode = graph->createNode<DeferredLightingNode>(context, sceneContext, sceneGraph, *deferredLightingShader, *camera);
+  deferredLightingNode->addInput(*gBufferNode, "fb0", 0);
+  deferredLightingNode->addInput(*gBufferNode, "fb1", 1);
+  deferredLightingNode->addInput(*gBufferNode, "fb2", 2);
+  deferredLightingNode->addInput(*gBufferNode, "fb3", 3);
+
   engine.setRenderer(renderer);
+
   engine.gameLoop();
-  // Engine->GameLoop
 }
 
 int main()
 {
   decoupling();
-  //cubeScene();
   //testInstanced();
-  //blinnPhong();
   return 0;
 }

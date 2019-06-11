@@ -1,3 +1,5 @@
+#pragma once
+
 #include <renderer/render-graph-node.hpp>
 
 #include <map>
@@ -20,15 +22,15 @@ public:
     T *createNode(ARGS &&... args)
     {
         T *node = new T(std::forward<ARGS>(args)...);
-        this->_nodes.insert(std::pair<t_RGNodeId, std::unique_ptr<T>>(node->getId(), node));
+        this->_nodes.insert(std::pair<t_id, std::unique_ptr<T>>(node->getId(), node));
         return node;
     }
     
-    RenderGraphNode *getNode(t_RGNodeId id);
+    RenderGraphNode *getNode(t_id id);
     void execute();
 
 private:
-    std::map<t_RGNodeId, std::unique_ptr<RenderGraphNode>> _nodes;
+    std::map<t_id, std::unique_ptr<RenderGraphNode>> _nodes;
 };
 
 } // namespace leo

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <renderer/global.hpp>
+#include <model/registered-object.hpp>
 
 #include <string>
 
@@ -9,7 +10,7 @@ namespace leo
 
 class Texture;
 
-class Shader
+class Shader : public RegisteredObject
 {
 public:
   Shader();

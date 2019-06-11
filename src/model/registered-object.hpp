@@ -9,13 +9,16 @@ class RegisteredObject
 {
 
 public:
-  RegisteredObject(t_id id);
+  RegisteredObject();
 
 public:
   const t_id &getId() const;
 
 protected:
   t_id _id;
+
+private:
+  static t_id _currentId;
 };
 
 } // namespace leo

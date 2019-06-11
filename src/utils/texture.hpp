@@ -37,9 +37,6 @@ public:
   int height = 0;
   const TextureMode mode = TextureMode::ERROR;
 
-private:
-  static t_id _count;
-
 }; // class Texture
 
 } // namespace leo
