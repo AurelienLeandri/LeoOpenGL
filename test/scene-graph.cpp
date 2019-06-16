@@ -55,6 +55,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
   glViewport(0, 0, width, height);
 }
 
+/*
 void testInstanced()
 {
   ComponentManager componentManager;
@@ -121,6 +122,7 @@ void testInstanced()
   engine.setInstancedScene(&instancedScene, transformations);
   engine.gameLoop();
 }
+*/
 
 void decoupling()
 {
@@ -145,6 +147,7 @@ void decoupling()
   Material *material = componentManager.createComponent<Material>();
 
   Volume *cube = componentManager.createComponent<Volume>(Volume::createCube(1.f));
+  cube->setLabel("Lights");
 
   node1.addComponent(cube);
   material->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", RGBA);
@@ -160,6 +163,9 @@ void decoupling()
   material2->parallax_map = textureManager.createTexture("resources/textures/bricks2_disp.jpg", RGB);
   material2->shininess = 32.f;
 
+  Material *lightMaterial = componentManager.createComponent<Material>();
+  lightMaterial->emissive_value = glm::vec3(1.0, 1.0, 1.0);
+
   node1.addComponent(material2);
 
   PointLight *pl = componentManager.createComponent<PointLight>(
@@ -174,7 +180,9 @@ void decoupling()
   t2->setRelativeScaling(glm::vec3(1.f, 2.f, 1.f));
   Entity node2;
   node2.addComponent(t2);
+  node2.addComponent(cube);
   node2.addComponent(pl);
+  node2.addComponent(lightMaterial);
 
   Transformation *t3 = componentManager.createComponent<Transformation>();
 
@@ -187,10 +195,13 @@ void decoupling()
   t3->setRelativeRotation(glm::vec3(45.f, 0.f, 0.f));
   t3->setRelativeScaling(glm::vec3(0.5f, 0.5f, 0.5f));
   Entity node3;
-  node3.addComponent(cube);
-  node3.addComponent(t3);
   node3.addComponent(dl);
-  node3.addComponent(material);
+
+  Entity node31;
+  node3.addChild(&node31);
+  node31.addComponent(material);
+  node31.addComponent(cube);
+  node31.addComponent(t3);
 
   Material *groundMaterial = componentManager.createComponent<Material>();
   groundMaterial->diffuse_texture = textureManager.createTexture("resources/textures/brickwall.jpg", SRGB);
@@ -294,7 +305,6 @@ void decoupling()
   Shader *bloomEffectShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/bloom-effect.frag.glsl");
 
   // Framebuffers
-  /*
   Framebuffer *main = graph->createFramebuffer();
   Framebuffer *multisampled = graph->createFramebuffer();
   Framebuffer *postProcess = graph->createFramebuffer();
@@ -304,8 +314,8 @@ void decoupling()
   Framebuffer *bloomEffectFB = graph->createFramebuffer();
   main->addColorBuffer({true});
   main->useRenderBuffer();
-  multisampled->addColorBuffer({true, 4});
-  multisampled->useRenderBuffer({4});
+  multisampled->addColorBuffer({true});
+  multisampled->useRenderBuffer();
   postProcess->addColorBuffer();
   postProcess->useRenderBuffer();
   extractCapedBrightnessFB->addColorBuffer({true});
@@ -317,7 +327,6 @@ void decoupling()
   blurFB->useRenderBuffer();
   bloomEffectFB->addColorBuffer({true});
   bloomEffectFB->useRenderBuffer();
-  */
 
   Framebuffer *gBuffer = graph->createFramebuffer();
   ColorBufferOptions normalPositionBufferOptions;
@@ -330,24 +339,21 @@ void decoupling()
   gBuffer->addColorBuffer();                            // spec buffer
   gBuffer->useRenderBuffer();                           // depth as usual
 
-/*
-  MainNode *mainNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *shader, *camera);
-  BlitNode *blitNode = graph->createNode<BlitNode>(context, *multisampled);
+  RenderNodeOptions options;
+  options.clearBufferFlags = GL_DEPTH_BUFFER_BIT;
+  MainNode *mainNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *shader, *camera, options);
+  //BlitNode *blitNode = graph->createNode<BlitNode>(context, *multisampled);
   GaussianBlurNode *blurNode = graph->createNode<GaussianBlurNode>(context, sceneContext, sceneGraph);
-  CubeMapNode *cubeMapNode = graph->createNode<CubeMapNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
+  //CubeMapNode *cubeMapNode = graph->createNode<CubeMapNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
   PostProcessNode *extractCapedBrightnessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *extractCapedBrightnessShader);
   PostProcessNode *hdrCorrectionNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *hdrCorrectionShader);
   PostProcessNode *bloomEffectNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *bloomEffectShader);
   PostProcessNode *postProcessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *postProcessShader);
   PostProcessNode *gammaCorrectionNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *gammaCorrectionShader);
 
-  mainNode->setFramebuffer(multisampled);
-  cubeMapNode->setFramebuffer(multisampled);
-  cubeMapNode->addInNode(*mainNode);
-  blitNode->setFramebuffer(main);
-  blitNode->addInNode(*cubeMapNode);
-  blitNode->addInNode(*mainNode);
-  extractCapedBrightnessNode->addInput(*blitNode, "fb", 0);
+  mainNode->setFramebuffer(main);
+  mainNode->setLabel("Lights");
+  extractCapedBrightnessNode->addInput(*mainNode, "fb", 0);
   extractCapedBrightnessNode->setFramebuffer(extractCapedBrightnessFB);
 
   blurNode->addInput(*extractCapedBrightnessNode, "fb", 1);
@@ -364,15 +370,16 @@ void decoupling()
   postProcessNode->setFramebuffer(postProcess);
   
   gammaCorrectionNode->addInput(*postProcessNode, "fb", 0);
-  */
 
   MainNode *gBufferNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *gBufferShader, *camera);
   gBufferNode->setFramebuffer(gBuffer);
+  mainNode->addInNode(*gBufferNode);
   DeferredLightingNode *deferredLightingNode = graph->createNode<DeferredLightingNode>(context, sceneContext, sceneGraph, *deferredLightingShader, *camera);
   deferredLightingNode->addInput(*gBufferNode, "fb0", 0);
   deferredLightingNode->addInput(*gBufferNode, "fb1", 1);
   deferredLightingNode->addInput(*gBufferNode, "fb2", 2);
   deferredLightingNode->addInput(*gBufferNode, "fb3", 3);
+  deferredLightingNode->setFramebuffer(main);
 
   engine.setRenderer(renderer);
 

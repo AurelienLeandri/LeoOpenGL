@@ -122,8 +122,7 @@ void MainNode::_renderRec(const Entity *root, const Material *material, const gl
     p_component = root->getComponent(ComponentType::VOLUME);
     if (p_component)
     {
-        this->_context.drawVolume(*static_cast<const Volume *>(p_component),
-                                  this->_sceneContext.bufferCollections.find(p_component->getId())->second);
+        this->_drawVolume(static_cast<const Volume *>(p_component));
     }
 
     for (auto &child : root->getChildren())
@@ -142,7 +141,8 @@ void MainNode::_renderRec(const Entity *root, const Material *material, const gl
 
 void MainNode::_drawVolume(const Volume *volume)
 {
-    this->_context.drawVolume(*volume, this->_sceneContext.bufferCollections.find(volume->getId())->second);
+    if (this->_label == volume->getLabel())
+        this->_context.drawVolume(*volume, this->_sceneContext.bufferCollections.find(volume->getId())->second);
 }
 
 void MainNode::_loadLightsToShader()
@@ -206,6 +206,7 @@ void MainNode::_setCurrentMaterial(const Material *material)
                                material->normal_map ? *material->normal_map : *TextureManager::blue.get());
     this->_loadTextureToShader("material.parallax_map", this->_materialTextureOffset + 4,
                                material->parallax_map ? *material->parallax_map : *TextureManager::black.get());
+    this->_shader.setVector3("material.emissive_value", material->emissive_value);
 }
 
 void MainNode::_loadShader()
@@ -254,6 +255,11 @@ void MainNode::notified(Subject *subject, Event event)
 void MainNode::setHdr(bool value)
 {
     this->_hdr = value;
+}
+
+void MainNode::setLabel(std::string label)
+{
+    this->_label = label;
 }
 
 } // namespace leo

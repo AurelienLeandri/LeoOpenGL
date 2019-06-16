@@ -53,6 +53,16 @@ Volume::Volume()
 {
 }
 
+const std::string &Volume::getLabel() const
+{
+  return this->_label;
+}
+
+void Volume::setLabel(std::string label)
+{
+  this->_label = label;
+}
+
 const std::vector<Vertex> &Volume::getVertices() const
 {
   return this->_vertices;

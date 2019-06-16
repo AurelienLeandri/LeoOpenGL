@@ -31,6 +31,7 @@ struct Material {
   sampler2D normal_map;
   sampler2D parallax_map;
   float shininess;
+  vec3 emissive_value;
 };
 
 layout (std140, binding = 1) uniform s1 {
@@ -221,7 +222,7 @@ void main()
   float reflectionFactor = texture(material.reflection_map, TexCoords).x;
   */
 
-  vec3 result = diffuse + specular + (ambient * diffuse_sample)/* + vec3(reflectionColor * reflectionFactor)*/;
+  vec3 result = material.emissive_value + diffuse + specular + (ambient * diffuse_sample)/* + vec3(reflectionColor * reflectionFactor)*/;
   //vec3 result = vec3(material.shininess / 100.0);
   //color = vec4(FragPosLightSpace, 1.0);
   //color = vec4(diffuse_value, 1.0);

@@ -26,7 +26,7 @@ class MainNode : public RenderNode
 
 public:
   MainNode(OpenGLContext &context, SceneContext &sceneContext, SceneGraph &sceneGraph, Shader &shader, const Camera &camera,
-           RenderNodeOptions = {GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT});
+           RenderNodeOptions options = {GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT});
 
 public:
   virtual void render();
@@ -35,6 +35,7 @@ public:
 
 public:
   void setHdr(bool value);
+  void setLabel(std::string label);
 
 protected:
   virtual void _loadShader() override;
@@ -55,6 +56,7 @@ private:
   const SceneGraph &_sceneGraph;
   const Camera &_camera;
   bool _hdr = true;
+  std::string _label = "";
 };
 
 } // namespace leo

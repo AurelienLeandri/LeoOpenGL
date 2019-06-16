@@ -31,6 +31,7 @@ public:
   Texture *normal_map = TextureManager::blue.get();
   Texture *parallax_map = TextureManager::black.get();
   float shininess = 32.f;
+  glm::vec3 emissive_value;
   bool force = false;
 };
 

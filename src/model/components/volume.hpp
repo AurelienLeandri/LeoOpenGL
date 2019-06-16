@@ -21,6 +21,8 @@ protected:
 public:
   const std::vector<Vertex> &getVertices() const;
   const std::vector<unsigned int> &getIndices() const;
+  void setLabel(std::string label);
+  const std::string &getLabel() const;
 
 public:
   static Volume createCustom(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
@@ -40,6 +42,7 @@ protected:
 protected:
   std::vector<Vertex> _vertices;
   std::vector<unsigned int> _indices;
+  std::string _label = "";
 };
 
 } // namespace leo

@@ -16,6 +16,7 @@ struct Material {
   sampler2D normal_map;
   sampler2D parallax_map;
   float shininess;
+  vec3 emissive_value;
 };
 
 in vec2 TexCoords;
