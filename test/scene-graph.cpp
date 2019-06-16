@@ -340,9 +340,8 @@ void decoupling()
   gBuffer->useRenderBuffer();                           // depth as usual
 
   RenderNodeOptions options;
-  options.clearBufferFlags = GL_DEPTH_BUFFER_BIT;
+  options.clearBufferFlags = 0;
   MainNode *mainNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *shader, *camera, options);
-  //BlitNode *blitNode = graph->createNode<BlitNode>(context, *multisampled);
   GaussianBlurNode *blurNode = graph->createNode<GaussianBlurNode>(context, sceneContext, sceneGraph);
   //CubeMapNode *cubeMapNode = graph->createNode<CubeMapNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
   PostProcessNode *extractCapedBrightnessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *extractCapedBrightnessShader);
@@ -379,7 +378,12 @@ void decoupling()
   deferredLightingNode->addInput(*gBufferNode, "fb1", 1);
   deferredLightingNode->addInput(*gBufferNode, "fb2", 2);
   deferredLightingNode->addInput(*gBufferNode, "fb3", 3);
+  BlitNode *copyDepthNode = graph->createNode<BlitNode>(context, *gBuffer, GL_DEPTH_BUFFER_BIT);
+  copyDepthNode->setFramebuffer(main);
+  copyDepthNode->addInNode(*deferredLightingNode);
+  copyDepthNode->addInNode(*gBufferNode);
   deferredLightingNode->setFramebuffer(main);
+  mainNode->addInNode(*copyDepthNode);
 
   engine.setRenderer(renderer);
 
