@@ -8,8 +8,10 @@ layout (location = 4) in vec3 biTangent;
 
 out vec2 TexCoords;
 out vec3 Normal;
+out vec3 NormalViewSpace;
 out vec3 FragPos;
 out vec4 FragPosLightSpace;
+out vec3 FragPosViewSpace;
 out vec3 Tangent;
 out vec3 BiTangent;
 out mat3 TBN;
@@ -23,8 +25,10 @@ void main() {
     gl_Position = projection * view * model * vec4(position, 1.0f);
     TexCoords = texCoords;
     FragPos = vec3(model * vec4(position, 1.0));
+    FragPosViewSpace = vec3(view * vec4(FragPos, 1.0));
     FragPosLightSpace = lightSpaceMatrix0 * vec4(FragPos, 1.0);
     Normal = normalize(mat3(transpose(inverse(model))) * normal);
+    NormalViewSpace = normalize(mat3(transpose(inverse(view))) * Normal);
     BiTangent = normalize(mat3(transpose(inverse(model))) * biTangent);
 
     vec3 in_tangent = normalize(mat3(transpose(inverse(model))) * tangent);

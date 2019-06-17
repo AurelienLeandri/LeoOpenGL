@@ -292,8 +292,10 @@ void decoupling()
 
   // Shaders
   Shader *shader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/basic.frag.glsl");
-  Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer.frag.glsl");
-  Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting.frag.glsl");
+  // Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer.frag.glsl");
+  Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer-view-space.frag.glsl");
+  // Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting.frag.glsl");
+  Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/ssao.frag.glsl");
   Shader *postProcessShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl");
   Shader *cubeMapShader = graph->createShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
   Shader *instancingShader = graph->createShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl");
@@ -370,10 +372,27 @@ void decoupling()
   
   gammaCorrectionNode->addInput(*postProcessNode, "fb", 0);
 
+/*
   MainNode *gBufferNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *gBufferShader, *camera);
   gBufferNode->setFramebuffer(gBuffer);
   mainNode->addInNode(*gBufferNode);
   DeferredLightingNode *deferredLightingNode = graph->createNode<DeferredLightingNode>(context, sceneContext, sceneGraph, *deferredLightingShader, *camera);
+  deferredLightingNode->addInput(*gBufferNode, "fb0", 0);
+  deferredLightingNode->addInput(*gBufferNode, "fb1", 1);
+  deferredLightingNode->addInput(*gBufferNode, "fb2", 2);
+  deferredLightingNode->addInput(*gBufferNode, "fb3", 3);
+  BlitNode *copyDepthNode = graph->createNode<BlitNode>(context, *gBuffer, GL_DEPTH_BUFFER_BIT);
+  copyDepthNode->setFramebuffer(main);
+  copyDepthNode->addInNode(*deferredLightingNode);
+  copyDepthNode->addInNode(*gBufferNode);
+  deferredLightingNode->setFramebuffer(main);
+  mainNode->addInNode(*copyDepthNode);
+*/
+
+  MainNode *gBufferNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *gBufferShader, *camera);
+  gBufferNode->setFramebuffer(gBuffer);
+  mainNode->addInNode(*gBufferNode);
+  PostProcessNode *deferredLightingNode = graph->createNode<DeferredLightingNode>(context, sceneContext, sceneGraph, *deferredLightingShader, *camera);
   deferredLightingNode->addInput(*gBufferNode, "fb0", 0);
   deferredLightingNode->addInput(*gBufferNode, "fb1", 1);
   deferredLightingNode->addInput(*gBufferNode, "fb2", 2);
