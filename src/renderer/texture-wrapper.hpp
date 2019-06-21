@@ -35,6 +35,7 @@ private:
 public:
   TextureWrapper(const Texture &texture, GLTextureOptions glOptions = {}, TextureOptions textureOptions = {});
   TextureWrapper(unsigned int width, unsigned int height, GLTextureOptions glOptions = {}, TextureOptions textureOptions = {});
+  TextureWrapper(unsigned int width, unsigned int height, unsigned char *data, GLTextureOptions glOptions = {}, TextureOptions textureOptions = {});
   TextureWrapper(const std::vector<std::shared_ptr<Texture>> &textures, GLTextureOptions glOptions, TextureOptions textureOptions = {});
   TextureWrapper(const TextureWrapper &other);
   ~TextureWrapper();

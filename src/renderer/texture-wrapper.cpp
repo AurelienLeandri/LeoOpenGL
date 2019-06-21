@@ -15,6 +15,12 @@ TextureWrapper::TextureWrapper(unsigned int width, unsigned int height, GLTextur
     init(nullptr, width, height);
 }
 
+TextureWrapper::TextureWrapper(unsigned int width, unsigned int height, unsigned char *data, GLTextureOptions glOptions, TextureOptions textureOptions)
+    : _id(0), _glOptions(glOptions), _options(textureOptions)
+{
+    init(data, width, height);
+}
+
 TextureWrapper::TextureWrapper(const std::vector<std::shared_ptr<Texture>> &textures, GLTextureOptions glOptions,
                                TextureOptions textureOptions)
     : _id(0), _glOptions(glOptions), _options(textureOptions)
@@ -82,7 +88,7 @@ void TextureWrapper::init(unsigned char *data, unsigned int width, unsigned int 
     {
         glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, this->_options.nbSamples, internalFormat, width, height, GL_TRUE);
     }
-    else  // GL_TEXTURE_2D
+    else // GL_TEXTURE_2D
     {
         glTexImage2D(textureType, 0, internalFormat, width, height, 0, format,
                      type, data ? data : 0);

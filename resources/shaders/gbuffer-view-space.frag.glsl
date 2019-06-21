@@ -4,8 +4,6 @@
 
 layout (location = 0) out vec4 Positions;
 layout (location = 1) out vec4 Normals;
-layout (location = 2) out vec4 Albedo;
-layout (location = 3) out vec4 Spec;
 
 struct Material {
   vec3 diffuse_value;
@@ -21,68 +19,16 @@ struct Material {
 
 in vec2 TexCoords;
 in vec3 Normal;
-in vec3 FragPos;
-in mat3 TBN;
 in vec3 NormalViewSpace;
+in vec3 FragPos;
+in vec4 FragPosLightSpace;
 in vec3 FragPosViewSpace;
-
-uniform Material material;
-uniform vec3 viewPos;
-uniform float far_plane;
-
-vec2 parallaxMapping(vec2 texCoords, vec3 TSviewDir)
-{
-  float height_scale = 0.05;
-  float height =  texture(material.parallax_map, texCoords).r;    
-  vec2 p = TSviewDir.xy / TSviewDir.z * (height * height_scale);
-  return texCoords - p; 
-}
-
-vec2 steepParallaxMapping(vec2 texCoords, vec3 TSviewDir)
-{
-  float height_scale = 0.2;
-  const float minLayers = 8.0;
-  const float maxLayers = 32.0;
-  float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), TSviewDir)));
-  float layerDepth = 1.0 / numLayers;
-  float currentLayerDepth = 0.0;
-  vec2 P = TSviewDir.xy * height_scale;
-  vec2 deltaTexCoords = P / numLayers;
-  vec2  currentTexCoords = texCoords;
-  float currentDepthMapValue = texture(material.parallax_map, currentTexCoords).r;
-  while(currentLayerDepth < currentDepthMapValue)
-  {
-    currentTexCoords -= deltaTexCoords;
-    currentDepthMapValue = texture(material.parallax_map, currentTexCoords).r;  
-    currentLayerDepth += layerDepth;  
-  }
-
-  vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
-  float beforeDepth = texture(material.parallax_map, prevTexCoords).r - currentLayerDepth + layerDepth;
-  float afterDepth  = currentDepthMapValue - currentLayerDepth;
-  float weight = afterDepth / (afterDepth - beforeDepth);
-  vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
-
-  return finalTexCoords;
-}
-
+in vec3 Tangent;
+in vec3 BiTangent;
+in mat3 TBN;
 
 void main()
 {
-  // Light Variables
-  vec3 tangViewDir = normalize(TBN * viewPos - TBN * FragPos);
-
-  vec2 pTexCoords = steepParallaxMapping(TexCoords, tangViewDir);
-
-  vec4 diffuse_sample_rgba = texture(material.diffuse_texture, pTexCoords);
-  vec3 diffuse_sample = diffuse_sample_rgba.xyz;
-
-  float specularStrength = 0.5;
-  vec4 specular_sample_rgba = texture(material.specular_texture, pTexCoords);
-  vec3 specular_sample = specular_sample_rgba.xyz;
-
   Positions = vec4(FragPosViewSpace, 1.0);
   Normals = vec4(NormalViewSpace, 1.0);
-  Albedo = vec4(material.diffuse_value * diffuse_sample, 1.0);
-  Spec = vec4(material.specular_value * specular_sample, material.shininess / 100.f);  // TODO: remove ugly /100
 }

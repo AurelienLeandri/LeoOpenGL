@@ -22,13 +22,13 @@ uniform mat4 projection;
 uniform mat4 lightSpaceMatrix0;
 
 void main() {
-    gl_Position = projection * view * model * vec4(position, 1.0f);
+    gl_Position = projection * view * model * vec4(position, 1.0);
     TexCoords = texCoords;
     FragPos = vec3(model * vec4(position, 1.0));
-    FragPosViewSpace = vec3(view * vec4(FragPos, 1.0));
+    FragPosViewSpace = (view * model * vec4(position, 1.0)).xyz;
     FragPosLightSpace = lightSpaceMatrix0 * vec4(FragPos, 1.0);
     Normal = normalize(mat3(transpose(inverse(model))) * normal);
-    NormalViewSpace = normalize(mat3(transpose(inverse(view))) * Normal);
+    NormalViewSpace = normalize(transpose(inverse(mat3(view * model))) * normal);
     BiTangent = normalize(mat3(transpose(inverse(model))) * biTangent);
 
     vec3 in_tangent = normalize(mat3(transpose(inverse(model))) * tangent);

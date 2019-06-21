@@ -6,6 +6,7 @@
 #include <renderer/opengl-context.hpp>
 #include <renderer/blit-node.hpp>
 #include <renderer/main-node.hpp>
+#include <renderer/ssao-node.hpp>
 #include <renderer/cube-map-node.hpp>
 #include <renderer/post-process-node.hpp>
 #include <renderer/deferred-lighting-node.hpp>
@@ -147,7 +148,6 @@ void decoupling()
   Material *material = componentManager.createComponent<Material>();
 
   Volume *cube = componentManager.createComponent<Volume>(Volume::createCube(1.f));
-  cube->setLabel("Lights");
 
   node1.addComponent(cube);
   material->diffuse_texture = textureManager.createTexture("resources/textures/wood.png", RGBA);
@@ -292,10 +292,10 @@ void decoupling()
 
   // Shaders
   Shader *shader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/basic.frag.glsl");
-  // Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer.frag.glsl");
-  Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer-view-space.frag.glsl");
-  // Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting.frag.glsl");
-  Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/ssao.frag.glsl");
+  Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer.frag.glsl");
+  Shader *gBufferShaderSSAO = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer-view-space.frag.glsl");
+  Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting.frag.glsl");
+  Shader *SSAOShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/ssao.frag.glsl");
   Shader *postProcessShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl");
   Shader *cubeMapShader = graph->createShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
   Shader *instancingShader = graph->createShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl");
@@ -313,8 +313,19 @@ void decoupling()
   Framebuffer *extractCapedBrightnessFB = graph->createFramebuffer();
   Framebuffer *hdrCorrectionFB = graph->createFramebuffer();
   Framebuffer *blurFB = graph->createFramebuffer();
+  Framebuffer *ssaoBlurFB = graph->createFramebuffer();
   Framebuffer *bloomEffectFB = graph->createFramebuffer();
-  main->addColorBuffer({true});
+  Framebuffer *ssaoFB = graph->createFramebuffer();
+
+  ColorBufferOptions mainBufferOptions;
+  mainBufferOptions.pixelFormat = GL_RGB;
+  mainBufferOptions.dataFormat = GL_RGB;
+  mainBufferOptions.dataType = GL_FLOAT;
+  mainBufferOptions.hdr = true;
+  main->addColorBuffer(mainBufferOptions);
+  main->addColorBuffer(mainBufferOptions);
+  main->addColorBuffer();
+  main->addColorBuffer();
   main->useRenderBuffer();
   multisampled->addColorBuffer({true});
   multisampled->useRenderBuffer();
@@ -327,6 +338,10 @@ void decoupling()
   hdrCorrectionFB->useRenderBuffer();
   blurFB->addColorBuffer();
   blurFB->useRenderBuffer();
+  ssaoBlurFB->addColorBuffer();
+  ssaoBlurFB->useRenderBuffer();
+  ssaoFB->addColorBuffer({true});
+  ssaoFB->useRenderBuffer();
   bloomEffectFB->addColorBuffer({true});
   bloomEffectFB->useRenderBuffer();
 
@@ -335,11 +350,11 @@ void decoupling()
   normalPositionBufferOptions.pixelFormat = GL_RGB;
   normalPositionBufferOptions.dataFormat = GL_RGB16F;
   normalPositionBufferOptions.dataType = GL_FLOAT;
-  gBuffer->addColorBuffer(normalPositionBufferOptions); // position buffer
-  gBuffer->addColorBuffer(normalPositionBufferOptions); // position buffer
-  gBuffer->addColorBuffer();                            // albedo buffer
-  gBuffer->addColorBuffer();                            // spec buffer
-  gBuffer->useRenderBuffer();                           // depth as usual
+  gBuffer->addColorBuffer(normalPositionBufferOptions);
+  gBuffer->addColorBuffer(normalPositionBufferOptions);
+  gBuffer->addColorBuffer();
+  gBuffer->addColorBuffer();
+  gBuffer->useRenderBuffer();
 
   RenderNodeOptions options;
   options.clearBufferFlags = 0;
@@ -367,7 +382,7 @@ void decoupling()
   bloomEffectNode->addInput(*blurNode, "fb1", 0);
   bloomEffectNode->setFramebuffer(bloomEffectFB);
 
-  postProcessNode->addInput(*bloomEffectNode, "fb", 0);
+  postProcessNode->addInput(*bloomEffectNode, "fb0", 0);
   postProcessNode->setFramebuffer(postProcess);
   
   gammaCorrectionNode->addInput(*postProcessNode, "fb", 0);
@@ -389,14 +404,27 @@ void decoupling()
   mainNode->addInNode(*copyDepthNode);
 */
 
+  // SSAO
+  MainNode *gBufferNodeSSAO = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *gBufferShaderSSAO, *camera);
+  gBufferNodeSSAO->setFramebuffer(gBuffer);
+  SSAONode *ssaoNode = graph->createNode<SSAONode>(context, sceneContext, sceneGraph, *SSAOShader, *camera);
+  ssaoNode->addInput(*gBufferNodeSSAO, "fb0", 0);
+  ssaoNode->addInput(*gBufferNodeSSAO, "fb1", 1);
+  ssaoNode->setFramebuffer(ssaoBlurFB);
+  GaussianBlurNode *ssaoBlurNode = graph->createNode<GaussianBlurNode>(context, sceneContext, sceneGraph, 10);
+  ssaoBlurNode->addInput(*ssaoNode, "fb0", 0);
+  ssaoBlurNode->setFramebuffer(ssaoFB);
+
+  // Lighting
   MainNode *gBufferNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *gBufferShader, *camera);
   gBufferNode->setFramebuffer(gBuffer);
   mainNode->addInNode(*gBufferNode);
-  PostProcessNode *deferredLightingNode = graph->createNode<DeferredLightingNode>(context, sceneContext, sceneGraph, *deferredLightingShader, *camera);
+  DeferredLightingNode *deferredLightingNode = graph->createNode<DeferredLightingNode>(context, sceneContext, sceneGraph, *deferredLightingShader, *camera);
   deferredLightingNode->addInput(*gBufferNode, "fb0", 0);
   deferredLightingNode->addInput(*gBufferNode, "fb1", 1);
   deferredLightingNode->addInput(*gBufferNode, "fb2", 2);
   deferredLightingNode->addInput(*gBufferNode, "fb3", 3);
+  deferredLightingNode->addInput(*ssaoBlurNode, "occlusionMap", 0);
   BlitNode *copyDepthNode = graph->createNode<BlitNode>(context, *gBuffer, GL_DEPTH_BUFFER_BIT);
   copyDepthNode->setFramebuffer(main);
   copyDepthNode->addInNode(*deferredLightingNode);

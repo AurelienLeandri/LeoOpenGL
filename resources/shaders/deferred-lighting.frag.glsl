@@ -11,6 +11,7 @@ uniform sampler2D fb0;
 uniform sampler2D fb1;
 uniform sampler2D fb2;
 uniform sampler2D fb3;
+uniform sampler2D occlusionMap;
 
 struct UPointLight {
   vec3 ambient;
@@ -106,13 +107,17 @@ void main()
   vec4 fbColor2 = texture(fb2, TexCoords);
   vec4 fbColor3 = texture(fb3, TexCoords);
 
+  //float occlusion = texture(occlusionMap, TexCoords).x;
+  float occlusion = 1.0;
+
+
   vec3 FragPos = fbColor0.xyz;
   vec4 FragPosLightSpace = lightSpaceMatrix0 * vec4(FragPos, 1.0);
   vec3 normal = fbColor1.xyz;
   vec3 ambient = ambientLight * fbColor2.xyz;
-  vec3 albedo = fbColor2.xyz;
+  vec3 albedo = fbColor2.xyz * occlusion;
   vec3 specular_sample = fbColor3.xyz;
-  float shininess = fbColor3.a * 100.f;
+  float shininess = fbColor0.a * 100.f;
 
   //FragColor = vec4(ambient, 1.0);
 
