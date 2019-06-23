@@ -64,6 +64,7 @@ float computeShadow(float bias, vec4 FragPosLightSpace)
     }    
   }
   shadow /= 9.0;
+  return 0.0;
   return shadow;
 }
 
@@ -97,6 +98,7 @@ float computePointLightShadow(float bias, vec3 FragPos)
         shadow += 1.0;
   }
   shadow /= float(samples);
+  return 0.0;
   return shadow;
 }
 

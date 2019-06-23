@@ -36,6 +36,8 @@ public:
   std::set<t_id> &getInNodes();
   std::set<t_id> &getOutNodes();
   t_id getId() const;
+  void setStringId(std::string id);
+  std::string getStringId();
 
 private:
   void _addInNode(RenderGraphNode &in);
@@ -48,6 +50,7 @@ protected:
   Framebuffer *_output = nullptr;
   OpenGLContext &_context;
   t_id _id;
+  std::string _stringId;
 
 private:
   static t_id _nbNodes;

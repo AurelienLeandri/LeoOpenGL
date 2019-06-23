@@ -71,4 +71,14 @@ t_id RenderGraphNode::getId() const
     return this->_id;
 }
 
+void RenderGraphNode::setStringId(std::string id)
+{
+    this->_stringId = id;
+}
+
+std::string RenderGraphNode::getStringId()
+{
+    return this->_stringId;
+}
+
 } // namespace leo
