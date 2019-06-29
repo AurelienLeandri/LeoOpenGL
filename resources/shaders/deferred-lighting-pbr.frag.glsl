@@ -163,12 +163,39 @@ void main()
 
   for (int i = 0; i < MAX_NUM_LIGHTS; i++)
   {
-    vec3 lightPosition = vec3(10.0, 10.0, 5.0);  // Hardcoded because positions on point light dont work
+    vec3 lightPosition = vec3(5.0, 5.0, 5.0);  // Hardcoded because positions on point light dont work
     vec3 lightDir = normalize(lightPosition - position);
     vec3 halfway = normalize(lightDir + viewDir);
     float distance = length(position - lightPosition);
     float attenuation = 1.0 / (distance * distance);
     vec3 radiance = attenuation * upl[i].ambient;
+
+    vec3 F0 = vec3(0.04); 
+    F0 = mix(F0, albedo, metalness);
+    vec3 F = fresnelSchlick(max(dot(halfway, viewDir), 0.0), F0);
+    float NDF = DistributionGGX(normal, halfway, roughness);       
+    float G   = GeometrySmith(normal, viewDir, lightDir, roughness);
+
+    // Cook Torrance
+    vec3 numerator    = NDF * G * F;
+    float denominator = 4.0 * max(dot(normal, viewDir), 0.0) * max(dot(normal, lightDir), 0.0);
+    vec3 specular     = numerator / max(denominator, 0.001);
+
+    vec3 kS = F;
+    vec3 kD = vec3(1.0) - kS;
+    kD *= 1.0 - metalness;
+
+    float NdotL = max(dot(normal, lightDir), 0.0);        
+    result += (kD * albedo / PI + specular) * radiance * NdotL;
+
+  }
+
+  for (int i = 0; i < MAX_NUM_LIGHTS; i++)
+  {
+    vec3 lightDir = normalize(-udl[i].direction);
+    vec3 halfway = normalize(lightDir + viewDir);
+    float attenuation = 1.0;
+    vec3 radiance = attenuation * udl[i].ambient;
 
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, albedo, metalness);

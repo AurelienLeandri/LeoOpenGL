@@ -247,7 +247,7 @@ void pbr()
   sceneGraph.setRoot(&root);
 
   DirectionLight *dl = componentManager.createComponent<DirectionLight>(
-      glm::vec3(10.2f, 0.2f, 0.2f),
+      glm::vec3(0.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
 
