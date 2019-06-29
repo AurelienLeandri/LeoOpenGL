@@ -5,7 +5,7 @@
 layout (location = 0) out vec4 Positions;
 layout (location = 1) out vec4 Normals;
 layout (location = 2) out vec4 Albedo;
-layout (location = 3) out vec4 Spec;
+layout (location = 3) out vec4 RoughnessMetalnessAO;
 
 struct Material {
   vec3 diffuse_value;
@@ -85,20 +85,18 @@ void main()
 
   vec2 pTexCoords = steepParallaxMapping(TexCoords, tangViewDir);
 
-  vec4 diffuse_sample_rgba = texture(material.diffuse_texture, pTexCoords);
-  vec3 diffuse_sample = diffuse_sample_rgba.xyz;
+  vec3 albedo = texture(pbrMaterial.albedo_texture, pTexCoords).xyz * pbrMaterial.albedo_value;
 
-  float specularStrength = 0.5;
-  vec4 specular_sample_rgba = texture(material.specular_texture, pTexCoords);
-  vec3 specular_sample = specular_sample_rgba.xyz;
+  float metalness = texture(pbrMaterial.metalness_texture, pTexCoords).x + pbrMaterial.metalness_value;
 
-  vec4 normal_sample_rgba = texture(material.normal_map, pTexCoords);
-  vec3 normal_sample = normalize(normal_sample_rgba.xyz);
-  vec3 normal = normalize(normal_sample * 2.0 - 1.0);
-  normal = TBN * normal;
+  float roughness = texture(pbrMaterial.roughness_texture, pTexCoords).x + pbrMaterial.roughness_value;
+
+  float ao = texture(pbrMaterial.ao_map, pTexCoords).x;
+
+  vec3 normal = TBN * normalize(normalize(texture(pbrMaterial.normal_map, pTexCoords).xyz) * 2.0 - 1.0);
 
   Positions = vec4(FragPos, 1.0);
   Normals = vec4(normal, 1.0);
-  Albedo = vec4(material.diffuse_value * diffuse_sample, 1.0);
-  Spec = vec4(material.specular_value * specular_sample, material.shininess / 100.f);  // TODO: remove ugly /100
+  Albedo = vec4(albedo, 1.0);
+  RoughnessMetalnessAO = vec4(roughness, metalness, ao, 1.0);  // Fill when needed
 }

@@ -12,6 +12,7 @@ namespace leo
 class Transformation;
 class SceneGraph;
 class Material;
+class PBRMaterial;
 class Entity;
 class Volume;
 class Texture;
@@ -46,7 +47,8 @@ protected:
   void _setModelMatrix(const glm::mat4x4 *transformation);
   void _setModelMatrix();
   void _setCurrentMaterial(const Material *material);
-  void _renderRec(const Entity *root, const Material *material, const glm::mat4x4 *matrix);
+  void _setCurrentMaterial(const PBRMaterial *material);
+  void _renderRec(const Entity *root, const Material *material, const PBRMaterial *PBRMaterial, const glm::mat4x4 *matrix);
 
 protected:
   virtual void _drawVolume(const Volume *volume);

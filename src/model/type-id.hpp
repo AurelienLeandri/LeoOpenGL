@@ -12,7 +12,8 @@ enum ComponentType
   POINT_LIGHT,
   TRANSFORMATION,
   VOLUME,
-  INSTANCED
+  INSTANCED,
+  PBR_MATERIAL
 };
 
 } // namespace leo

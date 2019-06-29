@@ -14,6 +14,7 @@
 #include <renderer/instanced-node.hpp>
 
 #include <model/components/material.hpp>
+#include <model/components/pbr-material.hpp>
 #include <model/components/volume.hpp>
 #include <model/components/point-light.hpp>
 #include <model/components/direction-light.hpp>
@@ -231,6 +232,7 @@ void launchRendering(SceneGraph &sceneGraph)
 
 void pbr()
 {
+
   // Scene model
   ComponentManager componentManager;
   TextureManager textureManager;
@@ -250,10 +252,10 @@ void pbr()
       glm::vec3(0.6f, 0.6f, 0.6f));
 
   PointLight *pl = componentManager.createComponent<PointLight>(
-      glm::vec3(0.2f, 0.2f, 0.2f),
+      glm::vec3(43.47, 41.31, 40.79),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
-  
+
   root.addComponent(dl);
 
   Entity *pointLight = entityManager.createEntity();
@@ -270,9 +272,10 @@ void pbr()
     for (int y = 0; y < 20; y += 2)
     {
       Entity *node = entityManager.createEntity();
-      Material *material = componentManager.createComponent<Material>();
-      material->diffuse_value = glm::vec3(0.95, 0.30, 0.1);
-      material->shininess = 32.f;
+      PBRMaterial *material = componentManager.createComponent<PBRMaterial>();
+      material->albedo_value = glm::vec3(0.95, 0.30, 0.1);
+      material->metalness_value = x / 20.f;
+      material->roughness_value = y / 20.f;
       Transformation *transformation = componentManager.createComponent<Transformation>();
       transformation->setRelativeTranslation(glm::vec3(x, y, 0));
       node->addComponent(cube);
@@ -282,7 +285,169 @@ void pbr()
     }
   }
 
-  launchRendering(sceneGraph);
+  // Engine creating camera, windows and input manager (do Getters)
+  Engine engine;
+  Camera *camera = &engine.getCamera();
+  GLFWwindow &window = engine.getWindow();
+  InputManager &inputManager = engine.getInputManager();
+
+  // OpenGLContext(+ SceneData inside)
+  OpenGLContext context;
+  context.setWindowContext(window, inputManager);
+
+  // Renderer
+  Renderer renderer;
+  renderer.createSceneContext(context);
+  renderer.setSceneGraph(sceneGraph);
+  SceneContext &sceneContext = renderer.getSceneContext();
+
+  // Create nodes
+  leo::Renderer *graph = &renderer;
+
+  // Shaders
+  Shader *shader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/basic.frag.glsl");
+  Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer-pbr.frag.glsl");
+  Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting-pbr.frag.glsl");
+  Shader *postProcessShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl");
+  Shader *cubeMapShader = graph->createShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
+  Shader *instancingShader = graph->createShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl");
+  Shader *gammaCorrectionShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/gamma-correction.frag.glsl");
+  Shader *shadowMappingShader = graph->createShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl");
+  Shader *cubeShadowMapShader = graph->createShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl");
+  Shader *extractCapedBrightnessShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/extract-caped-brightness.frag.glsl");
+  Shader *hdrCorrectionShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/hdr-correction.frag.glsl");
+  Shader *bloomEffectShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/bloom-effect.frag.glsl");
+
+  Framebuffer *postProcess = graph->createFramebuffer();
+  postProcess->addColorBuffer();
+  postProcess->useRenderBuffer();
+
+  /*()
+  // Framebuffers
+  Framebuffer *main = graph->createFramebuffer();
+  Framebuffer *multisampled = graph->createFramebuffer();
+  Framebuffer *postProcess = graph->createFramebuffer();
+  Framebuffer *extractCapedBrightnessFB = graph->createFramebuffer();
+  Framebuffer *hdrCorrectionFB = graph->createFramebuffer();
+  Framebuffer *blurFB = graph->createFramebuffer();
+  Framebuffer *bloomEffectFB = graph->createFramebuffer();
+
+  ColorBufferOptions mainBufferOptions;
+  mainBufferOptions.pixelFormat = GL_RGB;
+  mainBufferOptions.dataFormat = GL_RGB;
+  mainBufferOptions.dataType = GL_FLOAT;
+  mainBufferOptions.hdr = true;
+  main->addColorBuffer(mainBufferOptions);
+  main->useRenderBuffer();
+  multisampled->addColorBuffer({true});
+  multisampled->useRenderBuffer();
+  postProcess->addColorBuffer();
+  postProcess->useRenderBuffer();
+  extractCapedBrightnessFB->addColorBuffer({true});
+  extractCapedBrightnessFB->addColorBuffer();
+  extractCapedBrightnessFB->useRenderBuffer();
+  hdrCorrectionFB->addColorBuffer({true});
+  hdrCorrectionFB->useRenderBuffer();
+  blurFB->addColorBuffer();
+  blurFB->useRenderBuffer();
+  bloomEffectFB->addColorBuffer({true});
+  bloomEffectFB->useRenderBuffer();
+  */
+
+  Framebuffer *main = graph->createFramebuffer();
+  main->addColorBuffer();
+  main->useRenderBuffer();
+
+  Framebuffer *gBuffer = graph->createFramebuffer();
+  ColorBufferOptions normalPositionBufferOptions;
+  normalPositionBufferOptions.pixelFormat = GL_RGBA;
+  normalPositionBufferOptions.dataFormat = GL_RGBA16F;
+  normalPositionBufferOptions.dataType = GL_FLOAT;
+  gBuffer->addColorBuffer(normalPositionBufferOptions);
+  gBuffer->addColorBuffer(normalPositionBufferOptions);
+  gBuffer->addColorBuffer();
+  gBuffer->addColorBuffer();
+  gBuffer->useRenderBuffer();
+
+  PostProcessNode *postProcessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *postProcessShader);
+  postProcessNode->setStringId("post process node");
+  PostProcessNode *gammaCorrectionNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *gammaCorrectionShader);
+  gammaCorrectionNode->setStringId("gamma correction node");
+
+  /*
+  RenderNodeOptions options;
+  options.clearBufferFlags = 0;
+  MainNode *mainNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *shader, *camera, options);
+  mainNode->setStringId("main node");
+  GaussianBlurNode *blurNode = graph->createNode<GaussianBlurNode>(context, sceneContext, sceneGraph);
+  blurNode->setStringId("blur node");
+  CubeMapNode *cubeMapNode = graph->createNode<CubeMapNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
+  cubeMapNode->setStringId("cube map node");
+  PostProcessNode *extractCapedBrightnessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *extractCapedBrightnessShader);
+  extractCapedBrightnessNode->setStringId("extract caped node");
+  PostProcessNode *hdrCorrectionNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *hdrCorrectionShader);
+  hdrCorrectionNode->setStringId("hdr node");
+  PostProcessNode *bloomEffectNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *bloomEffectShader);
+  bloomEffectNode->setStringId("bloom node");
+  PostProcessNode *postProcessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *postProcessShader);
+  postProcessNode->setStringId("post process node");
+  PostProcessNode *gammaCorrectionNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *gammaCorrectionShader);
+  gammaCorrectionNode->setStringId("gamma correction node");
+
+  mainNode->setFramebuffer(main);
+  mainNode->setLabel("Lights");
+  cubeMapNode->setFramebuffer(main);
+  cubeMapNode->addInNode(*mainNode);
+  extractCapedBrightnessNode->addInput(*mainNode, "fb", 0);
+  extractCapedBrightnessNode->setFramebuffer(extractCapedBrightnessFB);
+
+  blurNode->addInput(*extractCapedBrightnessNode, "fb", 1);
+  blurNode->setFramebuffer(blurFB);
+
+  hdrCorrectionNode->addInput(*extractCapedBrightnessNode, "fb", 0);
+  hdrCorrectionNode->setFramebuffer(hdrCorrectionFB);
+
+  bloomEffectNode->addInput(*hdrCorrectionNode, "fb0", 0);
+  bloomEffectNode->addInput(*blurNode, "fb1", 0);
+  bloomEffectNode->setFramebuffer(bloomEffectFB);
+
+  postProcessNode->addInput(*bloomEffectNode, "fb0", 0);
+  postProcessNode->setFramebuffer(postProcess);
+
+  gammaCorrectionNode->addInput(*postProcessNode, "fb", 0);
+  */
+
+  postProcessNode->setFramebuffer(postProcess);
+
+  gammaCorrectionNode->addInput(*postProcessNode, "fb", 0);
+
+  // Lighting
+  MainNode *gBufferNode = graph->createNode<MainNode>(context, sceneContext, sceneGraph, *gBufferShader, *camera);
+  gBufferNode->setStringId("gbuffer node");
+
+  gBufferNode->setFramebuffer(gBuffer);
+  //mainNode->addInNode(*gBufferNode);
+  DeferredLightingNode *deferredLightingNode = graph->createNode<DeferredLightingNode>(context, sceneContext, sceneGraph, *deferredLightingShader, *camera);
+  deferredLightingNode->setStringId("deferred lighting node");
+
+  deferredLightingNode->addInput(*gBufferNode, "fb0", 0);
+  deferredLightingNode->addInput(*gBufferNode, "fb1", 1);
+  deferredLightingNode->addInput(*gBufferNode, "fb2", 2);
+  deferredLightingNode->addInput(*gBufferNode, "fb3", 3);
+  deferredLightingNode->setFramebuffer(main);
+  postProcessNode->addInput(*deferredLightingNode, "fb0", 0);
+  //BlitNode *copyDepthNode = graph->createNode<BlitNode>(context, *gBuffer, GL_DEPTH_BUFFER_BIT);
+  //copyDepthNode->setStringId("copy depth node");
+
+  //copyDepthNode->setFramebuffer(main);
+  //copyDepthNode->addInNode(*deferredLightingNode);
+  //copyDepthNode->addInNode(*gBufferNode);
+  //deferredLightingNode->setFramebuffer(main);
+  //mainNode->addInNode(*copyDepthNode);
+
+  engine.setRenderer(renderer);
+
+  engine.gameLoop();
 }
 
 void decoupling()

@@ -10,6 +10,7 @@
 #include <model/components/transformation.hpp>
 #include <model/entity.hpp>
 #include <model/components/material.hpp>
+#include <model/components/pbr-material.hpp>
 #include <model/components/volume.hpp>
 #include <model/scene-graph.hpp>
 #include <model/components/direction-light.hpp>
@@ -61,9 +62,10 @@ void MainNode::render()
 
     glm::mat4x4 m;
     Material defaultMat;
+    PBRMaterial defaultPBRMat;
     this->_shader.setVector3("viewPos", this->_camera.getPosition());
     this->_shader.setVector3("ambientLight", glm::vec3(0.4, 0.4, 0.4));
-    this->_renderRec(this->_sceneGraph.getRoot(), &defaultMat, &m);
+    this->_renderRec(this->_sceneGraph.getRoot(), &defaultMat, &defaultPBRMat, &m);
 }
 
 void MainNode::_loadInputFramebuffers()
@@ -101,9 +103,11 @@ void MainNode::_loadInputFramebuffers()
     this->_materialTextureOffset = inputNumber;
 }
 
-void MainNode::_renderRec(const Entity *root, const Material *material, const glm::mat4x4 *matrix)
+// TODO: make both materials inherit from a base class
+void MainNode::_renderRec(const Entity *root, const Material *material, const PBRMaterial *PBRmaterial, const glm::mat4x4 *matrix)
 {
     const Material *newMaterial = material;
+    const PBRMaterial *newPBRMaterial = PBRmaterial;
     const glm::mat4x4 *newMatrix = matrix;
     const IComponent *p_component;
     p_component = root->getComponent(ComponentType::MATERIAL);
@@ -111,6 +115,12 @@ void MainNode::_renderRec(const Entity *root, const Material *material, const gl
     {
         newMaterial = static_cast<const Material *>(p_component);
         this->_setCurrentMaterial(newMaterial);
+    }
+    p_component = root->getComponent(ComponentType::PBR_MATERIAL);
+    if (p_component)
+    {
+        newPBRMaterial = static_cast<const PBRMaterial *>(p_component);
+        this->_setCurrentMaterial(newPBRMaterial);
     }
     p_component = root->getComponent(ComponentType::TRANSFORMATION);
     if (p_component)
@@ -127,7 +137,7 @@ void MainNode::_renderRec(const Entity *root, const Material *material, const gl
 
     for (auto &child : root->getChildren())
     {
-        this->_renderRec(child.second, newMaterial, newMatrix);
+        this->_renderRec(child.second, newMaterial, newPBRMaterial, newMatrix);
     }
     if (newMatrix != matrix)
     {
@@ -136,6 +146,10 @@ void MainNode::_renderRec(const Entity *root, const Material *material, const gl
     if (newMaterial != material)
     {
         this->_setCurrentMaterial(material);
+    }
+    if (newPBRMaterial != PBRmaterial)
+    {
+        this->_setCurrentMaterial(PBRmaterial);
     }
 }
 
@@ -187,6 +201,30 @@ void MainNode::_setModelMatrix()
 void MainNode::_setModelMatrix(const glm::mat4x4 *transformation)
 {
     this->_shader.setMat4("model", *transformation);
+}
+
+void MainNode::_setCurrentMaterial(const PBRMaterial *material)
+{
+    this->_shader.setVector3("pbrMaterial.albedo_value", material->albedo_value);
+    this->_loadTextureToShader("pbrMaterial.albedo_texture", this->_materialTextureOffset + 0,
+                               material->albedo_texture ? *material->albedo_texture : *TextureManager::white.get());
+
+    this->_loadTextureToShader("pbrMaterial.normal_map", this->_materialTextureOffset + 1,
+                               material->normal_map ? *material->normal_map : *TextureManager::blue.get());
+
+    this->_shader.setFloat("pbrMaterial.metalness_value", material->metalness_value);
+    this->_loadTextureToShader("pbrMaterial.metalness_texture", this->_materialTextureOffset + 2,
+                               material->metalness_texture ? *material->metalness_texture : *TextureManager::black.get());
+
+    this->_shader.setFloat("pbrMaterial.roughness_value", material->roughness_value);
+    this->_loadTextureToShader("pbrMaterial.roughness_texture", this->_materialTextureOffset + 3,
+                               material->roughness_texture ? *material->roughness_texture : *TextureManager::white.get());
+
+    this->_loadTextureToShader("pbrMaterial.ao_map", this->_materialTextureOffset + 4,
+                               material->ao_map ? *material->ao_map : *TextureManager::white.get());
+
+    this->_loadTextureToShader("pbrMaterial.parallax_map", this->_materialTextureOffset + 5,
+                               material->parallax_map ? *material->parallax_map : *TextureManager::black.get());
 }
 
 void MainNode::_setCurrentMaterial(const Material *material)

@@ -34,6 +34,18 @@ struct Material {
   vec3 emissive_value;
 };
 
+struct PBRMaterial {
+  vec3 albedo_value;
+  sampler2D albedo_texture;
+  sampler2D normal_map;
+  float metalness_value;
+  sampler2D metalness_texture;
+  float roughness_value;
+  sampler2D roughness_texture;
+  sampler2D ao_map;
+  sampler2D parallax_map;
+};
+
 layout (std140, binding = 1) uniform s1 {
   UPointLight upl[MAX_NUM_LIGHTS];
   UDirectionLight udl[MAX_NUM_LIGHTS];
@@ -50,6 +62,7 @@ in mat3 TBN;
 out vec4 color;
 
 uniform Material material;
+uniform PBRMaterial pbrMaterial;
 uniform vec3 viewPos;
 uniform vec3 ambientLight;
 uniform sampler2D shadowMap0;

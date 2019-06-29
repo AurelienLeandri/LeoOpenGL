@@ -17,6 +17,18 @@ struct Material {
   vec3 emissive_value;
 };
 
+struct PBRMaterial {
+  vec3 albedo_value;
+  sampler2D albedo_texture;
+  sampler2D normal_map;
+  float metalness_value;
+  sampler2D metalness_texture;
+  float roughness_value;
+  sampler2D roughness_texture;
+  sampler2D ao_map;
+  sampler2D parallax_map;
+};
+
 in vec2 TexCoords;
 in vec3 Normal;
 in vec3 NormalViewSpace;

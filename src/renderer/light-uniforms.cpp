@@ -11,6 +11,7 @@ LightUniform::LightUniform() {}
 
 LightUniform::LightUniform(const Light &light)
 {
+    this->ambient = light.ambient;
     this->constant = light.constant;
     this->diffuse = light.diffuse;
     this->linear = light.linear;
@@ -20,7 +21,8 @@ LightUniform::LightUniform(const Light &light)
 
 LightUniform::~LightUniform() {}
 
-LightUniform::LightUniform(const LightUniform &other) : constant(other.constant),
+LightUniform::LightUniform(const LightUniform &other) : ambient(other.ambient),
+                                                        constant(other.constant),
                                                         diffuse(other.diffuse),
                                                         linear(other.linear),
                                                         specular(other.specular),
@@ -30,6 +32,7 @@ LightUniform::LightUniform(const LightUniform &other) : constant(other.constant)
 
 LightUniform &LightUniform::operator=(const LightUniform &other)
 {
+    this->ambient = other.ambient;
     this->constant = other.constant;
     this->diffuse = other.diffuse;
     this->linear = other.linear;

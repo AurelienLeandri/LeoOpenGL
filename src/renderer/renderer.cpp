@@ -17,6 +17,7 @@
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
 #include <model/components/material.hpp>
+#include <model/components/pbr-material.hpp>
 #include <model/components/transformation.hpp>
 #include <model/components/point-light.hpp>
 #include <model/components/direction-light.hpp>
@@ -86,6 +87,11 @@ void Renderer::_registerComponent(const IComponent &component)
   break;
   case ComponentType::INSTANCED:
   {
+  }
+  break;
+  case ComponentType::PBR_MATERIAL:
+  {
+    this->_sceneContext->registerMaterial(*static_cast<const PBRMaterial *>(&component));
   }
   break;
   case ComponentType::MATERIAL:

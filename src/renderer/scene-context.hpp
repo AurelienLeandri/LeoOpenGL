@@ -21,6 +21,7 @@ class SceneGraph;
 class Shader;
 class OpenGLContext;
 class Material;
+class PBRMaterial;
 class Volume;
 
 class SceneContext
@@ -35,6 +36,7 @@ public:
     void registerDirectionLight(const DirectionLight &dl, const SceneGraph &sceneGraph, Shader &shadowShader);
     void registerPointLight(const PointLight &dl, const SceneGraph &sceneGraph, Shader &shadowShader);
     void registerMaterial(const Material &m);
+    void registerMaterial(const PBRMaterial &m);
     void registerVolume(const Volume &volume);
     void setInstancingVBO(const std::vector<glm::mat4> &transformations);  // TODO: Should use Instancing node when the time is right
     void registerInstancedVolume(const Volume &volume);

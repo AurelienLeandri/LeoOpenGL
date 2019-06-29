@@ -10,6 +10,7 @@
 #include <model/components/point-light.hpp>
 #include <model/components/transformation.hpp>
 #include <model/components/material.hpp>
+#include <model/components/pbr-material.hpp>
 #include <model/components/volume.hpp>
 #include <model/entity.hpp>
 #include <model/texture-manager.hpp>
@@ -83,6 +84,25 @@ void SceneContext::registerMaterial(const Material &m)
 {
     GLTextureOptions options;
     for (const Texture *t : {m.diffuse_texture, m.specular_texture, m.reflection_map, m.normal_map, m.parallax_map})
+        if (t)
+        {
+            if (t->mode == RGBA || t->mode == SRGBA)
+            {
+                options.format = options.internalFormat = GL_RGBA;
+            }
+            else
+            {
+                options.format = options.internalFormat = GL_RGB;
+            }
+            options.type = GL_UNSIGNED_BYTE;
+            this->registerTexture(*t, options, {});
+        }
+}
+
+void SceneContext::registerMaterial(const PBRMaterial &m)
+{
+    GLTextureOptions options;
+    for (const Texture *t : {m.albedo_texture, m.metalness_texture, m.roughness_texture, m.normal_map, m.ao_map, m.parallax_map})
         if (t)
         {
             if (t->mode == RGBA || t->mode == SRGBA)
