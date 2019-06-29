@@ -155,6 +155,7 @@ void MainNode::_renderRec(const Entity *root, const Material *material, const PB
 
 void MainNode::_drawVolume(const Volume *volume)
 {
+    glDisable(GL_CULL_FACE);
     if (this->_label == volume->getLabel())
         this->_context.drawVolume(*volume, this->_sceneContext.bufferCollections.find(volume->getId())->second);
 }

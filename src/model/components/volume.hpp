@@ -26,7 +26,8 @@ public:
 
 public:
   static Volume createCustom(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
-  static Volume createCube(float side);
+  static Volume createCube(float side = 1.0);
+  static Volume createSphere(float radius = 0.5);
   static Volume createPlane(float width, float height);
   static Volume createPostProcessPlane();
 

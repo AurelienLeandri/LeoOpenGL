@@ -96,7 +96,7 @@ void main()
   vec3 normal = TBN * normalize(normalize(texture(pbrMaterial.normal_map, pTexCoords).xyz) * 2.0 - 1.0);
 
   Positions = vec4(FragPos, 1.0);
-  Normals = vec4(normal, 1.0);
+  Normals = vec4(Normal, 1.0);
   Albedo = vec4(albedo, 1.0);
   RoughnessMetalnessAO = vec4(roughness, metalness, ao, 1.0);  // Fill when needed
 }

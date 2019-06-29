@@ -247,7 +247,7 @@ void pbr()
   sceneGraph.setRoot(&root);
 
   DirectionLight *dl = componentManager.createComponent<DirectionLight>(
-      glm::vec3(0.2f, 0.2f, 0.2f),
+      glm::vec3(10.2f, 0.2f, 0.2f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
 
@@ -265,11 +265,11 @@ void pbr()
   pointLight->addComponent(pointLightTr);
   root.addChild(pointLight);
 
-  Volume *cube = componentManager.createComponent<Volume>(Volume::createCube(1.f));
+  Volume *cube = componentManager.createComponent<Volume>(Volume::createSphere());
 
-  for (int x = 0; x < 20; x += 2)
+  for (int x = 0; x < 12; x += 2)
   {
-    for (int y = 0; y < 20; y += 2)
+    for (int y = 0; y < 12; y += 2)
     {
       Entity *node = entityManager.createEntity();
       PBRMaterial *material = componentManager.createComponent<PBRMaterial>();
