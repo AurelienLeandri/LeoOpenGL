@@ -4,6 +4,7 @@
 #include <renderer/light-wrapper.hpp>
 #include <renderer/buffer-collection.hpp>
 #include <renderer/texture-wrapper.hpp>
+#include <renderer/ibl-wrapper.hpp>
 #include <renderer/opengl-context.hpp>
 
 #include <model/components/direction-light.hpp>
@@ -121,6 +122,11 @@ void SceneContext::registerMaterial(const PBRMaterial &m)
 void SceneContext::registerTexture(const Texture &tex, GLTextureOptions glOptions = {}, TextureOptions textureOptions = {})
 {
     this->textures.insert(std::pair<t_id, TextureWrapper>(tex.getId(), TextureWrapper(tex, glOptions, textureOptions)));
+}
+
+void SceneContext::registerIBL(const IBL &ibl)
+{
+    this->ibls.insert(std::pair<t_id, IBLWrapper>(ibl.getId(), IBLWrapper(ibl)));
 }
 
 void SceneContext::registerVolume(const Volume &volume)

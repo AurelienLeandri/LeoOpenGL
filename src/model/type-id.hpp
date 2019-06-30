@@ -13,7 +13,8 @@ enum ComponentType
   TRANSFORMATION,
   VOLUME,
   INSTANCED,
-  PBR_MATERIAL
+  PBR_MATERIAL,
+  IBL_MAP
 };
 
 } // namespace leo

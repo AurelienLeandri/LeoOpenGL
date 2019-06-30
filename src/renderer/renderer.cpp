@@ -17,6 +17,7 @@
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
 #include <model/components/material.hpp>
+#include <model/components/ibl.hpp>
 #include <model/components/pbr-material.hpp>
 #include <model/components/transformation.hpp>
 #include <model/components/point-light.hpp>
@@ -106,6 +107,11 @@ void Renderer::_registerComponent(const IComponent &component)
   case ComponentType::VOLUME:
   {
     this->_sceneContext->registerVolume(*static_cast<const Volume *>(&component));
+  }
+  break;
+  case ComponentType::IBL_MAP:
+  {
+    this->_sceneContext->registerIBL(*static_cast<const IBL *>(&component));
   }
   break;
   default:

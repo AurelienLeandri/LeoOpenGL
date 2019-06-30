@@ -37,6 +37,8 @@ layout (std140, binding = 1) uniform s1 {
   UDirectionLight udl[MAX_NUM_LIGHTS];
 };
 
+uniform sampler2D hdr;
+
 uniform vec3 viewPos;
 uniform vec3 ambientLight;
 uniform sampler2D shadowMap0;
@@ -217,6 +219,7 @@ void main()
 
   }
 
-  FragColor = vec4(result, 1.0);
+  //FragColor = vec4(result, 1.0);
+  FragColor = vec4(texture(hdr, TexCoords).xyz, 1.0);
 
 }

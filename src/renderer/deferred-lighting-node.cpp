@@ -6,6 +6,7 @@
 #include <renderer/opengl-context.hpp>
 #include <renderer/scene-context.hpp>
 #include <renderer/light-wrapper.hpp>
+#include <renderer/ibl-wrapper.hpp>
 
 #include <model/components/transformation.hpp>
 #include <model/entity.hpp>
@@ -115,7 +116,14 @@ void DeferredLightingNode::_loadLightsToShader()
         glBufferSubData(GL_UNIFORM_BUFFER, offset + i * sizeof(DirectionLightUniform), sizeof(DirectionLightUniform), &dlu);
         i++;
     }
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    for (auto &p : this->_sceneContext.ibls)
+    {
+        const TextureWrapper &tw = p.second.tw;
+        glUniform1i(glGetUniformLocation(this->_shader.getProgram(), "hdr"), this->_materialTextureOffset);
+        glActiveTexture(GL_TEXTURE0 + this->_materialTextureOffset);
+        glBindTexture(GL_TEXTURE_2D, tw.getId());
+        this->_materialTextureOffset++;
+    }
 }
 
 void DeferredLightingNode::_loadShader()

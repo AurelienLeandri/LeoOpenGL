@@ -20,6 +20,7 @@
 #include <model/components/direction-light.hpp>
 #include <model/components/transformation.hpp>
 #include <model/components/instanced.hpp>
+#include <model/components/ibl.hpp>
 #include <model/entity.hpp>
 #include <model/scene-graph.hpp>
 #include <model/cube-map.hpp>
@@ -247,7 +248,7 @@ void pbr()
   sceneGraph.setRoot(&root);
 
   DirectionLight *dl = componentManager.createComponent<DirectionLight>(
-      glm::vec3(0.2f, 0.2f, 0.2f),
+      glm::vec3(1.0f, 0.9f, 0.8f),
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
 
@@ -256,7 +257,11 @@ void pbr()
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
 
+  Texture *iblTexture = textureManager.createTexture("resources/textures/Ice_Lake_Ref.hdr", RGB);
+  IBL *ibl = componentManager.createComponent<IBL>(*iblTexture);
+
   root.addComponent(dl);
+  root.addComponent(ibl);
 
   Entity *pointLight = entityManager.createEntity();
   Transformation *pointLightTr = componentManager.createComponent<Transformation>();
@@ -264,6 +269,7 @@ void pbr()
   pointLight->addComponent(pl);
   pointLight->addComponent(pointLightTr);
   root.addChild(pointLight);
+
 
   Volume *cube = componentManager.createComponent<Volume>(Volume::createSphere());
 
@@ -273,6 +279,9 @@ void pbr()
     {
       Entity *node = entityManager.createEntity();
       PBRMaterial *material = componentManager.createComponent<PBRMaterial>();
+      material->albedo_texture = textureManager.createTexture("resources/textures/rustediron2_basecolor.png", RGBA);
+      material->metalness_texture = textureManager.createTexture("resources/textures/rustediron2_metallic.png", RGBA);
+      material->roughness_texture = textureManager.createTexture("resources/textures/rustediron2_roughness.png", RGBA);
       material->albedo_value = glm::vec3(0.95, 0.30, 0.1);
       material->metalness_value = x / 20.f;
       material->roughness_value = y / 20.f;
@@ -355,7 +364,12 @@ void pbr()
   */
 
   Framebuffer *main = graph->createFramebuffer();
-  main->addColorBuffer();
+  ColorBufferOptions mainBufferOptions;
+  mainBufferOptions.pixelFormat = GL_RGB;
+  mainBufferOptions.dataFormat = GL_RGB;
+  mainBufferOptions.dataType = GL_FLOAT;
+  mainBufferOptions.hdr = true;
+  main->addColorBuffer(mainBufferOptions);
   main->useRenderBuffer();
 
   Framebuffer *gBuffer = graph->createFramebuffer();
