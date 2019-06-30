@@ -104,6 +104,7 @@ private:
   std::map<t_id, std::unique_ptr<Framebuffer>> _framebuffers;
   std::map<t_id, std::unique_ptr<Shader>> _shaders;
   Shader _shadowMappingShader;
+  Shader _hdrShader;
   Shader _cubeShadowMapShader;
 };
 

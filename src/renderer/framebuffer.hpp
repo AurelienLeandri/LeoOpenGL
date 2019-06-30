@@ -12,10 +12,11 @@ namespace leo
 
 class Texture;
 
-enum DepthBufferType
+enum BufferType
 {
   DEPTH_MAP,
-  CUBE_MAP
+  CUBE_MAP,
+  TEXTURE_2D
 };
 
 typedef struct ColorBufferOptions
@@ -27,11 +28,12 @@ typedef struct ColorBufferOptions
   GLuint dataFormat = GL_RGBA;
   GLuint pixelFormat = GL_RGBA;
   GLuint dataType = GL_UNSIGNED_BYTE;
+  BufferType type = BufferType::TEXTURE_2D;
 } ColorBufferOptions;
 
 typedef struct DepthBufferOptions
 {
-  DepthBufferType type = DepthBufferType::DEPTH_MAP;
+  BufferType type = BufferType::DEPTH_MAP;
   unsigned int width = 1620;
   unsigned int height = 1080;
 } DepthBufferOptions;

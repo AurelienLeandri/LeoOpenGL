@@ -92,24 +92,24 @@ void Framebuffer::setDepthBuffer(DepthBufferOptions options)
   TextureOptions textureOptions;
   GLTextureOptions glOptions;
 
-  if (options.type == DepthBufferType::CUBE_MAP) // For depth cube map
+  if (options.type == BufferType::CUBE_MAP) // For depth cube map
   {
     glOptions.textureType = GL_TEXTURE_CUBE_MAP;
   }
 
   glOptions.internalFormat = GL_DEPTH_COMPONENT;
   glOptions.format = GL_DEPTH_COMPONENT;
-  glOptions.wrapping = options.type == DepthBufferType::CUBE_MAP ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER;
+  glOptions.wrapping = options.type == BufferType::CUBE_MAP ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER;
   glOptions.type = GL_FLOAT;
 
   this->_depthBuffer = std::unique_ptr<TextureWrapper>(new TextureWrapper(options.width, options.height, glOptions, textureOptions));
   TextureWrapper &tw = *this->_depthBuffer.get();
 
-  if (options.type == DepthBufferType::DEPTH_MAP)
+  if (options.type == BufferType::DEPTH_MAP)
   {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tw.getId(), 0);
   }
-  else if (options.type == DepthBufferType::CUBE_MAP)
+  else if (options.type == BufferType::CUBE_MAP)
   {
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tw.getId(), 0);
   }

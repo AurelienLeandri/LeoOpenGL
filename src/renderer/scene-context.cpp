@@ -5,6 +5,7 @@
 #include <renderer/buffer-collection.hpp>
 #include <renderer/texture-wrapper.hpp>
 #include <renderer/ibl-wrapper.hpp>
+#include <renderer/ibl-node.hpp>
 #include <renderer/opengl-context.hpp>
 
 #include <model/components/direction-light.hpp>
@@ -53,7 +54,7 @@ void SceneContext::registerDirectionLight(const DirectionLight &dl, const SceneG
     DepthBufferOptions options;
     options.width = 1620 * 2;
     options.height = 1080 * 2;
-    options.type = DepthBufferType::DEPTH_MAP;
+    options.type = BufferType::DEPTH_MAP;
 
     DirectionLightWrapper &wrapper = this->dLights.insert(std::pair<t_id, DirectionLightWrapper>(
                                                               dl.getId(),
@@ -124,9 +125,10 @@ void SceneContext::registerTexture(const Texture &tex, GLTextureOptions glOption
     this->textures.insert(std::pair<t_id, TextureWrapper>(tex.getId(), TextureWrapper(tex, glOptions, textureOptions)));
 }
 
-void SceneContext::registerIBL(const IBL &ibl)
+void SceneContext::registerIBL(const IBL &ibl, const SceneGraph &sceneGraph, Shader &hdrShader)
 {
-    this->ibls.insert(std::pair<t_id, IBLWrapper>(ibl.getId(), IBLWrapper(ibl)));
+    this->ibls.insert(std::pair<t_id, IBLWrapper>(ibl.getId(), IBLWrapper(ibl, IBLNode(this->_context, *this, sceneGraph, hdrShader, ibl))));
+    this->ibls.find(ibl.getId())->second.node.render();
 }
 
 void SceneContext::registerVolume(const Volume &volume)

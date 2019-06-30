@@ -34,7 +34,8 @@ namespace leo
 {
 
 Renderer::Renderer() : _shadowMappingShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl"),
-                       _cubeShadowMapShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl")
+                       _cubeShadowMapShader("resources/shaders/point-shadow-mapping.vs.glsl", "resources/shaders/point-shadow-mapping.frag.glsl", "resources/shaders/point-shadow-mapping.geo.glsl"),
+                       _hdrShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl")
 {
 }
 
@@ -111,7 +112,7 @@ void Renderer::_registerComponent(const IComponent &component)
   break;
   case ComponentType::IBL_MAP:
   {
-    this->_sceneContext->registerIBL(*static_cast<const IBL *>(&component));
+    this->_sceneContext->registerIBL(*static_cast<const IBL *>(&component), *this->_sceneGraph, this->_hdrShader);
   }
   break;
   default:

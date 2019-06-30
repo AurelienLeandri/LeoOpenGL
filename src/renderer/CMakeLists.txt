@@ -15,6 +15,9 @@ set(ENGINE_SOURCES ${ENGINE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/blit-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/main-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/main-node.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibl-node.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibl-node.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibl-wrapper.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ssao-node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ssao-node.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/deferred-lighting-node.cpp

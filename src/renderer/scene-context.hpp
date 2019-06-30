@@ -39,7 +39,7 @@ public:
     void registerPointLight(const PointLight &dl, const SceneGraph &sceneGraph, Shader &shadowShader);
     void registerMaterial(const Material &m);
     void registerMaterial(const PBRMaterial &m);
-    void registerIBL(const leo::IBL &ibl);
+    void registerIBL(const leo::IBL &ibl, const SceneGraph &sceneGraph, Shader &hdrShader);
     void registerVolume(const Volume &volume);
     void setInstancingVBO(const std::vector<glm::mat4> &transformations);  // TODO: Should use Instancing node when the time is right
     void registerInstancedVolume(const Volume &volume);
