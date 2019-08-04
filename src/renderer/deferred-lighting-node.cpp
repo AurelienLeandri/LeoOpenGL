@@ -54,6 +54,8 @@ void DeferredLightingNode::render()
 
     this->_context.drawVolume(*this->_postProcessGeometry,
                               this->_sceneContext.bufferCollections.find(this->_postProcessGeometry->getId())->second);
+    
+    glEnable(GL_DEPTH_TEST);
 }
 
 void DeferredLightingNode::_loadInputFramebuffers()

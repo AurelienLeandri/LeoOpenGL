@@ -244,7 +244,7 @@ void pbr()
 
   SceneGraph sceneGraph;
   CubeMap cubeMap("skybox", "resources/textures");
-  //sceneGraph.setCubeMap(&cubeMap);
+  sceneGraph.setCubeMap(&cubeMap);
   sceneGraph.setRoot(&root);
 
   DirectionLight *dl = componentManager.createComponent<DirectionLight>(
@@ -269,7 +269,6 @@ void pbr()
   pointLight->addComponent(pl);
   pointLight->addComponent(pointLightTr);
   root.addChild(pointLight);
-
 
   Volume *cube = componentManager.createComponent<Volume>(Volume::createSphere());
 
@@ -449,15 +448,20 @@ void pbr()
   deferredLightingNode->addInput(*gBufferNode, "fb2", 2);
   deferredLightingNode->addInput(*gBufferNode, "fb3", 3);
   deferredLightingNode->setFramebuffer(main);
-  postProcessNode->addInput(*deferredLightingNode, "fb0", 0);
-  //BlitNode *copyDepthNode = graph->createNode<BlitNode>(context, *gBuffer, GL_DEPTH_BUFFER_BIT);
-  //copyDepthNode->setStringId("copy depth node");
 
-  //copyDepthNode->setFramebuffer(main);
-  //copyDepthNode->addInNode(*deferredLightingNode);
-  //copyDepthNode->addInNode(*gBufferNode);
-  //deferredLightingNode->setFramebuffer(main);
-  //mainNode->addInNode(*copyDepthNode);
+  BlitNode *copyDepthNode = graph->createNode<BlitNode>(context, *gBuffer, GL_DEPTH_BUFFER_BIT);
+  copyDepthNode->setStringId("copy depth node");
+  copyDepthNode->setFramebuffer(main);
+  copyDepthNode->addInNode(*gBufferNode);
+  copyDepthNode->addInNode(*deferredLightingNode);
+
+  CubeMapNode *cubeMapNode = graph->createNode<CubeMapNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
+  cubeMapNode->setStringId("cube map node");
+  cubeMapNode->setFramebuffer(main);
+  cubeMapNode->addInNode(*copyDepthNode);
+
+  postProcessNode->addInput(*deferredLightingNode, "fb0", 0);
+  postProcessNode->addInNode(*cubeMapNode);
 
   engine.setRenderer(renderer);
 
