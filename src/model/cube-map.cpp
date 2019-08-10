@@ -7,7 +7,7 @@
 namespace leo
 {
 
-CubeMap::CubeMap()
+CubeMap::CubeMap(CubeMapType type) : _type(type)
 {
   this->_vertices = {
       // positions
@@ -54,9 +54,13 @@ CubeMap::CubeMap()
       1.0f, -1.0f, 1.0f};
 }
 
-CubeMap::CubeMap(std::string name, std::string path) : CubeMap()
+CubeMap::CubeMap(std::string name, std::string path, CubeMapType type) : CubeMap(type)
 {
-  this->_loadCubeMapTextures(name, path);
+  if (this->_type == CubeMapType::FACES)
+    this->_loadCubeMapTextures(name, path);
+  else {
+    this->_textures.push_back(std::make_shared<Texture>(path.c_str(), TextureMode::HDR));
+  }
 }
 
 void CubeMap::_loadCubeMapTextures(std::string name, std::string path)

@@ -56,6 +56,7 @@ void DeferredLightingNode::render()
                               this->_sceneContext.bufferCollections.find(this->_postProcessGeometry->getId())->second);
     
     glEnable(GL_DEPTH_TEST);
+    this->_context.loadFramebuffer(nullptr);
 }
 
 void DeferredLightingNode::_loadInputFramebuffers()

@@ -151,7 +151,7 @@ void launchRendering(SceneGraph &sceneGraph)
   mainNode->setStringId("main node");
   GaussianBlurNode *blurNode = graph->createNode<GaussianBlurNode>(context, sceneContext, sceneGraph);
   blurNode->setStringId("blur node");
-  CubeMapNode *cubeMapNode = graph->createNode<CubeMapNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
+  BackgroundNode *cubeMapNode = graph->createNode<BackgroundNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
   cubeMapNode->setStringId("cube map node");
   PostProcessNode *extractCapedBrightnessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *extractCapedBrightnessShader);
   extractCapedBrightnessNode->setStringId("extract caped node");
@@ -243,7 +243,7 @@ void pbr()
   Entity root;
 
   SceneGraph sceneGraph;
-  CubeMap cubeMap("skybox", "resources/textures");
+  CubeMap cubeMap("skybox", "resources/textures/Ice_Lake_Ref.hdr", CubeMapType::EQUIRECTANGULAR);
   sceneGraph.setCubeMap(&cubeMap);
   sceneGraph.setRoot(&root);
 
@@ -257,7 +257,7 @@ void pbr()
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
 
-  Texture *iblTexture = textureManager.createTexture("resources/textures/Ice_Lake_Ref.hdr", RGB);
+  Texture *iblTexture = textureManager.createTexture("resources/textures/Ice_Lake_Env.hdr", RGB);
   IBL *ibl = componentManager.createComponent<IBL>(*iblTexture);
 
   root.addComponent(dl);
@@ -278,9 +278,9 @@ void pbr()
     {
       Entity *node = entityManager.createEntity();
       PBRMaterial *material = componentManager.createComponent<PBRMaterial>();
-      material->albedo_texture = textureManager.createTexture("resources/textures/rustediron2_basecolor.png", RGBA);
-      material->metalness_texture = textureManager.createTexture("resources/textures/rustediron2_metallic.png", RGBA);
-      material->roughness_texture = textureManager.createTexture("resources/textures/rustediron2_roughness.png", RGBA);
+      //material->albedo_texture = textureManager.createTexture("resources/textures/rustediron2_basecolor.png", RGBA);
+      //material->metalness_texture = textureManager.createTexture("resources/textures/rustediron2_metallic.png", RGBA);
+      //material->roughness_texture = textureManager.createTexture("resources/textures/rustediron2_roughness.png", RGBA);
       material->albedo_value = glm::vec3(0.95, 0.30, 0.1);
       material->metalness_value = x / 20.f;
       material->roughness_value = y / 20.f;
@@ -317,7 +317,7 @@ void pbr()
   Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer-pbr.frag.glsl");
   Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting-pbr.frag.glsl");
   Shader *postProcessShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl");
-  Shader *cubeMapShader = graph->createShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map.frag.glsl");
+  Shader *cubeMapShader = graph->createShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map-equirectangular.frag.glsl");
   Shader *instancingShader = graph->createShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl");
   Shader *gammaCorrectionShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/gamma-correction.frag.glsl");
   Shader *shadowMappingShader = graph->createShader("resources/shaders/dir-shadow-mapping.vs.glsl", "resources/shaders/dir-shadow-mapping.frag.glsl");
@@ -394,7 +394,7 @@ void pbr()
   mainNode->setStringId("main node");
   GaussianBlurNode *blurNode = graph->createNode<GaussianBlurNode>(context, sceneContext, sceneGraph);
   blurNode->setStringId("blur node");
-  CubeMapNode *cubeMapNode = graph->createNode<CubeMapNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
+  BackgroundNode *cubeMapNode = graph->createNode<BackgroundNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
   cubeMapNode->setStringId("cube map node");
   PostProcessNode *extractCapedBrightnessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *extractCapedBrightnessShader);
   extractCapedBrightnessNode->setStringId("extract caped node");
@@ -455,7 +455,7 @@ void pbr()
   copyDepthNode->addInNode(*gBufferNode);
   copyDepthNode->addInNode(*deferredLightingNode);
 
-  CubeMapNode *cubeMapNode = graph->createNode<CubeMapNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
+  BackgroundNode *cubeMapNode = graph->createNode<BackgroundNode>(context, sceneContext, sceneGraph, *cubeMapShader, *camera);
   cubeMapNode->setStringId("cube map node");
   cubeMapNode->setFramebuffer(main);
   cubeMapNode->addInNode(*copyDepthNode);

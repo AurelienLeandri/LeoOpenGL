@@ -66,6 +66,7 @@ void MainNode::render()
     this->_shader.setVector3("viewPos", this->_camera.getPosition());
     this->_shader.setVector3("ambientLight", glm::vec3(0.4, 0.4, 0.4));
     this->_renderRec(this->_sceneGraph.getRoot(), &defaultMat, &defaultPBRMat, &m);
+    this->_context.loadFramebuffer(nullptr);
 }
 
 void MainNode::_loadInputFramebuffers()

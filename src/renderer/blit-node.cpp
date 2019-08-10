@@ -16,6 +16,7 @@ void BlitNode::render()
     this->_context.loadFramebuffer(this->_output, GL_DRAW_FRAMEBUFFER);
     glBlitFramebuffer(0, 0, 1620, 1080, 0, 0, 1620, 1080,
                       this->_blitMask, GL_NEAREST);
+    this->_context.loadFramebuffer(nullptr);
 }
 
 } // namespace leo

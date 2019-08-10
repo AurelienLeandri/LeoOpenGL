@@ -54,6 +54,8 @@ void GaussianBlurNode::render()
 
         horizontal != horizontal;
     }
+
+    this->_context.loadFramebuffer(nullptr);
 }
 
 } // namespace leo

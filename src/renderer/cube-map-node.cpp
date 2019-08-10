@@ -11,13 +11,13 @@
 namespace leo
 {
 
-CubeMapNode::CubeMapNode(OpenGLContext &context, SceneContext &sceneContext, const SceneGraph &sceneGraph, Shader &shader, const Camera &camera)
+BackgroundNode::BackgroundNode(OpenGLContext &context, SceneContext &sceneContext, const SceneGraph &sceneGraph, Shader &shader, const Camera &camera)
     : RenderNode(context, sceneContext, shader), _sceneGraph(sceneGraph), _camera(camera)
 {
     this->_cubeMap = sceneGraph.getCubeMap();
 }
 
-void CubeMapNode::render()
+void BackgroundNode::render()
 {
     this->_load();
 
@@ -33,7 +33,8 @@ void CubeMapNode::render()
 
         GLuint VAO = this->_context.loadCubeMap(*this->_cubeMap);
         this->_shader.setTexture(
-            "skybox", this->_context.getTextureWrapperId(*this->_cubeMap->getTextures()[0]), 0, GL_TEXTURE_CUBE_MAP);
+            "skybox", this->_context.getTextureWrapperId(*this->_cubeMap->getTextures()[0]), 0, 
+                this->_cubeMap->getType() == CubeMapType::FACES ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
@@ -44,7 +45,7 @@ void CubeMapNode::render()
     this->_unload();
 }
 
-void CubeMapNode::_load()
+void BackgroundNode::_load()
 {
     if (this->_cubeMap)
     {
@@ -52,11 +53,12 @@ void CubeMapNode::_load()
     }
 }
 
-void CubeMapNode::_unload()
+void BackgroundNode::_unload()
 {
+    this->_context.loadFramebuffer(nullptr);
 }
 
-void CubeMapNode::notified(Subject *subject, Event event)
+void BackgroundNode::notified(Subject *subject, Event event)
 {
     SceneGraph *c = dynamic_cast<SceneGraph *>(subject);
     if (c && event == Event::CUBE_MAP_UPDATED)
@@ -65,7 +67,7 @@ void CubeMapNode::notified(Subject *subject, Event event)
     }
 }
 
-void CubeMapNode::_loadCubeMap(const CubeMap *cubeMap)
+void BackgroundNode::_loadCubeMap(const CubeMap *cubeMap)
 {
     this->_cubeMap = cubeMap;
     this->_context.loadCubeMap(*cubeMap);

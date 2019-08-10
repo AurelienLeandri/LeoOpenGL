@@ -29,7 +29,7 @@ class Instanced;
 class InputManager;
 class Camera;
 class MainNode;
-class CubeMapNode;
+class BackgroundNode;
 class PostProcessNode;
 class GaussianBlurNode;
 class InstancedNode;

@@ -16,10 +16,10 @@ namespace leo
 class SceneGraph;
 class CubeMap;
 
-class CubeMapNode : public RenderNode
+class BackgroundNode : public RenderNode
 {
   public:
-    CubeMapNode(OpenGLContext &context, SceneContext &sceneContext, const SceneGraph &sceneGraph, Shader &shader, const Camera &camera);
+    BackgroundNode(OpenGLContext &context, SceneContext &sceneContext, const SceneGraph &sceneGraph, Shader &shader, const Camera &camera);
 
   public:
     virtual void render();
