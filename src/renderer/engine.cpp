@@ -71,6 +71,8 @@ void Engine::gameLoop(bool once)
   GLfloat deltaTime = 0.0;
   GLfloat currentFrame = 0.0;
 
+  this->_renderer->execute(true);
+  
   while (!glfwWindowShouldClose(this->_window))
   {
     currentFrame = glfwGetTime();

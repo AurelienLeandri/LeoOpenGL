@@ -44,6 +44,7 @@ public:
 public:
   void init(unsigned char *data, unsigned int width, unsigned int height, const std::vector<std::shared_ptr<Texture>> *textures = nullptr);
   GLuint getId() const;
+  const Texture *getTexture() const;
 
 private:
   GLuint _id = 0;

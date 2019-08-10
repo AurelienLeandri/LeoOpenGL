@@ -107,4 +107,9 @@ GLuint TextureWrapper::getId() const
     return this->_id;
 }
 
+const Texture *TextureWrapper::getTexture() const
+{
+    return this->_texture;
+}
+
 } // namespace leo

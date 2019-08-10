@@ -43,8 +43,6 @@ public:
     void registerVolume(const Volume &volume);
     void setInstancingVBO(const std::vector<glm::mat4> &transformations);  // TODO: Should use Instancing node when the time is right
     void registerInstancedVolume(const Volume &volume);
-
-private:
     void registerTexture(const Texture &tex, GLTextureOptions glOptionss, TextureOptions textureOptions);
 
 public:

@@ -23,7 +23,8 @@ void RenderGraph::execute()
 {
     std::map<t_id, int> incompleteInputs;
     std::map<t_id, bool> hasRan;
-    for (auto &pair : this->_nodes) {
+    for (auto &pair : this->_nodes)
+    {
         incompleteInputs.insert(std::pair<t_id, int>(pair.first, pair.second->getInNodes().size()));
         hasRan.insert(std::pair<t_id, int>(pair.first, false));
     }
@@ -45,7 +46,7 @@ void RenderGraph::execute()
                     for (auto &output : p.second->getOutNodes())
                     {
                         incompleteInputs[output]--;
-                    }                    
+                    }
                 }
                 else
                 {

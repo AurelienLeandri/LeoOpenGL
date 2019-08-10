@@ -26,6 +26,7 @@ void BackgroundNode::render()
     this->_shader.setMat4("view", untranslatedMatrix);
     this->_shader.setMat4("projection", glm::perspective(this->_camera.getZoom(), (float)1620 / (float)1080, 0.1f, 100.0f));
     this->_loadOutputFramebuffer();
+    this->_loadInputFramebuffers();
 
     if (this->_cubeMap)
     {
@@ -33,7 +34,7 @@ void BackgroundNode::render()
 
         GLuint VAO = this->_context.loadCubeMap(*this->_cubeMap);
         this->_shader.setTexture(
-            "skybox", this->_context.getTextureWrapperId(*this->_cubeMap->getTextures()[0]), 0, 
+            "skybox", this->_context.getTextureWrapperId(*this->_cubeMap->getTextures()[0]), this->_materialTextureOffset, 
                 this->_cubeMap->getType() == CubeMapType::FACES ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);

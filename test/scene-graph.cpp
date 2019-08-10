@@ -257,7 +257,7 @@ void pbr()
       glm::vec3(0.6f, 0.6f, 0.6f),
       glm::vec3(0.6f, 0.6f, 0.6f));
 
-  Texture *iblTexture = textureManager.createTexture("resources/textures/Ice_Lake_Env.hdr", RGB);
+  Texture *iblTexture = textureManager.createTexture("resources/textures/Ice_Lake_Ref.hdr", TextureMode::RGB);
   IBL *ibl = componentManager.createComponent<IBL>(*iblTexture);
 
   root.addComponent(dl);
@@ -317,6 +317,7 @@ void pbr()
   Shader *gBufferShader = graph->createShader("resources/shaders/basic.vs.glsl", "resources/shaders/gbuffer-pbr.frag.glsl");
   Shader *deferredLightingShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/deferred-lighting-pbr.frag.glsl");
   Shader *postProcessShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/reinhard-tone-mapping.frag.glsl");
+  Shader *convolutionShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/latlong-convolution.frag.glsl");
   Shader *cubeMapShader = graph->createShader("resources/shaders/cube-map.vs.glsl", "resources/shaders/cube-map-equirectangular.frag.glsl");
   Shader *instancingShader = graph->createShader("resources/shaders/instancing.vs.glsl", "resources/shaders/instanced-basic.frag.glsl");
   Shader *gammaCorrectionShader = graph->createShader("resources/shaders/post-process.vs.glsl", "resources/shaders/gamma-correction.frag.glsl");
@@ -329,6 +330,9 @@ void pbr()
   Framebuffer *postProcess = graph->createFramebuffer();
   postProcess->addColorBuffer();
   postProcess->useRenderBuffer();
+  Framebuffer *convolutionFB = graph->createFramebuffer();
+  convolutionFB->addColorBuffer();
+  convolutionFB->useRenderBuffer();
 
   /*()
   // Framebuffers
@@ -384,6 +388,17 @@ void pbr()
 
   PostProcessNode *postProcessNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *postProcessShader);
   postProcessNode->setStringId("post process node");
+
+  PostProcessNode *latLongConvolutionNode = graph->createPreprocessNode<PostProcessNode>(context, sceneContext, sceneGraph, *convolutionShader);
+  latLongConvolutionNode->setStringId("post process node");
+  GLTextureOptions latlongGLOptions;
+  latlongGLOptions.internalFormat = GL_RGB16F;
+  latlongGLOptions.format = GL_RGB;
+  latlongGLOptions.type = GL_FLOAT;
+  latlongGLOptions.wrapping = GL_REPEAT;
+  latLongConvolutionNode->addTextureUniform("latlong", iblTexture, latlongGLOptions);
+  latLongConvolutionNode->setFramebuffer(convolutionFB);
+
   PostProcessNode *gammaCorrectionNode = graph->createNode<PostProcessNode>(context, sceneContext, sceneGraph, *gammaCorrectionShader);
   gammaCorrectionNode->setStringId("gamma correction node");
 
@@ -431,7 +446,6 @@ void pbr()
   */
 
   postProcessNode->setFramebuffer(postProcess);
-
   gammaCorrectionNode->addInput(*postProcessNode, "fb", 0);
 
   // Lighting
@@ -459,6 +473,7 @@ void pbr()
   cubeMapNode->setStringId("cube map node");
   cubeMapNode->setFramebuffer(main);
   cubeMapNode->addInNode(*copyDepthNode);
+  cubeMapNode->addInput(*latLongConvolutionNode, "latlong", 0);
 
   postProcessNode->addInput(*deferredLightingNode, "fb0", 0);
   postProcessNode->addInNode(*cubeMapNode);

@@ -32,12 +32,27 @@ void RenderNode::_loadInputFramebuffers()
         glBindTexture(GL_TEXTURE_2D, input.getId());
         inputNumber++;
     }
+    for (const auto &p : this->_textureUniforms)
+    {
+        this->_loadTextureToShader(p.first.c_str(), inputNumber++, *p.second);
+    }
     this->_materialTextureOffset = inputNumber;
 }
 
 void RenderNode::_loadOutputFramebuffer()
 {
     this->_context.loadFramebuffer(this->_output);
+}
+
+void RenderNode::addTextureUniform(std::string uniformName, const Texture *texture, GLTextureOptions glOptions, TextureOptions textureOptions)
+{
+    this->_sceneContext.registerTexture(*texture, glOptions, textureOptions);
+    this->_textureUniforms.insert(std::pair<std::string, const Texture *>(uniformName, texture));
+}
+
+void RenderNode::addTextureUniform(std::string uniformName, const TextureWrapper *textureWrapper)
+{
+    this->_textureUniforms.insert(std::pair<std::string, const Texture *>(uniformName, textureWrapper->getTexture()));
 }
 
 void RenderNode::_loadTextureToShader(const char *uniformName, GLuint textureSlot, const Texture &texture)

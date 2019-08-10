@@ -78,6 +78,14 @@ public:
     return node;
   }
 
+  template <typename T, typename... ARGS>
+  T *createPreprocessNode(ARGS &&... args)
+  {
+    T *node = new T(std::forward<ARGS>(args)...);
+    this->_preprocessNodes.insert(std::pair<t_id, std::unique_ptr<T>>(node->getId(), node));
+    return node;
+  }
+
   template <typename... ARGS>
   Framebuffer *createFramebuffer(ARGS &&... args)
   {
@@ -97,10 +105,11 @@ public:
   RenderGraphNode *getNode(t_id id);
   Shader *getShader(t_id id);
   Framebuffer *getFramebuffer(t_id id);
-  void execute();
+  void execute(bool preprocess=false);
 
 private:
   std::map<t_id, std::unique_ptr<RenderGraphNode>> _nodes;
+  std::map<t_id, std::unique_ptr<RenderGraphNode>> _preprocessNodes;
   std::map<t_id, std::unique_ptr<Framebuffer>> _framebuffers;
   std::map<t_id, std::unique_ptr<Shader>> _shaders;
   Shader _shadowMappingShader;

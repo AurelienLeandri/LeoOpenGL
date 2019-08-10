@@ -3,6 +3,7 @@
 #include <renderer/render-graph-node.hpp>
 #include <controller/observer.hpp>
 #include <renderer/render-node-options.hpp>
+#include <renderer/texture-wrapper.hpp>
 
 #include <map>
 
@@ -37,12 +38,17 @@ protected:
 public:
   void setOptions(RenderNodeOptions options);
   const RenderNodeOptions &getOptions() const;
+  void addTextureUniform(std::string uniformName, const Texture *texture, GLTextureOptions glOptions = {}, TextureOptions textureOptions = {});
+  void addTextureUniform(std::string uniformName, const TextureWrapper *textureWrapper);
 
 protected:
   Shader &_shader;
   GLuint _materialTextureOffset = 0;
   RenderNodeOptions _options;
   SceneContext &_sceneContext;
+
+protected:
+  std::map<std::string, const Texture *> _textureUniforms;
 
 };
 

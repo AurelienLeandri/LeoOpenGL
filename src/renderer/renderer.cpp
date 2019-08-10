@@ -155,7 +155,7 @@ void Renderer::notified(Subject *subject, Event event)
   }
 }
 
-void Renderer::execute()
+void Renderer::execute(bool preprocess)
 {
   for (auto &p : this->_sceneContext->dLights)
   {
@@ -167,12 +167,21 @@ void Renderer::execute()
     p.second.renderNode.render();
   }
 
+  auto &nodes = preprocess ? this->_preprocessNodes : this->_nodes;
+
   std::map<t_id, int> incompleteInputs;
   std::map<t_id, bool> hasRan;
-  for (auto &pair : this->_nodes)
+  for (auto &pair : nodes)
   {
     incompleteInputs.insert(std::pair<t_id, int>(pair.first, pair.second->getInNodes().size()));
     hasRan.insert(std::pair<t_id, int>(pair.first, false));
+  }
+  for (auto &pair : this->_preprocessNodes)
+  {
+    for (auto &output : pair.second->getOutNodes())
+    {
+      incompleteInputs[output]--;
+    }
   }
   bool change = false;
   bool finished = false;
@@ -180,7 +189,7 @@ void Renderer::execute()
   {
     finished = true;
     change = false;
-    for (auto &p : this->_nodes)
+    for (auto &p : nodes)
     {
       if (!hasRan[p.first])
       {
