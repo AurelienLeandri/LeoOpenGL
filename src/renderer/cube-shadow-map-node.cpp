@@ -63,7 +63,8 @@ void CubeShadowMapNode::render()
     glm::mat4x4 m;
     this->_renderRec(this->_sceneGraph.getRoot(), &m);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    this->_context.loadFramebuffer(nullptr);
+
     // 2. then render scene as normal with shadow mapping (using depth map)
     glViewport(0, 0, 1620, 1080);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -32,7 +32,7 @@ private:
 
 public:
   void setRenderer(Renderer &renderer);
-  void gameLoop();
+  void gameLoop(bool once=false);
   Camera &getCamera();
   GLFWwindow &getWindow();
   InputManager &getInputManager();

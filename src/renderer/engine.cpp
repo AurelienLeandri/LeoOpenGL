@@ -64,7 +64,7 @@ InputManager &Engine::getInputManager()
   return *this->inputManager;
 }
 
-void Engine::gameLoop()
+void Engine::gameLoop(bool once)
 {
   // Render to our framebuffer
   GLfloat lastFrame = 0.0;
@@ -87,6 +87,9 @@ void Engine::gameLoop()
 
     // Check and call events
     glfwPollEvents();
+
+    if (once)
+      break;
   }
 
   glfwDestroyWindow(this->_window);

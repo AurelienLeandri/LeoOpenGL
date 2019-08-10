@@ -186,6 +186,7 @@ void Renderer::execute()
       {
         if (incompleteInputs[p.first] == 0)
         {
+          // std::cout << p.second->getStringId() << std::endl;
           p.second->render();
           change = true;
           hasRan[p.first] = true;
