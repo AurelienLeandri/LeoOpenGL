@@ -634,8 +634,8 @@ void decoupling()
 
 int main()
 {
-  //decoupling();
-  pbr();
+  decoupling();
+  //pbr();
   //testInstanced();
   return 0;
 }

@@ -7,3 +7,4 @@
 *.dll
 !external/bin/*.dll
 out/
+CMakeSettings.json
