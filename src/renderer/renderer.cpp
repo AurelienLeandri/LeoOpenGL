@@ -198,8 +198,6 @@ void Renderer::render(const SceneGraph *sceneGraph)
   this->_gBufferNode->render();
   this->_deferredLightingNode->render();
 
-  /*
-
   this->_mainNode->render();
 
   if (this->_instancedNode)
@@ -222,9 +220,8 @@ void Renderer::render(const SceneGraph *sceneGraph)
   this->_postProcessNode->render();
 
   this->_gammaCorrectionNode->render();
-  */
 
-      glfwSwapBuffers(this->_window);
+  glfwSwapBuffers(this->_window);
 }
 
 void Renderer::createMainNode(SceneGraph *sceneGraph)

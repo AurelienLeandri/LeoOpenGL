@@ -31,6 +31,19 @@ struct Material {
   sampler2D normal_map;
   sampler2D parallax_map;
   float shininess;
+  vec3 emissive_value;
+};
+
+struct PBRMaterial {
+  vec3 albedo_value;
+  sampler2D albedo_texture;
+  sampler2D normal_map;
+  float metalness_value;
+  sampler2D metalness_texture;
+  float roughness_value;
+  sampler2D roughness_texture;
+  sampler2D ao_map;
+  sampler2D parallax_map;
 };
 
 layout (std140, binding = 1) uniform s1 {
@@ -49,6 +62,7 @@ in mat3 TBN;
 out vec4 color;
 
 uniform Material material;
+uniform PBRMaterial pbrMaterial;
 uniform vec3 viewPos;
 uniform vec3 ambientLight;
 uniform sampler2D shadowMap0;
@@ -221,7 +235,7 @@ void main()
   float reflectionFactor = texture(material.reflection_map, TexCoords).x;
   */
 
-  vec3 result = diffuse + specular + (ambient * diffuse_sample)/* + vec3(reflectionColor * reflectionFactor)*/;
+  vec3 result = material.emissive_value + diffuse + specular + (ambient * diffuse_sample)/* + vec3(reflectionColor * reflectionFactor)*/;
   //vec3 result = vec3(material.shininess / 100.0);
   //color = vec4(FragPosLightSpace, 1.0);
   //color = vec4(diffuse_value, 1.0);

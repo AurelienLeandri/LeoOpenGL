@@ -20,9 +20,7 @@ ObjectRegister &ObjectRegister::getInstance()
 
 bool ObjectRegister::registerObject(const RegisteredObject *object, t_id id)
 {
-  return this->_register.insert(
-                            std::pair<std::string, const RegisteredObject *>(id, object))
-      .second;
+  return this->_register.insert(std::pair<t_id, const RegisteredObject *>(id, object)).second;
 }
 
 bool ObjectRegister::unregisterObject(t_id id)

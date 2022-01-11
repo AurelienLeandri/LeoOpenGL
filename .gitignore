@@ -1,0 +1,10 @@
+.*
+!.env.cmake
+!.gitignore
+*.ilk
+*.exe
+*.pdb
+*.dll
+!external/bin/*.dll
+out/
+CMakeSettings.json

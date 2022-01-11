@@ -3,11 +3,10 @@
 #include <map>
 #include <string>
 
+#include "registered-object.hpp"
+
 namespace leo
 {
-
-class RegisteredObject;
-
 class ObjectRegister
 {
 

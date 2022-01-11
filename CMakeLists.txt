@@ -1,31 +1,75 @@
-cmake_minimum_required(VERSION 3.0)
-project(opengl-engine)
+include("./.env.cmake" RESULT_VARIABLE LOCAL_ENV)
+message(STATUS "Local .env.cmake: ${LOCAL_ENV}")
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
+cmake_minimum_required(VERSION 3.11.0)
 
+set(NAME LeoOpenGL)
+
+message(STATUS "Using generator ${CMAKE_GENERATOR}")
+
+project(${NAME} VERSION 1.0.0)
+
+MESSAGE("Looking for the opengl32.lib")
 find_package(OpenGL REQUIRED)
 if (!OPENGL_FOUND)
     MESSAGE("OPENGL NOT FOUND")
 endif()
-include_directories(${GLEW_INCLUDE_DIRS})
 
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(GLM DEFAULT_MSG GLM_INCLUDE_DIR)
-# Define GLM_INCLUDE_DIRS
-if (GLM_FOUND)
-    set(GLM_INCLUDE_DIRS ${GLM_INCLUDE_DIR})
+if (NOT DEFINED GLFW_LIB_PATH OR NOT DEFINED GLFW_INCLUDE_PATH)
+  message(FATAL_ERROR "GLFW_LIB_PATH and GLFW_INCLUDE_PATH are not set in .env.cmake!")
 endif()
 
-# Hide some variables
-mark_as_advanced(GLM_INCLUDE_DIR)
+message("Using GLFW lib found in ${GLFW_LIB_PATH}")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdump-tree-original -std=c++1y -Wall -Wextra -pedantic -g")
+if (NOT DEFINED ASSIMP_INCLUDE_PATH OR NOT DEFINED ASSIMP_LIB_PATH)
+  message(FATAL_ERROR "ASSIMP_LIB_PATH and ASSIMP_INCLUDE_PATH is not set in .env.cmake!")
+endif()
 
-include_directories(
-        ${CMAKE_SOURCE_DIR}/src
+message("Using Assimp lib found in ${ASSIMP_LIB_PATH}")
+
+if (NOT DEFINED GLAD_INCLUDE_PATH OR NOT DEFINED GLAD_LIB_PATH)
+  message(FATAL_ERROR "GLAD_LIB_PATH and EMBREE_INCLUDE_PATH is not set in .env.cmake!")
+endif()
+
+message("Using GLAD lib found in ${EMBREE_LIB_PATH}")
+
+include_directories(${INCLUDE_PATH})
+message("Additional include directory: ${INCLUDE_PATH}")
+
+include_directories(src)
+
+
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp SOURCES ${PROJECT_SOURCE_DIR}/src/*.hpp ${PROJECT_SOURCE_DIR}/external/*.cpp ${PROJECT_SOURCE_DIR}/external/*.c)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+ 
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}")
+
+set(STBI_NO_DDS)
+
+message(STATUS "CREATING BUILD FOR WINDOWS")
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+  ${PROJECT_SOURCE_DIR}/src
+  ${GLFW_INCLUDE_PATH}
+  ${ASSIMP_INCLUDE_PATH}
+  ${GLAD_INCLUDE_PATH}
+  ${INCLUDE_PATH}
+  )
+
+target_link_directories(${PROJECT_NAME} PUBLIC
+  ${GLFW_LIB_PATH}
+  ${ASSIMP_LIB_PATH}
+  ${GLAD_LIB_PATH}
+  ${LIB_PATH}
 )
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+target_link_libraries(${PROJECT_NAME} glfw3 assimp-vc140-mt soil glfw3 opengl32)
 
-add_subdirectory(src)
-add_subdirectory(test)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/external/bin"
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+
