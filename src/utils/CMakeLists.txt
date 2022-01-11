@@ -1,8 +1,0 @@
-set(ENGINE_SOURCES ${ENGINE_SOURCES}
-  ${CMAKE_CURRENT_SOURCE_DIR}/file-reader.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/file-reader.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/texture.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/texture.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/geometry.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/stb_image.h
-  PARENT_SCOPE)

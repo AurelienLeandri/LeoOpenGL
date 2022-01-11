@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <string>
 
 #include <renderer/global.hpp>
 

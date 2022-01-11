@@ -1,9 +1,0 @@
-set(ENGINE_SOURCES ${ENGINE_SOURCES}
-  ${CMAKE_CURRENT_SOURCE_DIR}/subject.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/subject.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/observer.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/observer.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/event.hpp
-  PARENT_SCOPE
-  )
-

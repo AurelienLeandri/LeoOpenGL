@@ -21,8 +21,12 @@ OpenGLContext::OpenGLContext()
 
 void OpenGLContext::_init(const OpenGLContextOptions &options)
 {
-    // Initialize GLEW to setup the OpenGL Function pointers
-    glewExperimental = GL_TRUE;
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cerr << "Failed to initialize GLAD" << std::endl;
+        return;
+    }
+    std::cerr << "GLAD initialized succesfully" << std::endl;
 
     // Define the viewport dimensions
     glClearColor(0.07, 0.07, 0.07, 1);
@@ -34,14 +38,6 @@ void OpenGLContext::_init(const OpenGLContextOptions &options)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-
-    if (glewInit() == GLEW_OK)
-        std::cerr << "Glew initialized successfully" << std::endl;
-    else
-    {
-        std::cerr << "Failed to initialize Glew" << std::endl;
-        return;
-    }
 
     // Set up debugging
     GLint flags;
